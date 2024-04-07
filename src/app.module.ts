@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { HelmetMiddleware } from '@nest-middlewares/helmet';
+import { ChatbotModule } from './chatbot/chatbot.module';
 dotenv.config();
 @Module({
   imports: [
@@ -19,6 +20,7 @@ dotenv.config();
     //   synchronize: true,
     //   debug: false,
     // }),
+    ChatbotModule,
   ],
   controllers: [AppController],
   providers: [AppService],
