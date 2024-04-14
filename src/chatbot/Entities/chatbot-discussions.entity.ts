@@ -9,11 +9,11 @@ export class ChatbotDiscussionsEntity extends TimestampEntites {
 
   @OneToMany(
     () => ChatbotMessagesEntity,
-    (chatbotMessages) => chatbotMessages.discussionId,
+    (chatbotMessages) => chatbotMessages.discussion,
     {
       nullable: true,
-      cascade: true,
       eager: true,
+      cascade: ['soft-remove'],
     },
   )
   messages: ChatbotMessagesEntity[];

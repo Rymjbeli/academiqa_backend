@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  ParseIntPipe,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -9,7 +12,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { ChatbotService } from './chatbot.service';
-
+import { ChatbotDiscussionsEntity } from './Entities/chatbot-discussions.entity';
 
 @Controller('chatbot')
 export class ChatbotController {
@@ -32,14 +35,16 @@ export class ChatbotController {
   ): Promise<{ prompt: string; image: string; response: string }> {
     try {
       const imagePath = image ? image.path : '';
+      const imageName = image ? image.filename : '';
       const prompt = data.prompt;
-      let discussionId = data.discussionId;
-      discussionId = parseInt(String(discussionId));
+      const discussionId = data.discussionId;
+      // discussionId = parseInt(String(discussionId));
 
       return this.chatbotService.generateResponse(
         prompt,
         imagePath,
-        discussionId,
+        imageName,
+        +discussionId,
       );
     } catch (error) {
       throw new Error(`Failed to generate response: ${error.message}`);
@@ -47,7 +52,14 @@ export class ChatbotController {
   }
 
   @Get('GetAllDiscussions')
-  GetAllDiscussions(): any[] {
-    return this.chatbotService.buildDiscussions();
+  async GetAllDiscussions(): Promise<ChatbotDiscussionsEntity[]> {
+    return await this.chatbotService.getAllDiscussions();
+  }
+  @Delete('DeleteDiscussion/:id')
+  async DeleteDiscussionById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<void> {
+    console.log(id);
+    return await this.chatbotService.deleteDiscussionById(+id);
   }
 }

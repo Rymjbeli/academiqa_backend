@@ -1,64 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import fs from 'fs';
+import * as fs from 'fs';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import * as dotenv from 'dotenv';
+import { ChatbotDiscussionsEntity } from './Entities/chatbot-discussions.entity';
+import { Repository } from 'typeorm';
+import { ChatbotMessagesEntity } from './Entities/chatbot-messages.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 dotenv.config();
 @Injectable()
 export class ChatbotService {
-  chatBot = [
-    {
-      id: 1,
-      discussionId: 1,
-      prompt: 'What is the capital of France?',
-      image: '',
-      response: 'The capital of France is Paris.',
-    },
-    {
-      id: 2,
-      discussionId: 1,
-      prompt: 'What is the capital of Spain?',
-      image: '',
-      response: 'The capital of Spain is Madrid.',
-    },
-    {
-      id: 3,
-      discussionId: 2,
-      prompt: 'What is python?',
-      image: '',
-      response: 'Python is one of the programming languages.',
-    },
-  ];
-  buildDiscussions = () => {
-    return this.chatBot.reduce((acc, curr) => {
-      const discussion = acc.find((d) => d.id === curr.discussionId);
-      if (discussion) {
-        discussion.conversationHistory.push({
-          id: curr.id,
-          prompt: curr.prompt,
-          image: curr.image,
-          response: curr.response,
-        });
-      } else {
-        acc.push({
-          id: curr.discussionId,
-          conversationHistory: [
-            {
-              id: curr.id,
-              prompt: curr.prompt,
-              image: curr.image,
-              response: curr.response,
-            },
-          ],
-        });
-      }
-      return acc;
-    }, []);
-  };
+  constructor(
+    @InjectRepository(ChatbotDiscussionsEntity)
+    private chatbotDiscussionsRepository: Repository<ChatbotDiscussionsEntity>,
+    @InjectRepository(ChatbotMessagesEntity)
+    private chatbotMessagesRepository: Repository<ChatbotMessagesEntity>,
+  ) {}
+
   private genAI = new GoogleGenerativeAI(
     process.env.GOOGLE_GENERATIVE_AI_API_KEY,
   );
 
-  fileToGenerativePart(path, mimeType) {
+  fileToGenerativePart(path: string, mimeType: string) {
     return {
       inlineData: {
         data: Buffer.from(fs.readFileSync(path)).toString('base64'),
@@ -69,6 +31,7 @@ export class ChatbotService {
   async generateResponse(
     prompt: string,
     imagePath: string,
+    imageName: string,
     discussionId: number,
   ): Promise<{ prompt: string; image: string; response: string }> {
     try {
@@ -76,15 +39,16 @@ export class ChatbotService {
       const model = this.genAI.getGenerativeModel({
         model: genModel,
       });
-      const discussions = this.buildDiscussions();
-      let promptWithHistory;
+      let promptWithHistory: string;
+      let discussion: ChatbotDiscussionsEntity;
       if (!discussionId) {
         promptWithHistory = prompt;
       } else {
+        discussion = await this.getDiscussionById(discussionId);
+
         promptWithHistory =
-          discussions
-            .find((discussion) => discussion.id === discussionId)
-            .conversationHistory.map((chat) => chat.response)
+          discussion.messages
+            .map((chat) => `${chat.prompt}\n${chat.response}`)
             .join('\n') +
           '\n' +
           prompt;
@@ -92,6 +56,7 @@ export class ChatbotService {
 
       let requestPrompt: any[];
       if (imagePath != '') {
+        console.log('imagePath', imagePath);
         const imageToRead = this.fileToGenerativePart(imagePath, 'image/png');
         requestPrompt = [promptWithHistory, imageToRead];
       } else {
@@ -99,18 +64,51 @@ export class ChatbotService {
       }
 
       const result = await model.generateContent(requestPrompt);
-      const response = await result.response;
-      discussionId = discussionId ? discussionId : discussions.length + 1;
-      this.chatBot.push({
-        id: this.chatBot.length + 1,
-        discussionId: discussionId,
-        prompt: prompt,
-        image: imagePath,
-        response: response.text(),
-      });
+      const response = result.response;
+      await this.createMessage(discussion, prompt, response.text(), imageName);
       return { prompt: prompt, image: imagePath, response: response.text() };
     } catch (error) {
       throw new Error(`Failed to generate response: ${error.message}`);
     }
+  }
+
+  async getAllDiscussions(): Promise<ChatbotDiscussionsEntity[]> {
+    return await this.chatbotDiscussionsRepository.find();
+  }
+  async deleteDiscussionById(id: number) {
+    const discussion = await this.chatbotDiscussionsRepository.findOneBy({
+      id,
+    });
+    console.log(discussion);
+    if (!discussion) {
+      throw new Error(`Discussion with id ${id} not found`);
+    }
+    await this.chatbotDiscussionsRepository.softRemove(discussion);
+  }
+  async getDiscussionById(id: number): Promise<ChatbotDiscussionsEntity> {
+    return await this.chatbotDiscussionsRepository.findOneBy({ id });
+  }
+  async createDiscussion(): Promise<ChatbotDiscussionsEntity> {
+    const newDiscussion = this.chatbotDiscussionsRepository.create();
+    return await this.chatbotDiscussionsRepository.save(newDiscussion);
+  }
+
+  async createMessage(
+    discussion: ChatbotDiscussionsEntity,
+    prompt: string,
+    response: string,
+    image: string,
+  ): Promise<ChatbotMessagesEntity> {
+    if (!discussion) {
+      discussion = await this.createDiscussion();
+    }
+    const newMessage = this.chatbotMessagesRepository.create({
+      discussion,
+      prompt,
+      response,
+      image,
+    });
+    await this.chatbotMessagesRepository.save(newMessage);
+    return newMessage;
   }
 }

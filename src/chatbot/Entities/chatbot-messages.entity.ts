@@ -12,11 +12,9 @@ export class ChatbotMessagesEntity extends TimestampEntites {
     (chatbotDiscussions) => chatbotDiscussions.id,
     {
       nullable: false,
-      cascade: true,
-      eager: true,
     },
   )
-  discussionId: number;
+  discussion: ChatbotDiscussionsEntity;
 
   @Column({
     nullable: true,
