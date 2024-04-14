@@ -12,6 +12,9 @@ import { RessourceModule } from './ressource/ressource.module';
 import { AnnouncementModule } from './announcement/announcement.module';
 import { AbsenceModule } from './absence/absence.module';
 import { TaskModule } from './task/task.module';
+import { SubjectModule } from './subject/subject.module';
+import { SessionTypeModule } from './session-type/session-type.module';
+import { SessionModule } from './session/session.module';
 dotenv.config();
 @Module({
   imports: [
@@ -35,6 +38,9 @@ dotenv.config();
     AnnouncementModule,
     AbsenceModule,
     TaskModule,
+    SubjectModule,
+    SessionTypeModule,
+    SessionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
