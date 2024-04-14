@@ -31,7 +31,7 @@ export class ChatbotController {
     @UploadedFile() image: Express.Multer.File,
   ): Promise<{ prompt: string; image: string; response: string }> {
     try {
-      const imagePath = image ? image.filename : '';
+      const imagePath = image ? image.path : '';
       const prompt = data.prompt;
       let discussionId = data.discussionId;
       discussionId = parseInt(String(discussionId));

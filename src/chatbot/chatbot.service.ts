@@ -68,12 +68,11 @@ export class ChatbotService {
   }
   async generateResponse(
     prompt: string,
-    imageName: string,
+    imagePath: string,
     discussionId: number,
   ): Promise<{ prompt: string; image: string; response: string }> {
     try {
-      let image = '';
-      const genModel = imageName != '' ? 'gemini-pro-vision' : 'gemini-pro';
+      const genModel = imagePath != '' ? 'gemini-pro-vision' : 'gemini-pro';
       const model = this.genAI.getGenerativeModel({
         model: genModel,
       });
@@ -92,9 +91,8 @@ export class ChatbotService {
       }
 
       let requestPrompt: any[];
-      if (imageName != '') {
-        image = `uploads\\` + imageName;
-        const imageToRead = this.fileToGenerativePart(image, 'image/png');
+      if (imagePath != '') {
+        const imageToRead = this.fileToGenerativePart(imagePath, 'image/png');
         requestPrompt = [promptWithHistory, imageToRead];
       } else {
         requestPrompt = [promptWithHistory];
@@ -107,10 +105,10 @@ export class ChatbotService {
         id: this.chatBot.length + 1,
         discussionId: discussionId,
         prompt: prompt,
-        image: imageName,
+        image: imagePath,
         response: response.text(),
       });
-      return { prompt: prompt, image: imageName, response: response.text() };
+      return { prompt: prompt, image: imagePath, response: response.text() };
     } catch (error) {
       throw new Error(`Failed to generate response: ${error.message}`);
     }
