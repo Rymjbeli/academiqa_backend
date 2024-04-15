@@ -1,6 +1,7 @@
-import { Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 import { ChatbotMessagesEntity } from './chatbot-messages.entity';
+import { StudentEntity } from '../../user/entities/student.entity';
 
 @Entity('chatbot_discussions')
 export class ChatbotDiscussionsEntity extends TimestampEntites {
@@ -17,4 +18,8 @@ export class ChatbotDiscussionsEntity extends TimestampEntites {
     },
   )
   messages: ChatbotMessagesEntity[];
+  @ManyToOne(() => StudentEntity, {
+    nullable: false,
+  })
+  student: StudentEntity;
 }

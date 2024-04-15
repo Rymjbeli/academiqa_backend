@@ -26,11 +26,4 @@ export class ChatbotMessagesEntity extends TimestampEntites {
 
   @Column()
   response: string;
-
-  // @ManyToOne(() => UserEntity, (user) => user.chatbotDisscussions, {
-  //   nullable: false,
-  //   cascade: true,
-  //   eager: true,
-  // })
-  // user: UserEntity;
 }

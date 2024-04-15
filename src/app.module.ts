@@ -15,6 +15,9 @@ import { TaskModule } from './task/task.module';
 import { SubjectModule } from './subject/subject.module';
 import { SessionTypeModule } from './session-type/session-type.module';
 import { SessionModule } from './session/session.module';
+import { UserModule } from './user/user.module';
+import { UserEntity } from './user/entities/user.entity';
+import { StudentEntity } from './user/entities/student.entity';
 dotenv.config();
 @Module({
   imports: [
@@ -41,6 +44,8 @@ dotenv.config();
     SubjectModule,
     SessionTypeModule,
     SessionModule,
+    UserModule,
+    TypeOrmModule.forFeature([UserEntity, StudentEntity]),
   ],
   controllers: [AppController],
   providers: [AppService],
