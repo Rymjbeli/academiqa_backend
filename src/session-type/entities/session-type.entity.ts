@@ -7,11 +7,11 @@ import {
 } from 'typeorm';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 import { SessionTypeEnum } from '../../Enums/session-type.enum';
-import { Session } from '../../session/entities/session.entity';
-import { Subject } from '../../subject/entities/subject.entity';
+import { SessionEntity } from '../../session/entities/session.entity';
+import { SubjectEntity } from '../../subject/entities/subject.entity';
 
 @Entity('session_type')
-export class SessionType extends TimestampEntites {
+export class SessionTypeEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -33,9 +33,13 @@ export class SessionType extends TimestampEntites {
   })
   type: SessionTypeEnum;
 
-  @OneToMany(() => Session, (session) => session.sessionType)
-  sessions: Session[];
+  @OneToMany(() => SessionEntity, (session) => session.sessionType, {
+    nullable: false,
+  })
+  sessions: SessionEntity[];
 
-  @ManyToOne(() => Subject, (subject) => subject.sessionTypes)
-  subject: Subject;
+  @ManyToOne(() => SubjectEntity, (subject) => subject.sessionTypes, {
+    nullable: false,
+  })
+  subject: SubjectEntity;
 }

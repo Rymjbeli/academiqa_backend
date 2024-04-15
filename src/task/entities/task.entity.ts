@@ -1,4 +1,4 @@
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 export class TaskEntity {
   @PrimaryGeneratedColumn()

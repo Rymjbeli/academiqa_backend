@@ -1,12 +1,14 @@
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { TimestampEntites } from '../../Generics/timestamp.entities';
+import { SessionEntity } from '../../session/entities/session.entity';
 
-export class RessourceEntity {
+export class RessourceEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
-  // @ManyToOne(()=>SessionEntity,{
-  //   nullable: false,
-  // })
-  // session: SessionEntity;
+  @ManyToOne(() => SessionEntity, {
+    nullable: false,
+  })
+  session: SessionEntity;
   @Column()
   path: string;
 }

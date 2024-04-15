@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RessourceService } from './ressource.service';
 import { CreateRessourceDto } from './dto/create-ressource.dto';
 import { UpdateRessourceDto } from './dto/update-ressource.dto';
@@ -23,7 +31,10 @@ export class RessourceController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRessourceDto: UpdateRessourceDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateRessourceDto: UpdateRessourceDto,
+  ) {
     return this.ressourceService.update(+id, updateRessourceDto);
   }
 

@@ -1,6 +1,7 @@
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { TimestampEntites } from '../../Generics/timestamp.entities';
 
-export class CommonChatEntity {
+export class CommonChatEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()

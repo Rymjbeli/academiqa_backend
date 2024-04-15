@@ -1,6 +1,7 @@
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { TimestampEntites } from '../../Generics/timestamp.entities';
 
-export class Announcement {
+export class Announcement extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
