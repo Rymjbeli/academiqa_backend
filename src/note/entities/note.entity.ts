@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
+import { SessionEntity } from '../../session/entities/session.entity';
 @Entity('note')
 export class NoteEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
@@ -12,8 +13,8 @@ export class NoteEntity extends TimestampEntites {
   //   nullable: false,
   // })
   // user: UserEntity;
-  // @ManyToOne(()=>SessionEntity, (session)=>session.notes, {
-  //   nullable: false,
-  // })
-  // session: SessionEntity;
+  @ManyToOne(() => SessionEntity, {
+    nullable: false,
+  })
+  session: SessionEntity;
 }
