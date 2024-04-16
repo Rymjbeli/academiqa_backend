@@ -5,15 +5,13 @@ import { NoteEntity } from '../../note/entities/note.entity';
 @ChildEntity()
 export class StudentEntity extends UserEntity {
   @Column()
-  sector: string;
+  speciality: string;
   @Column()
   group: number;
   @Column()
   level: string;
   @Column()
   sectorLevel: string;
-  @Column()
-  nbAbsence: number;
   @Column()
   photo: string;
   @Column()

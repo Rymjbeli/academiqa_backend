@@ -18,6 +18,7 @@ import { SessionModule } from './session/session.module';
 import { UserModule } from './user/user.module';
 import { UserEntity } from './user/entities/user.entity';
 import { StudentEntity } from './user/entities/student.entity';
+import { FileUploadModule } from "./file-upload/file-upload.module";
 dotenv.config();
 @Module({
   imports: [
@@ -45,6 +46,7 @@ dotenv.config();
     SessionTypeModule,
     SessionModule,
     UserModule,
+    FileUploadModule,
     TypeOrmModule.forFeature([UserEntity, StudentEntity]),
   ],
   controllers: [AppController],

@@ -6,6 +6,8 @@ import { ChatbotDiscussionsEntity } from './Entities/chatbot-discussions.entity'
 import { Repository } from 'typeorm';
 import { ChatbotMessagesEntity } from './Entities/chatbot-messages.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FileUploadService } from "../file-upload/file-upload.service";
+import axios from "axios";
 dotenv.config();
 @Injectable()
 export class ChatbotService {
@@ -14,28 +16,30 @@ export class ChatbotService {
     private chatbotDiscussionsRepository: Repository<ChatbotDiscussionsEntity>,
     @InjectRepository(ChatbotMessagesEntity)
     private chatbotMessagesRepository: Repository<ChatbotMessagesEntity>,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
   private genAI = new GoogleGenerativeAI(
     process.env.GOOGLE_GENERATIVE_AI_API_KEY,
   );
 
-  fileToGenerativePart(path: string, mimeType: string) {
+  fileToGenerativePart(image: Express.Multer.File, mimeType: string) {
+    const base64Data = Buffer.from(image.buffer).toString('base64');
     return {
       inlineData: {
-        data: Buffer.from(fs.readFileSync(path)).toString('base64'),
+        data: base64Data,
         mimeType,
       },
     };
   }
+
   async generateResponse(
     prompt: string,
-    imagePath: string,
-    imageName: string,
+    image: Express.Multer.File,
     discussionId: number,
   ): Promise<{ prompt: string; image: string; response: string }> {
     try {
-      const genModel = imagePath != '' ? 'gemini-pro-vision' : 'gemini-pro';
+      const genModel = image ? 'gemini-pro-vision' : 'gemini-pro';
       const model = this.genAI.getGenerativeModel({
         model: genModel,
       });
@@ -55,9 +59,14 @@ export class ChatbotService {
       }
 
       let requestPrompt: any[];
-      if (imagePath != '') {
-        console.log('imagePath', imagePath);
-        const imageToRead = this.fileToGenerativePart(imagePath, 'image/png');
+      let imagePath: string;
+      if (image) {
+        console.log(image,discussionId,prompt);
+        const authClient = await this.fileUploadService.authorize();
+        const imageId: any = await this.fileUploadService.uploadFile(authClient, image, process.env.CHATBOT_UPLOADS);
+        // const imagePath = await this.fileUploadService.downloadFile(authClient, imageId, process.env.CSV_FILES);
+        imagePath = "https://drive.google.com/thumbnail?id=" + imageId.id;
+        const imageToRead = this.fileToGenerativePart(image, 'image/png');
         requestPrompt = [promptWithHistory, imageToRead];
       } else {
         requestPrompt = [promptWithHistory];
@@ -65,7 +74,7 @@ export class ChatbotService {
 
       const result = await model.generateContent(requestPrompt);
       const response = result.response;
-      await this.createMessage(discussion, prompt, response.text(), imageName);
+      await this.createMessage(discussion, prompt, response.text(), imagePath);
       return { prompt: prompt, image: imagePath, response: response.text() };
     } catch (error) {
       throw new Error(`Failed to generate response: ${error.message}`);
