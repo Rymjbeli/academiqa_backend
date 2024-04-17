@@ -2,25 +2,23 @@ import {
   Body,
   Controller,
   Delete,
-  Get, HttpException, HttpStatus,
+  Get,
+  HttpException,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
   UploadedFile,
-  UseInterceptors
-} from "@nestjs/common";
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ChatbotService } from './chatbot.service';
 import { ChatbotDiscussionsEntity } from './Entities/chatbot-discussions.entity';
-import { FileUploadService } from "../file-upload/file-upload.service";
-
+import { FileUploadService } from '../file-upload/file-upload.service';
 
 @Controller('chatbot')
 export class ChatbotController {
-  constructor(
-    private readonly chatbotService: ChatbotService,
-
-  ) {}
+  constructor(private readonly chatbotService: ChatbotService) {}
 
   @Post('chat')
   @UseInterceptors(
@@ -50,11 +48,7 @@ export class ChatbotController {
       // const prompt = data.prompt;
       // const discussionId = data.discussionId;
       const { prompt, discussionId } = data;
-      return this.chatbotService.generateResponse(
-        prompt,
-        image,
-        +discussionId,
-      );
+      return this.chatbotService.generateResponse(prompt, image, +discussionId);
     } catch (error) {
       throw new Error(`Failed to generate response: ${error.message}`);
     }
@@ -86,5 +80,4 @@ export class ChatbotController {
   //     throw new Error(`Failed to upload file: ${error.message}`);
   //   }
   // }
-
 }

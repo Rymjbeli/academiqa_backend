@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 import { SessionTypeEntity } from '../../session-type/entities/session-type.entity';
-import { CommonChatEntity } from '../../common-chat/entities/common-chat.entity';
+import { CommonChatEntity } from '../../common-chat-session/entities/common-chat.entity';
 import { NoteEntity } from '../../note/entities/note.entity';
 import { RessourceEntity } from '../../ressource/entities/ressource.entity';
 import { TaskEntity } from '../../task/entities/task.entity';
@@ -24,10 +24,10 @@ export class SessionEntity extends TimestampEntites {
     nullable: false,
   })
   sessionType: SessionTypeEntity;
-  @OneToMany(() => CommonChatEntity, (commonChat) => commonChat.session, {
-    nullable: true,
-  })
-  commonChats: CommonChatEntity[];
+  // @OneToMany(() => CommonChatEntity, (commonChat) => commonChat.session, {
+  //   nullable: true,
+  // })
+  // commonChats: CommonChatEntity[];
   @OneToMany(() => NoteEntity, (note) => note.session)
   notes: NoteEntity[];
   @OneToMany(() => RessourceEntity, (ressource) => ressource.session, {

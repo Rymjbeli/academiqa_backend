@@ -21,9 +21,13 @@ export class ChatbotMessagesEntity extends TimestampEntites {
   })
   image: string;
 
-  @Column()
+  @Column({
+    length: 100000,
+  })
   prompt: string;
 
-  @Column()
+  @Column({
+    length: 100000,
+  })
   response: string;
 }
