@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { HelmetMiddleware } from '@nest-middlewares/helmet';
 import { ChatbotModule } from './chatbot/chatbot.module';
-import { NotificationModule } from './notification/notification.module';
 import { NoteModule } from './note/note.module';
 import { CommonChatSessionModule } from './common-chat-session/common-chat-session.module';
 import { RessourceModule } from './ressource/ressource.module';
@@ -35,7 +34,6 @@ dotenv.config();
       debug: false,
     }),
     ChatbotModule,
-    NotificationModule,
     NoteModule,
     RessourceModule,
     AnnouncementModule,
