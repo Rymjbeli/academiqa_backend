@@ -1,17 +1,14 @@
-import { ChildEntity, Column, OneToMany } from 'typeorm';
+import { ChildEntity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { AbsenceEntity } from '../../absence/entities/absence.entity';
 import { NoteEntity } from '../../note/entities/note.entity';
+import { GroupEntity } from '../../group/entities/group.entity';
 @ChildEntity()
 export class StudentEntity extends UserEntity {
-  @Column()
-  speciality: string;
-  @Column()
-  group: number;
-  @Column()
-  level: string;
-  @Column()
-  sectorLevel: string;
+  @ManyToOne(() => GroupEntity, {
+    nullable: false,
+  })
+  group: GroupEntity;
   @Column()
   photo: string;
   @Column()

@@ -9,6 +9,7 @@ import { TimestampEntites } from '../../Generics/timestamp.entities';
 import { SessionTypeEnum } from '../../Enums/session-type.enum';
 import { SessionEntity } from '../../session/entities/session.entity';
 import { SubjectEntity } from '../../subject/entities/subject.entity';
+import { GroupEntity } from '../../group/entities/group.entity';
 
 @Entity('session_type')
 export class SessionTypeEntity extends TimestampEntites {
@@ -19,7 +20,10 @@ export class SessionTypeEntity extends TimestampEntites {
     length: 50,
   })
   day: string;
-
+  @ManyToOne(() => GroupEntity, {
+    nullable: false,
+  })
+  group: GroupEntity;
   @Column()
   startHour: Date;
 

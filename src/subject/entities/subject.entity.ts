@@ -24,14 +24,6 @@ export class SubjectEntity extends TimestampEntites {
   @Column({
     length: 100,
   })
-  sector: string;
-
-  @Column()
-  level: number;
-
-  @Column({
-    length: 100,
-  })
   sectorLevel: string;
 
   @Column()
