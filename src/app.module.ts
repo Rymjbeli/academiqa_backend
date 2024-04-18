@@ -19,6 +19,7 @@ import { UserModule } from './user/user.module';
 import { UserEntity } from './user/entities/user.entity';
 import { StudentEntity } from './user/entities/student.entity';
 import { FileUploadModule } from './file-upload/file-upload.module';
+import { GroupModule } from './group/group.module';
 dotenv.config();
 @Module({
   imports: [
@@ -48,6 +49,7 @@ dotenv.config();
     FileUploadModule,
     TypeOrmModule.forFeature([UserEntity, StudentEntity]),
     CommonChatSessionModule,
+    GroupModule,
   ],
   controllers: [AppController],
   providers: [AppService],
