@@ -13,6 +13,8 @@ export class StudentEntity extends UserEntity {
   photo: string;
   @Column()
   enrollmentNumber: number;
+  @Column()
+  cin: number;
   @OneToMany(() => AbsenceEntity, (absence) => absence.student, {
     nullable: true,
   })

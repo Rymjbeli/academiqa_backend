@@ -25,10 +25,12 @@ export class SubjectEntity extends TimestampEntites {
     length: 100,
   })
   sectorLevel: string;
-
+  @Column()
+  module: string;
+  @Column()
+  coefficient: number;
   @Column()
   hourlyLoad: number;
-
   @Column()
   absenceLimit: number;
 
