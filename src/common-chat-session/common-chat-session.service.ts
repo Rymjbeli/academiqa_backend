@@ -3,12 +3,15 @@ import { CreateCommonChatSessionDto } from './dto/create-common-chat-session.dto
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonChatEntity } from './entities/common-chat.entity';
 import { Repository } from 'typeorm';
+import { NotificationService } from '../notification/notification.service';
+import { NotifTypeEnum } from '../Enums/notif-type.enum';
 
 @Injectable()
 export class CommonChatSessionService {
   constructor(
     @InjectRepository(CommonChatEntity)
     private readonly commonChatSessionRepository: Repository<CommonChatEntity>,
+    private notificationService: NotificationService,
   ) {}
   clientToUser: any = {};
 
@@ -55,11 +58,19 @@ export class CommonChatSessionService {
     return null;
   }
   async createMessage(createCommonChatSessionDto: CreateCommonChatSessionDto) {
+    const notification = await this.notificationService.buildNotification(
+      NotifTypeEnum.MESSAGE,
+      'ramy',
+      null,
+      null,
+      0,
+    );
     const newMessage = this.commonChatSessionRepository.create(
       createCommonChatSessionDto,
     );
     // newMessage.author = this.clientToUser[user];
-    return await this.commonChatSessionRepository.save(newMessage);
+    await this.commonChatSessionRepository.save(newMessage);
+    return notification;
   }
   async findAll(): Promise<any[]> {
     const chats = await this.commonChatSessionRepository.find({

@@ -29,16 +29,13 @@ export class CommonChatSessionGateway {
       // console.log('message', createCommonChatSessionDto);
       // console.log('socket', this.commonChatSessionService.clientToUser[socket.id]);
       const sender = this.commonChatSessionService.clientToUser[socket.id];
-      await this.commonChatSessionService.createMessage(
+      const notification = await this.commonChatSessionService.createMessage(
         createCommonChatSessionDto,
       );
       const allMessages = await this.commonChatSessionService.findAll();
       this.server.emit('message', allMessages);
-      // const notification = this.notificationService.createNotification(
-      //   sender,
-      //   'message',
-      // );
-      // socket.broadcast.to(sender).emit('notify', notification);
+      socket.broadcast.emit('notify', notification);
+
       return createCommonChatSessionDto;
     } catch (error) {
       console.error('Error creating message:', error);
