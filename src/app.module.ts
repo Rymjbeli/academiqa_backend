@@ -46,7 +46,6 @@ dotenv.config();
     SessionModule,
     UserModule,
     FileUploadModule,
-    TypeOrmModule.forFeature([UserEntity, StudentEntity]),
     CommonChatSessionModule,
   ],
   controllers: [AppController],
