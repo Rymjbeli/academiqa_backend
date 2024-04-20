@@ -5,7 +5,7 @@ import { google } from 'googleapis';
 import * as csv from 'csv-parser';
 @Injectable()
 export class FileUploadService {
-  uploadCSVFile(file: Express.Multer.File) {
+  uploadCSVFile(file: Express.Multer.File): Promise<any[]> {
     try {
       return new Promise((resolve, reject) => {
         const results = [];

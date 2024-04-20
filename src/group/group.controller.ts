@@ -17,8 +17,7 @@ import { FileUploadService } from '../file-upload/file-upload.service';
 
 @Controller('group')
 export class GroupController {
-  constructor(
-    private readonly groupService: GroupService) {}
+  constructor(private readonly groupService: GroupService) {}
   @Get()
   findAll() {
     return this.groupService.findAll();

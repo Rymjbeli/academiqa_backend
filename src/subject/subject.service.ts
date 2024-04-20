@@ -1,26 +1,90 @@
-import { Injectable } from '@nestjs/common';
-import { CreateSubjectDto } from './dto/create-subject.dto';
-import { UpdateSubjectDto } from './dto/update-subject.dto';
+import { Injectable } from "@nestjs/common";
+import { CreateSubjectDto } from "./dto/create-subject.dto";
+import { UpdateSubjectDto } from "./dto/update-subject.dto";
+import { FileUploadService } from "../file-upload/file-upload.service";
+import { SubjectEntity } from "./entities/subject.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class SubjectService {
-  create(createSubjectDto: CreateSubjectDto) {
-    return 'This action adds a new subject';
+  constructor(
+    private readonly fileUploadService: FileUploadService,
+    @InjectRepository(SubjectEntity)
+    private subjectRepository: Repository<SubjectEntity>,
+  ) {}
+  async createOneSubject(createSubjectDto: CreateSubjectDto) {
+    const subject = await this.subjectRepository.create(createSubjectDto);
+    return await this.subjectRepository.save(subject);
+  }
+  async createSubjects(subjectFile: Express.Multer.File) {
+    const subjects: CreateSubjectDto[] =
+      await this.fileUploadService.uploadCSVFile(subjectFile);
+    const subjectEntities = subjects.map((createSubjectDto) =>
+      this.createOneSubject(createSubjectDto),
+    );
+    return Promise.all(subjectEntities);
   }
 
-  findAll() {
-    return `This action returns all subject`;
+  async findAll() {
+    return await this.subjectRepository.find();
+  }
+  async findAllGroupedByModule() {
+    const subjects = await this.findAll();
+
+    const groupedSubjects = subjects.reduce((grouped, subject) => {
+      const key = subject.module;
+      if (!grouped[key]) {
+        grouped[key] = [];
+      }
+      grouped[key].push(subject);
+      return grouped;
+    }, {});
+
+    return Object.keys(groupedSubjects).map((module) => ({
+      module,
+      subjects: groupedSubjects[module],
+    }));
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} subject`;
+  async findOne(id: number) {
+    return await this.subjectRepository.findOneBy({ id });
+  }
+  async findBySectorLevel(sectorLevel: string) {
+    // const subjects = await this.subjectRepository.find({
+    //   where: { sectorLevel },
+    //   relations: ["teacher"],
+    // });
+    //
+    // return subjects.map((subject) => ({
+    //   ...subject,
+    //   teacherUsername: subject.teacher.username,
+    // }));
+    return await this.subjectRepository.findBy({ sectorLevel });
   }
 
-  update(id: number, updateSubjectDto: UpdateSubjectDto) {
-    return `This action updates a #${id} subject`;
+  // async findByTeacher() {
+  //
+  // }
+  async deleteSubject(id: number) {
+    const subject = await this.findOne(id);
+    if (!subject) {
+      throw new Error('Subject not found');
+    } else {
+      return await this.subjectRepository.softRemove(subject);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} subject`;
+  async update(id: number, updateSubjectDto: UpdateSubjectDto) {
+    const subject = await this.findOne(id);
+    if (!subject) {
+      throw new Error('Subject not found');
+    } else {
+      return await this.subjectRepository.save({
+        ...subject,
+        ...updateSubjectDto,
+      });
+    }
   }
+
 }

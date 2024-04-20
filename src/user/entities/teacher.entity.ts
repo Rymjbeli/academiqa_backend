@@ -9,10 +9,10 @@ export class TeacherEntity extends UserEntity {
   speciality: string;
   @Column()
   photo: string;
-  @OneToMany(() => SubjectEntity, (subject) => subject.teacher, {
-    nullable: true,
-  })
-  subjects: SubjectEntity[];
+  // @OneToMany(() => SubjectEntity, (subject) => subject.teacher, {
+  //   nullable: true,
+  // })
+  // subjects: SubjectEntity[];
   @OneToMany(() => TaskEntity, (task) => task.teacher, {
     nullable: true,
   })

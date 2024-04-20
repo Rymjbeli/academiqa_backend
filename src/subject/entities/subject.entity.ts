@@ -27,25 +27,29 @@ export class SubjectEntity extends TimestampEntites {
   sectorLevel: string;
   @Column()
   module: string;
-  @Column()
+  @Column({
+    type: 'float',
+  })
   coefficient: number;
   @Column()
   hourlyLoad: number;
   @Column()
   absenceLimit: number;
 
-  @OneToMany(() => SessionTypeEntity, (sessionType) => sessionType.subject)
-  sessionTypes: SessionTypeEntity[];
-  @OneToMany(() => AnnouncementEntity, (announcement) => announcement.subject, {
-    nullable: true,
-  })
-  announcements: AnnouncementEntity[];
-  @ManyToOne(() => TeacherEntity, (teacher) => teacher.subjects, {
-    nullable: false,
-  })
-  teacher: TeacherEntity;
-  @OneToMany(() => AbsenceEntity, (absence) => absence.subject, {
-    nullable: true,
-  })
-  absences: AbsenceEntity[];
+  // @OneToMany(() => SessionTypeEntity, (sessionType) => sessionType.subject)
+  // sessionTypes: SessionTypeEntity[];
+  // @OneToMany(() => AnnouncementEntity, (announcement) => announcement.subject, {
+  //  nullable: true,
+  //  cascade: ['soft-remove']
+  // })
+  // announcements: AnnouncementEntity[];
+  // @ManyToOne(() => TeacherEntity, (teacher) => teacher.subjects, {
+  //   nullable: false,
+  // })
+  // teacher: TeacherEntity;
+  // @OneToMany(() => AbsenceEntity, (absence) => absence.subject, {
+  //   nullable: true,
+  //  cascade: ['soft-remove']
+  // })
+  // absences: AbsenceEntity[];
 }
