@@ -12,12 +12,12 @@ export class NoteEntity extends TimestampEntites {
   content: string;
   @Column()
   title: string;
-  @ManyToOne(() => StudentEntity, (user) => user.notes, {
+  /*  @ManyToOne(() => StudentEntity, (student) => student.notes, {
     nullable: false,
   })
   student: StudentEntity;
   @ManyToOne(() => SessionEntity, (session) => session.notes, {
     nullable: false,
   })
-  session: SessionEntity;
+  session: SessionEntity;*/
 }

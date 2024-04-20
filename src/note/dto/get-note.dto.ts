@@ -1,11 +1,26 @@
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Exclude, Expose } from 'class-transformer';
 
+@Exclude()
 export class GetNoteDto {
-  @IsOptional()
+  /*  @IsOptional()
   @IsNumber()
   studentId: number;
 
   @IsOptional()
   @IsNumber()
-  sessionId: number;
+  sessionId: number;*/
+  @Expose()
+  @IsNumber()
+  id: number;
+
+  @Expose()
+  @IsString()
+  title: string;
+
+  @Expose()
+  @IsString()
+  content: string;
+
+  date: string;
 }

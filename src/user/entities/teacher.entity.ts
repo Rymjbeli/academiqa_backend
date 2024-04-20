@@ -13,10 +13,10 @@ export class TeacherEntity extends UserEntity {
     nullable: true,
   })
   subjects: SubjectEntity[];
-  @OneToMany(() => TaskEntity, (task) => task.teacher, {
+  /*  @OneToMany(() => TaskEntity, (task) => task.teacher, {
     nullable: true,
   })
-  tasks: TaskEntity[];
+  tasks: TaskEntity[];*/
   @OneToMany(() => AnnouncementEntity, (announcement) => announcement.teacher, {
     nullable: true,
   })

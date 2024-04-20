@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+import { GetNoteDto } from './dto/get-note.dto';
 import { Repository } from 'typeorm';
 import { NoteEntity } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GetNoteDto } from './dto/get-note.dto';
 import { StudentEntity } from '../user/entities/student.entity';
+import { Expose, plainToClass } from 'class-transformer';
 
 @Injectable()
 export class NoteService {
@@ -15,21 +16,52 @@ export class NoteService {
   ) {}
   async create(
     createNoteDto: CreateNoteDto,
-    student: StudentEntity,
+    // student: StudentEntity,
   ): Promise<NoteEntity> {
     const newNote = this.noteRepository.create(createNoteDto);
-    newNote.student = student;
+    // newNote.student = student;
     return await this.noteRepository.save(newNote);
   }
 
-  async findAll(): Promise<NoteEntity[] | null> {
-    return await this.noteRepository.find();
+  async findAll(): Promise<GetNoteDto[] | null> {
+    const noteEntities = await this.noteRepository.find();
+    if (!noteEntities) {
+      return null;
+    }
+    return noteEntities.map((note) => {
+      const noteDto = plainToClass(GetNoteDto, note);
+      const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+      };
+      noteDto.date = Intl.DateTimeFormat('en-US', options).format(
+        note.createdAt,
+      );
+      return noteDto;
+    });
   }
 
-  async findOne(id: number): Promise<NoteEntity | null> {
-    return await this.noteRepository.findOne({ where: { id } });
-  }
+  async findOne(id: number): Promise<GetNoteDto | null> {
+    const noteEntity = await this.noteRepository.findOne({ where: { id } });
+    if (!noteEntity) {
+      return null;
+    }
+    const noteDto = plainToClass(GetNoteDto, noteEntity);
 
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+    };
+    noteDto.date = Intl.DateTimeFormat('en-US', options).format(
+      noteEntity.createdAt,
+    );
+    return noteDto;
+  }
+  /*
   async findByStudent(studentId: number): Promise<NoteEntity[] | null> {
     const notes = await this.findAll();
     return notes.filter((note) => note.student.id == studentId);
@@ -49,47 +81,36 @@ export class NoteService {
       }
       return !(sessionId && note.session.id != sessionId);
     });
-  }
-
-  update(id: number, updateNoteDto: UpdateNoteDto) {
-    return `This action updates a #${id} note`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} note`;
-  }
-
-  /*  async createTestStudent(): Promise<StudentEntity> {
-    try {
-      const student = new StudentEntity();
-      student.email = 'ryra@g.com';
-      student.password = '123456';
-      student.username = 'ines';
-      student.role = 'STUDENT';
-      student.speciality = 'GL';
-      student.group = 2;
-      student.level = '3';
-      student.sectorLevel = `${student.speciality} ${student.level}`;
-      student.photo = 'photo.jpg';
-      student.enrollmentNumber = 123456;
-      const savedStudent = await this.studentRepository.save(student);
-      console.log('created');
-
-      // Fetch the student immediately after saving
-      const fetchedStudent = await this.studentRepository.findOne({
-        where: { id: savedStudent.id },
-      });
-      console.log('Fetched student:', fetchedStudent);
-
-      return savedStudent;
-    } catch (error) {
-      console.log('erreeuur');
-      throw error;
-    }
-  }
-  async getTestStudent(): Promise<StudentEntity[]> {
-    const students = await this.studentRepository.find();
-    console.log('Retrieved students:', students);
-    return students;
   }*/
+
+  async update(
+    id: number,
+    updateNoteDto: UpdateNoteDto,
+  ): Promise<NoteEntity | null> {
+    let note = await this.noteRepository.findOne({ where: { id } });
+    if (!note) {
+      return null;
+    }
+    note = { ...note, ...updateNoteDto };
+    return await this.noteRepository.save(note);
+  }
+
+  async remove(id: number): Promise<NoteEntity | null> {
+    const note = await this.findOne(id);
+    if (!note) {
+      return null;
+    }
+    return await this.noteRepository.softRemove(note);
+  }
+
+  async recover(id: number): Promise<NoteEntity | null> {
+    const note = await this.noteRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+    if (!note) {
+      return null;
+    }
+    return await this.noteRepository.recover(note);
+  }
 }
