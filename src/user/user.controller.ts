@@ -15,6 +15,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Get('role/:id')
+  async getUserRole(@Param('id') id: number) {
+    return this.userService.getUserRole(id);
+  }
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     return 'This action adds a new user';

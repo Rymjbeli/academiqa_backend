@@ -6,8 +6,8 @@ import { ChatbotDiscussionsEntity } from './Entities/chatbot-discussions.entity'
 import { Repository } from 'typeorm';
 import { ChatbotMessagesEntity } from './Entities/chatbot-messages.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FileUploadService } from "../file-upload/file-upload.service";
-import axios from "axios";
+import { FileUploadService } from '../file-upload/file-upload.service';
+import axios from 'axios';
 dotenv.config();
 @Injectable()
 export class ChatbotService {
@@ -61,11 +61,15 @@ export class ChatbotService {
       let requestPrompt: any[];
       let imagePath: string;
       if (image) {
-        console.log(image,discussionId,prompt);
+        console.log(image, discussionId, prompt);
         const authClient = await this.fileUploadService.authorize();
-        const imageId: any = await this.fileUploadService.uploadFile(authClient, image, process.env.CHATBOT_UPLOADS);
+        const imageId: any = await this.fileUploadService.uploadFile(
+          authClient,
+          image,
+          process.env.CHATBOT_UPLOADS,
+        );
         // const imagePath = await this.fileUploadService.downloadFile(authClient, imageId, process.env.CSV_FILES);
-        imagePath = "https://drive.google.com/thumbnail?id=" + imageId.id;
+        imagePath = 'https://drive.google.com/thumbnail?id=' + imageId.id;
         const imageToRead = this.fileToGenerativePart(image, 'image/png');
         requestPrompt = [promptWithHistory, imageToRead];
       } else {

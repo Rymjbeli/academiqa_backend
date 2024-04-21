@@ -16,9 +16,10 @@ import { SubjectModule } from './subject/subject.module';
 import { SessionTypeModule } from './session-type/session-type.module';
 import { SessionModule } from './session/session.module';
 import { UserModule } from './user/user.module';
-import { UserEntity } from './user/entities/user.entity';
-import { StudentEntity } from './user/entities/student.entity';
-import { FileUploadModule } from "./file-upload/file-upload.module";
+import { User } from './user/entities/user.entity';
+import { Student } from './user/entities/student.entity';
+import { FileUploadModule } from './file-upload/file-upload.module';
+import { AuthModule } from './auth/auth.module';
 dotenv.config();
 @Module({
   imports: [
@@ -47,7 +48,8 @@ dotenv.config();
     SessionModule,
     UserModule,
     FileUploadModule,
-    TypeOrmModule.forFeature([UserEntity, StudentEntity]),
+    TypeOrmModule.forFeature([User, Student]),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
