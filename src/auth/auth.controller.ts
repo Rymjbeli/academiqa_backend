@@ -4,7 +4,7 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import { User } from '../user/entities/user.entity';
 import { LoginCredentialsDto } from './dto/login-credentials.dto';
 import {JwtAuthGuard} from "./guard/jwt-auth.guard";
-import { User as CurrentUser } from 'src/decorators/user.decorator';
+import { CurrentUser } from 'src/decorators/user.decorator';
 import {CreateTeacherDto} from "../user/dto/create-teacher.dto";
 @Controller('auth')
 export class AuthController {
