@@ -6,8 +6,6 @@ import { Student } from '../../user/entities/student.entity';
 export class AbsenceEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column()
-  absenceNumber: number;
   @ManyToOne(() => SubjectEntity, (subject) => subject.absences, {
     nullable: false,
   })

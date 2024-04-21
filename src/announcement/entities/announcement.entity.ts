@@ -16,4 +16,5 @@ export class AnnouncementEntity extends TimestampEntites {
     nullable: false,
   })
   teacher: Teacher;
+  // newAnnouncement: import("c:/Users/weszi/OneDrive/Bureau/gl3sem2/ppp/Academiqa/academiqa_backend/src/user/entities/user.entity").UserEntity;
 }

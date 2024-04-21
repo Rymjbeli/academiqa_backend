@@ -7,7 +7,7 @@ import { HelmetMiddleware } from '@nest-middlewares/helmet';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { NotificationModule } from './notification/notification.module';
 import { NoteModule } from './note/note.module';
-import { CommonChatModule } from './common-chat/common-chat.module';
+import { CommonChatSessionModule } from './common-chat-session/common-chat-session.module';
 import { RessourceModule } from './ressource/ressource.module';
 import { AnnouncementModule } from './announcement/announcement.module';
 import { AbsenceModule } from './absence/absence.module';
@@ -20,6 +20,8 @@ import { User } from './user/entities/user.entity';
 import { Student } from './user/entities/student.entity';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { AuthModule } from './auth/auth.module';
+import { GroupModule } from './group/group.module';
+
 dotenv.config();
 @Module({
   imports: [
@@ -38,7 +40,7 @@ dotenv.config();
     ChatbotModule,
     NotificationModule,
     NoteModule,
-    CommonChatModule,
+    CommonChatSessionModule,
     RessourceModule,
     AnnouncementModule,
     AbsenceModule,
@@ -50,6 +52,7 @@ dotenv.config();
     FileUploadModule,
     TypeOrmModule.forFeature([User, Student]),
     AuthModule,
+    GroupModule,
   ],
   controllers: [AppController],
   providers: [AppService],

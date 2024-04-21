@@ -3,7 +3,7 @@ import { NotifTypeEnum } from '../../Enums/notif-type.enum';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 
 @Entity('notifications')
-export class Notification extends TimestampEntites {
+export class NotificationEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()

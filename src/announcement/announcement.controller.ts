@@ -39,7 +39,13 @@ export class AnnouncementController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.announcementService.remove(+id);
+  softRemove(@Param('id') id: string) {
+    return this.announcementService.softRemove(+id);
   }
+
+  @Patch('recover/:id')
+  recover(@Param('id') id: string) {
+    return this.announcementService.recover(+id);
+  }
+
 }
