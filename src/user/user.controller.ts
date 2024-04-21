@@ -5,42 +5,35 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  Delete, UseGuards, ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {User} from "./entities/user.entity";
+import {JwtAuthGuard} from "../auth/guard/jwt-auth.guard";
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @Get('role/:id')
-  async getUserRole(@Param('id') id: number) {
-    return this.userService.getUserRole(id);
-  }
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
-
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  async findAll(): Promise<User[]> {
+    return await this.userService.findAllUsers();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.findOneUser(id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.softDeleteUser(id);
+  }
+
+  @Get('restore/:id')
+  @UseGuards(JwtAuthGuard)
+  async restore(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.restoreUser(id);
   }
 }

@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -12,28 +16,38 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async getUserRole(id: number): Promise<string> {
-    const user = await this.userRepository.findOneBy({ id });
-    if (!user) {
-      throw new Error('User not found');
+  async findOneUser(id: number): Promise<User | null> {
+    return await this.userRepository.findOneBy({ id });
+  }
+
+  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const newUser = await this.userRepository.preload({
+      id,
+      ...updateUserDto,
+    });
+    if (!newUser) {
+      throw new NotFoundException(`User with id ${id} not found`);
     }
-    console.log(user.role);
-    return user.role;
+    return await this.userRepository.save(newUser);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async softDeleteUser(id: number) {
+    const userToRemove = await this.userRepository.findOneBy({ id });
+    if (!userToRemove) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return await this.userRepository.softDelete(id);
   }
 
-  findOne(id: number) {
-    return;
+  async restoreUser(id: number) {
+    return await this.userRepository.restore(id);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findAllUsers() {
+    return await this.userRepository.find();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+  // async changePassword(user : User, newPassword: string){
+  //
+  // }
 }

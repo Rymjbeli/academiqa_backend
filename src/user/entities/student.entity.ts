@@ -6,7 +6,7 @@ import { GroupEntity } from '../../group/entities/group.entity';
 @ChildEntity()
 export class Student extends User {
   @ManyToOne(() => GroupEntity, {
-    nullable: false,
+    nullable: true,
   })
   group: GroupEntity;
   @Column()

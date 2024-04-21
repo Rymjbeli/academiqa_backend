@@ -13,39 +13,39 @@ import { UpdateAnnouncementDto } from './dto/update-announcement.dto';
 
 @Controller('announcement')
 export class AnnouncementController {
-//   constructor(private readonly announcementService: AnnouncementService) {}
-//
-//   @Post()
-//   create(@Body() createAnnouncementDto: CreateAnnouncementDto) {
-//     return this.announcementService.create(createAnnouncementDto);
-//   }
-//
-//   @Get()
-//   findAll() {
-//     return this.announcementService.findAll();
-//   }
-//
-//   @Get(':id')
-//   findOne(@Param('id') id: string) {
-//     return this.announcementService.findOne(+id);
-//   }
-//
-//   @Patch(':id')
-//   update(
-//     @Param('id') id: string,
-//     @Body() updateAnnouncementDto: UpdateAnnouncementDto,
-//   ) {
-//     return this.announcementService.update(+id, updateAnnouncementDto);
-//   }
-//
-//   @Delete(':id')
-//   softRemove(@Param('id') id: string) {
-//     return this.announcementService.softRemove(+id);
-//   }
-//
-//   @Patch('recover/:id')
-//   recover(@Param('id') id: string) {
-//     return this.announcementService.recover(+id);
-//   }
+  constructor(private readonly announcementService: AnnouncementService) {}
+
+  @Post()
+  create(@Body() createAnnouncementDto: CreateAnnouncementDto) {
+    return this.announcementService.create(createAnnouncementDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.announcementService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.announcementService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateAnnouncementDto: UpdateAnnouncementDto,
+  ) {
+    return this.announcementService.update(+id, updateAnnouncementDto);
+  }
+
+  @Delete(':id')
+  softRemove(@Param('id') id: string) {
+    return this.announcementService.softRemove(+id);
+  }
+
+  @Patch('recover/:id')
+  recover(@Param('id') id: string) {
+    return this.announcementService.recover(+id);
+  }
 
 }
