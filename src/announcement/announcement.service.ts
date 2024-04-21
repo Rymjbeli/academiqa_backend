@@ -11,7 +11,8 @@ import { SubjectService } from 'src/subject/subject.service';
 export class AnnouncementService {
 
   constructor(
-    @InjectRepository(AnnouncementEntity) private announcementRepository: Repository<AnnouncementEntity>,
+    @InjectRepository(AnnouncementEntity)
+    private announcementRepository: Repository<AnnouncementEntity>,
     private teacherService: UserService,
     private subjectService: SubjectService
   ){}

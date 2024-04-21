@@ -1,6 +1,6 @@
 import { IsNotEmpty } from "class-validator";
 import { SubjectEntity } from "src/subject/entities/subject.entity";
-import { TeacherEntity } from "src/user/entities/teacher.entity";
+import { Teacher } from "src/user/entities/teacher.entity";
 
 export class CreateAnnouncementDto {
     @IsNotEmpty()
@@ -10,7 +10,7 @@ export class CreateAnnouncementDto {
     subject: SubjectEntity;
 
     @IsNotEmpty()
-    teacher: TeacherEntity;
+    teacher: Teacher;
     
 
 }
