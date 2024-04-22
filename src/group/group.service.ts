@@ -1,11 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { GroupEntity } from './entities/group.entity';
 
 @Injectable()
 export class GroupService {
+  constructor(
+    @InjectRepository(GroupEntity)
+    private groupRepository: Repository<GroupEntity>,
+  ) {}
   create(createGroupDto: CreateGroupDto) {
     return 'This action adds a new group';
+  }
+
+  async getGroupBySLNum(sectorLevel: string, groupNumber: number){
+    const group = await this.groupRepository.findOne({
+      where: { sectorLevel: sectorLevel, group: groupNumber },
+    });
+    if (!group) {
+      return null;
+    }
+    return group;
   }
 
   findAll() {

@@ -8,7 +8,7 @@ import {
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 import { SessionTypeEntity } from '../../session-type/entities/session-type.entity';
 import { AnnouncementEntity } from '../../announcement/entities/announcement.entity';
-import { TeacherEntity } from '../../user/entities/teacher.entity';
+import { Teacher } from '../../user/entities/teacher.entity';
 import { AbsenceEntity } from '../../absence/entities/absence.entity';
 
 @Entity('subject')
@@ -43,10 +43,10 @@ export class SubjectEntity extends TimestampEntites {
   //  cascade: ['soft-remove']
   // })
   // announcements: AnnouncementEntity[];
-  // @ManyToOne(() => TeacherEntity, (teacher) => teacher.subjects, {
+  // @ManyToOne(() => Teacher, (teacher) => teacher.subjects, {
   //   nullable: false,
   // })
-  // teacher: TeacherEntity;
+  // teacher: Teacher;
   // @OneToMany(() => AbsenceEntity, (absence) => absence.subject, {
   //   nullable: true,
   //  cascade: ['soft-remove']

@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { HelmetMiddleware } from '@nest-middlewares/helmet';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { NotificationModule } from './notification/notification.module';
 import { NoteModule } from './note/note.module';
 import { CommonChatSessionModule } from './common-chat-session/common-chat-session.module';
 import { RessourceModule } from './ressource/ressource.module';
@@ -15,11 +16,12 @@ import { SubjectModule } from './subject/subject.module';
 import { SessionTypeModule } from './session-type/session-type.module';
 import { SessionModule } from './session/session.module';
 import { UserModule } from './user/user.module';
-import { UserEntity } from './user/entities/user.entity';
-import { StudentEntity } from './user/entities/student.entity';
+import { User } from './user/entities/user.entity';
+import { Student } from './user/entities/student.entity';
 import { FileUploadModule } from './file-upload/file-upload.module';
-import { NotificationModule } from './notification/notification.module';
+import { AuthModule } from './auth/auth.module';
 import { GroupModule } from './group/group.module';
+
 dotenv.config();
 @Module({
   imports: [
@@ -36,7 +38,9 @@ dotenv.config();
       debug: false,
     }),
     ChatbotModule,
+    NotificationModule,
     NoteModule,
+    CommonChatSessionModule,
     RessourceModule,
     AnnouncementModule,
     AbsenceModule,
@@ -46,9 +50,8 @@ dotenv.config();
     SessionModule,
     UserModule,
     FileUploadModule,
-    TypeOrmModule.forFeature([UserEntity, StudentEntity]),
-    CommonChatSessionModule,
-    NotificationModule,
+    TypeOrmModule.forFeature([User, Student]),
+    AuthModule,
     GroupModule,
   ],
   controllers: [AppController],

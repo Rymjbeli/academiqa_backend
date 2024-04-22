@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 import { SubjectEntity } from '../../subject/entities/subject.entity';
-import { TeacherEntity } from '../../user/entities/teacher.entity';
+import { Teacher } from '../../user/entities/teacher.entity';
 @Entity('announcement')
 export class AnnouncementEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
@@ -12,8 +12,9 @@ export class AnnouncementEntity extends TimestampEntites {
   //   nullable: false,
   // })
   // subject: SubjectEntity;
-  @ManyToOne(() => TeacherEntity, (teacher) => teacher.announcements, {
+  @ManyToOne(() => Teacher, (teacher) => teacher.announcements, {
     nullable: false,
   })
-  teacher: TeacherEntity;
+  teacher: Teacher;
+  // newAnnouncement: import("c:/Users/weszi/OneDrive/Bureau/gl3sem2/ppp/Academiqa/academiqa_backend/src/user/entities/user.entity").UserEntity;
 }

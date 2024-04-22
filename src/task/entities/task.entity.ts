@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { SessionEntity } from '../../session/entities/session.entity';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
-import { TeacherEntity } from '../../user/entities/teacher.entity';
+import { Teacher } from '../../user/entities/teacher.entity';
 @Entity('task')
 export class TaskEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
@@ -10,10 +10,10 @@ export class TaskEntity extends TimestampEntites {
   content: string;
   @Column()
   isDone: boolean;
-  @ManyToOne(() => TeacherEntity, (teacher) => teacher.tasks, {
+  @ManyToOne(() => Teacher, (teacher) => teacher.tasks, {
     nullable: false,
   })
-  teacher: TeacherEntity;
+  teacher: Teacher;
   @ManyToOne(() => SessionEntity, (session) => session.tasks, {
     nullable: false,
   })

@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 import { SubjectEntity } from '../../subject/entities/subject.entity';
-import { StudentEntity } from '../../user/entities/student.entity';
+import { Student } from '../../user/entities/student.entity';
 @Entity('absence')
 export class AbsenceEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
@@ -10,8 +10,8 @@ export class AbsenceEntity extends TimestampEntites {
   //   nullable: false,
   // })
   // subject: SubjectEntity;
-  @ManyToOne(() => StudentEntity, (student) => student.absences, {
+  @ManyToOne(() => Student, (student) => student.absences, {
     nullable: false,
   })
-  student: StudentEntity;
+  student: Student;
 }

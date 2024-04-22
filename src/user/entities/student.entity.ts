@@ -1,20 +1,16 @@
 import { ChildEntity, Column, ManyToOne, OneToMany } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { User } from './user.entity';
 import { AbsenceEntity } from '../../absence/entities/absence.entity';
 import { NoteEntity } from '../../note/entities/note.entity';
 import { GroupEntity } from '../../group/entities/group.entity';
 @ChildEntity()
-export class StudentEntity extends UserEntity {
+export class Student extends User {
   @ManyToOne(() => GroupEntity, {
-    nullable: false,
+    nullable: true,
   })
   group: GroupEntity;
   @Column()
-  photo: string;
-  @Column()
   enrollmentNumber: number;
-  @Column()
-  cin: number;
   @OneToMany(() => AbsenceEntity, (absence) => absence.student, {
     nullable: true,
   })

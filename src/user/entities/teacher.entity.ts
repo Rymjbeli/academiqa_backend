@@ -1,14 +1,12 @@
 import { ChildEntity, Column, OneToMany } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { User } from './user.entity';
 import { SubjectEntity } from '../../subject/entities/subject.entity';
 import { TaskEntity } from '../../task/entities/task.entity';
 import { AnnouncementEntity } from '../../announcement/entities/announcement.entity';
 @ChildEntity()
-export class TeacherEntity extends UserEntity {
+export class Teacher extends User {
   @Column()
   speciality: string;
-  @Column()
-  photo: string;
   // @OneToMany(() => SubjectEntity, (subject) => subject.teacher, {
   //   nullable: true,
   // })
