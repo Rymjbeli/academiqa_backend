@@ -12,11 +12,13 @@ import { JwtModule } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
 import * as process from 'process';
 import {JwtStrategy} from "./strategy/passport-jwt.strategy";
+import {GroupService} from "../group/group.service";
+import {GroupEntity} from "../group/entities/group.entity";
 
 dotenv.config();
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Student, Teacher, Admin]),
+    TypeOrmModule.forFeature([User, Student, Teacher, Admin, GroupEntity]),
     PassportModule.register(
       { defaultStrategy: 'jwt' }),
       JwtModule.register({
@@ -26,7 +28,7 @@ dotenv.config();
         },
       }),
   ],
-  providers: [AuthService, UserService, JwtStrategy],
+  providers: [AuthService, UserService, JwtStrategy, GroupService],
   controllers: [AuthController],
   exports: [AuthService],
 })

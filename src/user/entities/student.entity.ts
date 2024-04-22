@@ -10,11 +10,7 @@ export class Student extends User {
   })
   group: GroupEntity;
   @Column()
-  photo: string;
-  @Column()
   enrollmentNumber: number;
-  @Column()
-  cin: number;
   @OneToMany(() => AbsenceEntity, (absence) => absence.student, {
     nullable: true,
   })

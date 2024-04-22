@@ -7,8 +7,6 @@ import { AnnouncementEntity } from '../../announcement/entities/announcement.ent
 export class Teacher extends User {
   @Column()
   speciality: string;
-  @Column()
-  photo: string;
   @OneToMany(() => SubjectEntity, (subject) => subject.teacher, {
     nullable: true,
   })

@@ -25,6 +25,12 @@ export class User extends TimestampEntites {
   @Column()
   username: string;
 
+  @Column({ unique: true })
+  cin: number;
+
+  @Column({ nullable: true, length: 500 })
+  Photo: string;
+
   @Column()
   salt: string;
 
