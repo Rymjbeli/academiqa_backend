@@ -77,6 +77,7 @@ export class SubjectService {
 
   async update(id: number, updateSubjectDto: UpdateSubjectDto) {
     const subject = await this.findOne(id);
+    console.log('subject', subject);
     if (!subject) {
       throw new Error('Subject not found');
     } else {
