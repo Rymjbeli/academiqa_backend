@@ -3,9 +3,8 @@ import { GroupEntity } from '../../group/entities/group.entity';
 import { Type } from 'class-transformer';
 import { SubjectEntity } from '../../subject/entities/subject.entity';
 import { SessionTypeEnum } from '../../Enums/session-type.enum';
-import { TeacherEntity } from '../../user/entities/teacher.entity';
 
-export class CreateSessionTypeDto {
+export class CreateSessionTypeGroupSectorLevelDto {
   @IsNotEmpty()
   @IsString()
   day: string;
@@ -21,14 +20,18 @@ export class CreateSessionTypeDto {
   type: SessionTypeEnum;
 
   @IsNotEmpty()
-  @Type(() => GroupEntity)
-  group: GroupEntity;
+  @IsString()
+  sectorLevel: string;
 
   @IsNotEmpty()
-  @Type(() => SubjectEntity)
-  subject: SubjectEntity;
+  @IsNumber()
+  groupNumber: number;
+
+  @IsNotEmpty()
+  @IsString()
+  subjectName: string;
 
   /*  @IsNotEmpty()
-  @Type(() => TeacherEntity)
-  teacher: TeacherEntity;*/
+  @IsNumber()
+  teacherID: number;*/
 }

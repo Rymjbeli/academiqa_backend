@@ -1,10 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { CreateSubjectDto } from "./dto/create-subject.dto";
-import { UpdateSubjectDto } from "./dto/update-subject.dto";
-import { FileUploadService } from "../file-upload/file-upload.service";
-import { SubjectEntity } from "./entities/subject.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { CreateSubjectDto } from './dto/create-subject.dto';
+import { UpdateSubjectDto } from './dto/update-subject.dto';
+import { FileUploadService } from '../file-upload/file-upload.service';
+import { SubjectEntity } from './entities/subject.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SubjectService {
@@ -50,6 +50,17 @@ export class SubjectService {
   async findOne(id: number) {
     return await this.subjectRepository.findOneBy({ id });
   }
+
+  async findBySubjectName(name: string) {
+    const foundSubject = await this.subjectRepository.findOne({
+      where: { name },
+    });
+    if (!foundSubject) {
+      throw new Error('Subject not found' + name);
+    }
+    return foundSubject;
+  }
+
   async findBySectorLevel(sectorLevel: string) {
     // const subjects = await this.subjectRepository.find({
     //   where: { sectorLevel },
@@ -86,5 +97,4 @@ export class SubjectService {
       });
     }
   }
-
 }

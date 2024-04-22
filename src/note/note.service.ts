@@ -24,9 +24,11 @@ export class NoteService {
   }
 
   async findAll(): Promise<GetNoteDto[] | null> {
-    const noteEntities = await this.noteRepository.find();
+    const noteEntities = await this.noteRepository.find({
+      relations: ['session'],
+    });
     if (!noteEntities) {
-      return null;
+      throw new Error('No notes found');
     }
     return noteEntities.map((note) => {
       const noteDto = plainToClass(GetNoteDto, note);
@@ -44,9 +46,12 @@ export class NoteService {
   }
 
   async findOne(id: number): Promise<GetNoteDto | null> {
-    const noteEntity = await this.noteRepository.findOne({ where: { id } });
+    const noteEntity = await this.noteRepository.findOne({
+      where: { id },
+      relations: ['session'],
+    });
     if (!noteEntity) {
-      return null;
+      throw new Error('Note not found');
     }
     const noteDto = plainToClass(GetNoteDto, noteEntity);
 
@@ -63,7 +68,7 @@ export class NoteService {
   }
   /*
   async findByStudent(studentId: number): Promise<NoteEntity[] | null> {
-    const notes = await this.findAll();
+    const notes = await this.findAll({relations: ['session']}});
     return notes.filter((note) => note.student.id == studentId);
   }
 
@@ -71,7 +76,7 @@ export class NoteService {
     queryParams: GetNoteDto,
   ): Promise<NoteEntity[] | null> {
     const { studentId, sessionId } = queryParams;
-    const notes = await this.noteRepository.find();
+    const notes = await this.noteRepository.find({ relations: ['session'] });
     if (!studentId && !sessionId) {
       return notes;
     }
@@ -89,7 +94,7 @@ export class NoteService {
   ): Promise<NoteEntity | null> {
     let note = await this.noteRepository.findOne({ where: { id } });
     if (!note) {
-      return null;
+      throw new Error('Note not found');
     }
     note = { ...note, ...updateNoteDto };
     return await this.noteRepository.save(note);
@@ -98,7 +103,7 @@ export class NoteService {
   async remove(id: number): Promise<NoteEntity | null> {
     const note = await this.findOne(id);
     if (!note) {
-      return null;
+      throw new Error('Note not found');
     }
     return await this.noteRepository.softRemove(note);
   }
@@ -109,7 +114,7 @@ export class NoteService {
       withDeleted: true,
     });
     if (!note) {
-      return null;
+      throw new Error('Note not found');
     }
     return await this.noteRepository.recover(note);
   }

@@ -26,7 +26,7 @@ export class TaskService {
   async findAll(): Promise<GetTaskDto[] | null> {
     const taskEntities = await this.taskRepository.find();
     if (!taskEntities) {
-      return null;
+      throw new Error('No tasks found');
     }
     return taskEntities.map((task) => {
       return plainToClass(GetTaskDto, task);
@@ -36,7 +36,7 @@ export class TaskService {
   async findOne(id: number): Promise<GetTaskDto | null> {
     const taskEntity = await this.taskRepository.findOne({ where: { id } });
     if (!taskEntity) {
-      return null;
+      throw new Error('Task not found');
     }
     return plainToClass(GetTaskDto, taskEntity);
   }
@@ -52,7 +52,7 @@ export class TaskService {
   ): Promise<TaskEntity | null> {
     let task = await this.findOne(id);
     if (!task) {
-      return null;
+      throw new Error('Task not found');
     }
     task = { ...task, ...updateTaskDto };
     return await this.taskRepository.save(task);
@@ -61,7 +61,7 @@ export class TaskService {
   async remove(id: number): Promise<TaskEntity | null> {
     const task = await this.findOne(id);
     if (!task) {
-      return null;
+      throw new Error('Task not found');
     }
     return await this.taskRepository.softRemove(task);
   }
@@ -72,7 +72,7 @@ export class TaskService {
       withDeleted: true,
     });
     if (!task) {
-      return null;
+      throw new Error('Task not found');
     }
     return await this.taskRepository.recover(task);
   }

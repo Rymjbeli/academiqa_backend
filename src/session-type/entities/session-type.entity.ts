@@ -10,6 +10,7 @@ import { SessionTypeEnum } from '../../Enums/session-type.enum';
 import { SessionEntity } from '../../session/entities/session.entity';
 import { SubjectEntity } from '../../subject/entities/subject.entity';
 import { GroupEntity } from '../../group/entities/group.entity';
+import { TeacherEntity } from '../../user/entities/teacher.entity';
 
 @Entity('session_type')
 export class SessionTypeEntity extends TimestampEntites {
@@ -20,15 +21,12 @@ export class SessionTypeEntity extends TimestampEntites {
     length: 50,
   })
   day: string;
-  @ManyToOne(() => GroupEntity, {
-    nullable: false,
-  })
-  group: GroupEntity;
-  @Column()
-  startHour: Date;
 
   @Column()
-  endHour: Date;
+  startHour: string;
+
+  @Column()
+  endHour: string;
 
   @Column({
     type: 'enum',
@@ -37,13 +35,25 @@ export class SessionTypeEntity extends TimestampEntites {
   })
   type: SessionTypeEnum;
 
-  @OneToMany(() => SessionEntity, (session) => session.sessionType, {
+  /*  @OneToMany(() => SessionEntity, (session) => session.sessionType, {
     nullable: false,
   })
-  sessions: SessionEntity[];
+  sessions: SessionEntity[];*/
 
-  // @ManyToOne(() => SubjectEntity, (subject) => subject.sessionTypes, {
-  //   nullable: false,
-  // })
-  // subject: SubjectEntity;
+  /*
+  @ManyToOne(() => TeacherEntity, (teacher) => teacher.sessionTypes, {
+    nullable: false,
+  })
+  teacher: TeacherEntity;
+*/
+
+  @ManyToOne(() => GroupEntity, {
+    nullable: false,
+  })
+  group: GroupEntity;
+
+  @ManyToOne(() => SubjectEntity, (subject) => subject.sessionTypes, {
+    nullable: false,
+  })
+  subject: SubjectEntity;
 }

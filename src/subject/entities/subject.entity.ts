@@ -36,8 +36,8 @@ export class SubjectEntity extends TimestampEntites {
   @Column()
   absenceLimit: number;
 
-  // @OneToMany(() => SessionTypeEntity, (sessionType) => sessionType.subject)
-  // sessionTypes: SessionTypeEntity[];
+  @OneToMany(() => SessionTypeEntity, (sessionType) => sessionType.subject)
+  sessionTypes: SessionTypeEntity[];
   // @OneToMany(() => AnnouncementEntity, (announcement) => announcement.subject, {
   //  nullable: true,
   //  cascade: ['soft-remove']

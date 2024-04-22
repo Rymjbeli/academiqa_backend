@@ -8,33 +8,82 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { GroupService } from './group.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileUploadService } from '../file-upload/file-upload.service';
+import { GroupEntity } from './entities/group.entity';
 
 @Controller('group')
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
+
+  @Post('/CreateAll')
+  @UseInterceptors(FileInterceptor('file'))
+  async create(@UploadedFile() file: Express.Multer.File) {
+    return await this.groupService.createGroups(file);
+  }
+
+  @Post('/CreateOne')
+  createOne(@Body() createGroupDto: CreateGroupDto) {
+    return this.groupService.createOneGroup(createGroupDto);
+  }
+
   @Get()
   findAll() {
     return this.groupService.findAll();
   }
 
+  @Get('/SectorLevel/:sectorLevel')
+  findBySectorLevel(@Param('sectorLevel') sectorLevel: string) {
+    return this.groupService.findBySectorLevel(sectorLevel);
+  }
+
+  @Get('/Level/:level')
+  findByLevel(@Param('level') level: string) {
+    return this.groupService.findByLevel(level);
+  }
+
+  @Get('/Sector/:sector')
+  findBySector(@Param('sector') sector: string) {
+    return this.groupService.findBySector(sector);
+  }
+
+  @Get('/SectorLevelGroup/:sectorLevel/:group')
+  findGroupedBySectorLevelGroup(
+    @Param('sectorLevel') sectorLevel: string,
+    @Param('group', ParseIntPipe) group: number,
+  ): Promise<GroupEntity> {
+    return this.groupService.findBySectorLevelGroup(sectorLevel, group);
+  }
+
+  @Get('/GroupedBySectorLevel')
+  findAllGroupedBySectorLevel() {
+    return this.groupService.findAllGroupedBySectorLevel();
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.groupService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.groupService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGroupDto: UpdateGroupDto) {
-    return this.groupService.update(+id, updateGroupDto);
+  @Patch('/update/:id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateGroupDto: UpdateGroupDto,
+  ) {
+    return this.groupService.update(id, updateGroupDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.groupService.remove(+id);
+  @Delete('/delete/:id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.groupService.remove(id);
+  }
+
+  @Get('/recover/:id')
+  recover(@Param('id', ParseIntPipe) id: number) {
+    return this.groupService.recover(id);
   }
 }
