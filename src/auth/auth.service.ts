@@ -46,11 +46,12 @@ export class AuthService {
     user.role = userRepository.metadata.targetName;
     user.salt = await bcrypt.genSalt();
     user.password = await bcrypt.hash(user.password, user.salt);
+    console.log("CreateUserDto",userData);
     try {
       await userRepository.save(user);
     } catch (e) {
       throw new ConflictException(
-        `Email ${user.email} and cin ${user.cin} already exists`,
+        `Email ${user.email} or cin ${user.cin} already exists`,
       );
     }
     return {
@@ -72,7 +73,7 @@ export class AuthService {
 
   async registerStudents(
     studentsFile: Express.Multer.File,
-  ): Promise<{ conflicts: string[] }> {
+  ): Promise<void> {
     const studentsData: any =
       await this.fileUploadService.uploadCSVFile(studentsFile);
     const conflictEmails: string[] = [];
@@ -81,6 +82,7 @@ export class AuthService {
     await Promise.all(
       studentsData.map(async (studentData: any) => {
         try {
+          console.log(studentData.sectorLevel, studentData.groupNumber);
           // Get group using sectorLevel and groupNumber
           const group = await this.groupService.getGroupBySLNum(
             studentData.sectorLevel,
@@ -88,8 +90,8 @@ export class AuthService {
           );
           if (!group) {
             // If group not found, add the email to conflicts array
-            conflictEmails.push(studentData.email);
-            return;
+            // conflictEmails.push(studentData.email);
+            // return;
           }
           // Create CreateStudentDto using group and other student data
           const createStudentDto: CreateStudentDto = {
@@ -104,7 +106,9 @@ export class AuthService {
         }
       }),
     );
-    return { conflicts: conflictEmails };
+    if (conflictEmails.length > 0) {
+      throw new ConflictException(conflictEmails);
+    }
   }
   async registerTeacher(teacherData: CreateTeacherDto): Promise<Partial<User>> {
     return this.createUser(teacherData, this.teacherRepository);
@@ -112,7 +116,7 @@ export class AuthService {
 
   async registerTeachers(
     teacherDataFile: Express.Multer.File,
-  ): Promise<{ conflicts: string[] }> {
+  ): Promise<void> {
     const teachersData: any =
       await this.fileUploadService.uploadCSVFile(teacherDataFile);
 
@@ -130,7 +134,10 @@ export class AuthService {
       }),
     );
 
-    return { conflicts: conflictEmails };
+    // return { conflicts: conflictEmails };
+    if (conflictEmails.length > 0) {
+      throw new ConflictException(conflictEmails);
+    }
   }
 
   async login(credentials: LoginCredentialsDto) {
