@@ -50,6 +50,11 @@ export class SubjectController {
   //   return await this.subjectService.findByTeacher();
   // }
 
+  @Get('/Name/:name')
+  findBySubjectName(@Param('name') name: string) {
+    return this.subjectService.findBySubjectName(name);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.subjectService.deleteSubject(+id);

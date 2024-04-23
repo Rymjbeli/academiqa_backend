@@ -16,4 +16,7 @@ export class CreateSubjectDto {
   module: string;
   @IsNotEmpty()
   hourlyLoad: number;
+
+  @IsNotEmpty()
+  semester: number;
 }

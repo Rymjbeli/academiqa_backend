@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { CreateSessionDto } from './dto/create-session.dto';
@@ -16,8 +17,16 @@ export class SessionController {
   constructor(private readonly sessionService: SessionService) {}
 
   @Post()
-  create(@Body() createSessionDto: CreateSessionDto) {
-    return this.sessionService.create(createSessionDto);
+  generateSessionsForAllSessionTypes(
+    @Query('numberOfWeeks') numberOfWeeks: number,
+    @Query('semesterStartDate') semesterStartDate: string,
+    @Body('holidays') holidays: { date: string; name: string }[],
+  ) {
+    return this.sessionService.generateSessionsForAllSessionTypes(
+      numberOfWeeks,
+      semesterStartDate,
+      holidays,
+    );
   }
 
   @Get()

@@ -15,8 +15,8 @@ export class Student extends User {
     nullable: true,
   })
   absences: AbsenceEntity[];
-  @OneToMany(() => NoteEntity, (note) => note.student, {
+  /*  @OneToMany(() => NoteEntity, (note) => note.student, {
     nullable: true,
   })
-  notes: NoteEntity[];
+  notes: NoteEntity[];*/
 }

@@ -20,20 +20,26 @@ export class SessionEntity extends TimestampEntites {
   @Column()
   date: Date;
 
+  @Column()
+  endTime: Date;
+
+  @Column('simple-array')
+  holidayName?: string[];
+
   @ManyToOne(() => SessionTypeEntity, (sessionType) => sessionType.sessions, {
-    nullable: false,
+    nullable: true,
   })
   sessionType: SessionTypeEntity;
   // @OneToMany(() => CommonChatEntity, (commonChat) => commonChat.session, {
   //   nullable: true,
   // })
   // commonChats: CommonChatEntity[];
-  @OneToMany(() => NoteEntity, (note) => note.session)
-  notes: NoteEntity[];
+  /*  @OneToMany(() => NoteEntity, (note) => note.session)
+  notes: NoteEntity[];*/
   @OneToMany(() => RessourceEntity, (ressource) => ressource.session, {
     nullable: true,
   })
   ressources: RessourceEntity[];
-  @OneToMany(() => TaskEntity, (task) => task.session, { nullable: true })
-  tasks: TaskEntity[];
+  /*  @OneToMany(() => TaskEntity, (task) => task.session, { nullable: true })
+  tasks: TaskEntity[];*/
 }
