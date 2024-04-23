@@ -10,6 +10,7 @@ import { SessionTypeEntity } from '../../session-type/entities/session-type.enti
 import { AnnouncementEntity } from '../../announcement/entities/announcement.entity';
 import { TeacherEntity } from '../../user/entities/teacher.entity';
 import { AbsenceEntity } from '../../absence/entities/absence.entity';
+import { IsIn } from 'class-validator';
 
 @Entity('subject')
 export class SubjectEntity extends TimestampEntites {
@@ -35,6 +36,10 @@ export class SubjectEntity extends TimestampEntites {
   hourlyLoad: number;
   @Column()
   absenceLimit: number;
+
+  @Column()
+  @IsIn([1, 2])
+  semester: number;
 
   @OneToMany(() => SessionTypeEntity, (sessionType) => sessionType.subject)
   sessionTypes: SessionTypeEntity[];

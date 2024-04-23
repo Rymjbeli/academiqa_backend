@@ -22,10 +22,10 @@ export class SessionTypeEntity extends TimestampEntites {
   })
   day: string;
 
-  @Column()
+  @Column('time')
   startHour: string;
 
-  @Column()
+  @Column('time')
   endHour: string;
 
   @Column({
@@ -35,10 +35,10 @@ export class SessionTypeEntity extends TimestampEntites {
   })
   type: SessionTypeEnum;
 
-  /*  @OneToMany(() => SessionEntity, (session) => session.sessionType, {
+  @OneToMany(() => SessionEntity, (session) => session.sessionType, {
     nullable: false,
   })
-  sessions: SessionEntity[];*/
+  sessions: SessionEntity[];
 
   /*
   @ManyToOne(() => TeacherEntity, (teacher) => teacher.sessionTypes, {

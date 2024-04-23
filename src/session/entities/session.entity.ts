@@ -20,10 +20,16 @@ export class SessionEntity extends TimestampEntites {
   @Column()
   date: Date;
 
-  /*  @ManyToOne(() => SessionTypeEntity, (sessionType) => sessionType.sessions, {
-    nullable: false,
+  @Column()
+  endTime: Date;
+
+  @Column('simple-array')
+  holidayName?: string[];
+
+  @ManyToOne(() => SessionTypeEntity, (sessionType) => sessionType.sessions, {
+    nullable: true,
   })
-  sessionType: SessionTypeEntity;*/
+  sessionType: SessionTypeEntity;
   // @OneToMany(() => CommonChatEntity, (commonChat) => commonChat.session, {
   //   nullable: true,
   // })
