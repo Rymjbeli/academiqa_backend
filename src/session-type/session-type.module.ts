@@ -7,7 +7,7 @@ import { GroupEntity } from '../group/entities/group.entity';
 import { GroupService } from '../group/group.service';
 import { SubjectEntity } from '../subject/entities/subject.entity';
 import { SubjectService } from '../subject/subject.service';
-import { TeacherEntity } from '../user/entities/teacher.entity';
+import { Teacher } from '../user/entities/teacher.entity';
 import { TeacherService } from '../user/teacher/teacher.service';
 
 @Module({
@@ -16,7 +16,7 @@ import { TeacherService } from '../user/teacher/teacher.service';
       SessionTypeEntity,
       GroupEntity,
       SubjectEntity,
-      TeacherEntity,
+      Teacher,
     ]),
   ],
   controllers: [SessionTypeController],

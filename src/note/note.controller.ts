@@ -22,7 +22,7 @@ export class NoteController {
   @Post()
   async create(
     @Body() createNoteDto: CreateNoteDto,
-    // , @User() student: StudentEntity
+    // , @User() student: student
   ): Promise<NoteEntity | null> {
     return this.noteService.create(createNoteDto);
   }

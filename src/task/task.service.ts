@@ -4,7 +4,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskEntity } from './entities/task.entity';
 import { Repository } from 'typeorm';
-import { TeacherEntity } from '../user/entities/teacher.entity';
+import { Teacher } from '../user/entities/teacher.entity';
 import { GetTaskDto } from './dto/get-task.dto';
 import { plainToClass } from 'class-transformer';
 
@@ -16,7 +16,7 @@ export class TaskService {
   ) {}
   async create(
     createTaskDto: CreateTaskDto,
-    // teacher: TeacherEntity,
+    // teacher: Teacher,
   ): Promise<TaskEntity> {
     const newTask = this.taskRepository.create(createTaskDto);
     // newTask.teacher = teacher;

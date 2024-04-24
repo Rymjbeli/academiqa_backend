@@ -43,10 +43,11 @@ export class AuthService {
     const user = userRepository.create({
       ...userData,
     });
+
     user.role = userRepository.metadata.targetName;
     user.salt = await bcrypt.genSalt();
     user.password = await bcrypt.hash(user.password, user.salt);
-    console.log("CreateUserDto",userData);
+    // console.log("CreateUserDto",userData);
     try {
       await userRepository.save(user);
     } catch (e) {
@@ -82,12 +83,12 @@ export class AuthService {
     await Promise.all(
       studentsData.map(async (studentData: any) => {
         try {
-          console.log(studentData.sectorLevel, studentData.groupNumber);
           // Get group using sectorLevel and groupNumber
-          const group = await this.groupService.getGroupBySLNum(
+          const group = await this.groupService.findBySectorLevelGroup(
             studentData.sectorLevel,
             studentData.groupNumber,
           );
+          console.log("group",group);
           if (!group) {
             // If group not found, add the email to conflicts array
             // conflictEmails.push(studentData.email);
@@ -111,7 +112,7 @@ export class AuthService {
     }
   }
   async registerTeacher(teacherData: CreateTeacherDto): Promise<Partial<User>> {
-    return this.createUser(teacherData, this.teacherRepository);
+    return await this.createUser(teacherData, this.teacherRepository);
   }
 
   async registerTeachers(

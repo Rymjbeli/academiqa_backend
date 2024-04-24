@@ -35,7 +35,11 @@ export class GroupController {
   findAll() {
     return this.groupService.findAll();
   }
-
+  @Get('count')
+  // @UseGuards(JwtAuthGuard)
+  async countGroups() {
+    return await this.groupService.countGroups();
+  }
   @Get('/SectorLevel/:sectorLevel')
   findBySectorLevel(@Param('sectorLevel') sectorLevel: string) {
     return this.groupService.findBySectorLevel(sectorLevel);

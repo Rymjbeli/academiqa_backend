@@ -17,7 +17,6 @@ export class FileUploadService {
           .pipe(csv())
           .on('data', (data) => results.push(data))
           .on('end', () => {
-            console.log(results);
             resolve(results);
           })
           .on('error', (error) => {

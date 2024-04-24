@@ -10,7 +10,7 @@ import { SubjectService } from '../subject/subject.service';
 import { TeacherService } from '../user/teacher/teacher.service';
 import { GroupEntity } from '../group/entities/group.entity';
 import { SubjectEntity } from '../subject/entities/subject.entity';
-import { TeacherEntity } from '../user/entities/teacher.entity';
+import { Teacher } from '../user/entities/teacher.entity';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { TeacherEntity } from '../user/entities/teacher.entity';
       SessionTypeEntity,
       GroupEntity,
       SubjectEntity,
-      TeacherEntity,
+      Teacher,
     ]),
   ],
   controllers: [SessionController],

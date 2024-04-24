@@ -25,7 +25,7 @@ export class SubjectController {
   }
   @Post('CreateOne')
   createOne(@Body() createSubjectDto: CreateSubjectDto) {
-    console.log("createSubjectDto", createSubjectDto);
+    console.log('createSubjectDto', createSubjectDto);
     return this.subjectService.createOneSubject(createSubjectDto);
   }
 

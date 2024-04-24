@@ -10,12 +10,12 @@ export class TaskEntity extends TimestampEntites {
   content: string;
   @Column()
   isDone: boolean;
-  // @ManyToOne(() => Teacher, (teacher) => teacher.tasks, {
-  //   nullable: false,
-  // })
-  // teacher: Teacher;
-  // @ManyToOne(() => SessionEntity, (session) => session.tasks, {
-  //   nullable: false,
-  // })
-  // session: SessionEntity;
+  @ManyToOne(() => Teacher, (teacher) => teacher.tasks, {
+    nullable: false,
+  })
+  teacher: Teacher;
+  @ManyToOne(() => SessionEntity, (session) => session.tasks, {
+    nullable: false,
+  })
+  session: SessionEntity;
 }

@@ -5,11 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AnnouncementEntity } from './entities/announcement.entity';
 import { SubjectService } from 'src/subject/subject.service';
 import { UserService } from 'src/user/user.service';
-import {User} from "../user/entities/user.entity";
-import { SubjectModule } from "../subject/subject.module";
+import { User } from '../user/entities/user.entity';
+import { SubjectModule } from '../subject/subject.module';
 
 @Module({
-  imports:[
+  imports: [
     SubjectModule,
     TypeOrmModule.forFeature([AnnouncementEntity, User]),
   ],

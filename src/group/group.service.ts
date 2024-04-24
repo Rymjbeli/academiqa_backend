@@ -107,4 +107,8 @@ export class GroupService {
       return await this.groupRepository.recover(group);
     }
   }
+
+  async countGroups() {
+    return await this.groupRepository.count();
+  }
 }

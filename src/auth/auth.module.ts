@@ -11,22 +11,21 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
 import * as process from 'process';
-import {JwtStrategy} from "./strategy/passport-jwt.strategy";
-import {GroupService} from "../group/group.service";
-import {GroupEntity} from "../group/entities/group.entity";
+import { JwtStrategy } from './strategy/passport-jwt.strategy';
+import { GroupService } from '../group/group.service';
+import { GroupEntity } from '../group/entities/group.entity';
 
 dotenv.config();
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Student, Teacher, Admin, GroupEntity]),
-    PassportModule.register(
-      { defaultStrategy: 'jwt' }),
-      JwtModule.register({
-        secret: process.env.SECRET_KEY,
-        signOptions: {
-          expiresIn: '1d',
-        },
-      }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: process.env.SECRET_KEY,
+      signOptions: {
+        expiresIn: '1d',
+      },
+    }),
   ],
   providers: [AuthService, UserService, JwtStrategy, GroupService],
   controllers: [AuthController],

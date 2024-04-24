@@ -5,7 +5,7 @@ import { GetNoteDto } from './dto/get-note.dto';
 import { Repository } from 'typeorm';
 import { NoteEntity } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { StudentEntity } from '../user/entities/student.entity';
+import { Student } from '../user/entities/student.entity';
 import { Expose, plainToClass } from 'class-transformer';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class NoteService {
   ) {}
   async create(
     createNoteDto: CreateNoteDto,
-    // student: StudentEntity,
+    // student: student,
   ): Promise<NoteEntity> {
     const newNote = this.noteRepository.create(createNoteDto);
     // newNote.student = student;

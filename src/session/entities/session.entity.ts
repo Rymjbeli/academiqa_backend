@@ -34,12 +34,12 @@ export class SessionEntity extends TimestampEntites {
   //   nullable: true,
   // })
   // commonChats: CommonChatEntity[];
-  /*  @OneToMany(() => NoteEntity, (note) => note.session)
-  notes: NoteEntity[];*/
+  // /*  @OneToMany(() => NoteEntity, (note) => note.session)
+  // notes: NoteEntity[];*/
   @OneToMany(() => RessourceEntity, (ressource) => ressource.session, {
     nullable: true,
   })
   ressources: RessourceEntity[];
-  /*  @OneToMany(() => TaskEntity, (task) => task.session, { nullable: true })
-  tasks: TaskEntity[];*/
+  @OneToMany(() => TaskEntity, (task) => task.session, { nullable: true })
+  tasks: TaskEntity[];
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,7 +23,10 @@ export class StudentService {
   }
 
   async findOneStudent(id: number) {
-    const student = await this.studentRepository.findOneBy({ id });
+    const [student] = await this.studentRepository.find({
+      relations: ['group'],
+      where: { id },
+    });
     if (!student) {
       throw new NotFoundException(`Student with id ${id} not found`);
     }
@@ -42,7 +45,13 @@ export class StudentService {
     if (!student) {
       throw new NotFoundException(`Student with id ${id} not found`);
     }
-    await this.studentRepository.update(id, data);
+    try {
+      await this.studentRepository.update(id, data);
+    } catch (e) {
+      throw new ConflictException(
+        `Email ${data.email} or cin ${data.cin} already exists`,
+      );
+    }
     return await this.findOneStudent(id);
   }
 }

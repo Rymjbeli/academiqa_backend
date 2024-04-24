@@ -3,7 +3,7 @@ import { GroupEntity } from '../../group/entities/group.entity';
 import { Type } from 'class-transformer';
 import { SubjectEntity } from '../../subject/entities/subject.entity';
 import { SessionTypeEnum } from '../../Enums/session-type.enum';
-import { TeacherEntity } from '../../user/entities/teacher.entity';
+import { Teacher } from '../../user/entities/teacher.entity';
 
 export class CreateSessionTypeDto {
   @IsNotEmpty()
@@ -29,6 +29,6 @@ export class CreateSessionTypeDto {
   subject: SubjectEntity;
 
   /*  @IsNotEmpty()
-  @Type(() => TeacherEntity)
-  teacher: TeacherEntity;*/
+  @Type(() => Teacher)
+  teacher: Teacher;*/
 }
