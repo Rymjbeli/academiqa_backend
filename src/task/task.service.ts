@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,17 +16,21 @@ export class TaskService {
   ) {}
   async create(
     createTaskDto: CreateTaskDto,
-    // teacher: Teacher,
+    teacher: Teacher,
   ): Promise<TaskEntity> {
     const newTask = this.taskRepository.create(createTaskDto);
-    // newTask.teacher = teacher;
+    newTask.teacher = teacher;
     return await this.taskRepository.save(newTask);
   }
 
-  async findAll(): Promise<GetTaskDto[] | null> {
-    const taskEntities = await this.taskRepository.find();
+  async findAll(teacher: Teacher): Promise<GetTaskDto[] | null> {
+    const taskEntities = await this.taskRepository.find({
+      where: {
+        teacher: { id: teacher.id },
+      },
+    });
     if (!taskEntities) {
-      throw new Error('No tasks found');
+      throw new NotFoundException('No tasks found');
     }
     return taskEntities.map((task) => {
       return plainToClass(GetTaskDto, task);
@@ -49,24 +53,33 @@ export class TaskService {
   async update(
     id: number,
     updateTaskDto: UpdateTaskDto,
+    teacher: Teacher,
   ): Promise<TaskEntity | null> {
     let task = await this.findOne(id);
     if (!task) {
       throw new Error('Task not found');
     }
     task = { ...task, ...updateTaskDto };
-    return await this.taskRepository.save(task);
+    if(task.teacher.id !== teacher.id){
+      throw new Error('Unauthorized');
+    } else {
+      return await this.taskRepository.save(task);
+    }
   }
 
-  async remove(id: number): Promise<TaskEntity | null> {
+  async remove(id: number, teacher: Teacher): Promise<TaskEntity | null> {
     const task = await this.findOne(id);
     if (!task) {
       throw new Error('Task not found');
     }
-    return await this.taskRepository.softRemove(task);
+    if(task.teacher.id !== teacher.id){
+      throw new Error('Unauthorized');
+    } else {
+      return await this.taskRepository.softRemove(task);
+    }
   }
 
-  async recover(id: number): Promise<TaskEntity | null> {
+  async recover(id: number, teacher: Teacher): Promise<TaskEntity | null> {
     const task = await this.taskRepository.findOne({
       where: { id },
       withDeleted: true,
@@ -74,6 +87,10 @@ export class TaskService {
     if (!task) {
       throw new Error('Task not found');
     }
-    return await this.taskRepository.recover(task);
+    if(task.teacher.id !== teacher.id){
+      throw new Error('Unauthorized');
+    } else {
+      return await this.taskRepository.recover(task);
+    }
   }
 }

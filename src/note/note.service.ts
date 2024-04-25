@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { GetNoteDto } from './dto/get-note.dto';
@@ -16,19 +16,22 @@ export class NoteService {
   ) {}
   async create(
     createNoteDto: CreateNoteDto,
-    // student: student,
+    student: Student,
   ): Promise<NoteEntity> {
     const newNote = this.noteRepository.create(createNoteDto);
-    // newNote.student = student;
+    newNote.student = student;
     return await this.noteRepository.save(newNote);
   }
 
-  async findAll(): Promise<GetNoteDto[] | null> {
+  async findAll(student: Student): Promise<GetNoteDto[] | null> {
     const noteEntities = await this.noteRepository.find({
+      where: {
+        student: { id: student.id },
+      },
       relations: ['session'],
     });
     if (!noteEntities) {
-      throw new Error('No notes found');
+      throw new NotFoundException('No notes found');
     }
     return noteEntities.map((note) => {
       const noteDto = plainToClass(GetNoteDto, note);
@@ -45,32 +48,32 @@ export class NoteService {
     });
   }
 
-  async findOne(id: number): Promise<GetNoteDto | null> {
+  async findOne(id: number, student: Student): Promise<GetNoteDto | null> {
     const noteEntity = await this.noteRepository.findOne({
       where: { id },
-      relations: ['session'],
+      relations: ['session', 'student'],
     });
     if (!noteEntity) {
-      throw new Error('Note not found');
+      throw new NotFoundException('Note not found');
     }
-    const noteDto = plainToClass(GetNoteDto, noteEntity);
+    if (noteEntity.student.id != student.id) {
+      throw new UnauthorizedException('Unauthorized');
+    } else {
+      const noteDto = plainToClass(GetNoteDto, noteEntity);
 
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long',
-    };
-    noteDto.date = Intl.DateTimeFormat('en-US', options).format(
-      noteEntity.createdAt,
-    );
-    return noteDto;
+      const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+      };
+      noteDto.date = Intl.DateTimeFormat('en-US', options).format(
+        noteEntity.createdAt,
+      );
+      return noteDto;
+    }
   }
   /*
-  async findByStudent(studentId: number): Promise<NoteEntity[] | null> {
-    const notes = await this.findAll({relations: ['session']}});
-    return notes.filter((note) => note.student.id == studentId);
-  }
 
   async findAllByStudentBySession(
     queryParams: GetNoteDto,
@@ -91,24 +94,33 @@ export class NoteService {
   async update(
     id: number,
     updateNoteDto: UpdateNoteDto,
+    student: Student,
   ): Promise<NoteEntity | null> {
-    let note = await this.noteRepository.findOne({ where: { id } });
+    let note = await this.noteRepository.findOne({ where: { id }, relations: ['student']});
     if (!note) {
-      throw new Error('Note not found');
+      throw new NotFoundException('Note not found');
     }
     note = { ...note, ...updateNoteDto };
-    return await this.noteRepository.save(note);
+    if(note.student.id !== student.id) {
+      throw new UnauthorizedException('Unauthorized');
+    } else {
+      return await this.noteRepository.save(note);
+    }
   }
 
-  async remove(id: number): Promise<NoteEntity | null> {
-    const note = await this.findOne(id);
+  async remove(id: number, student: Student): Promise<NoteEntity | null> {
+    const note = await this.findOne(id, student);
     if (!note) {
       throw new Error('Note not found');
     }
-    return await this.noteRepository.softRemove(note);
+    if(note.student.id !== student.id) {
+      throw new UnauthorizedException('Unauthorized');
+    } else {
+      return await this.noteRepository.softRemove(note);
+    }
   }
 
-  async recover(id: number): Promise<NoteEntity | null> {
+  async recover(id: number, user: Student): Promise<NoteEntity | null> {
     const note = await this.noteRepository.findOne({
       where: { id },
       withDeleted: true,
@@ -116,6 +128,10 @@ export class NoteService {
     if (!note) {
       throw new Error('Note not found');
     }
-    return await this.noteRepository.recover(note);
+    if(note.student.id !== user.id) {
+      throw new UnauthorizedException('Unauthorized');
+    } else {
+      return await this.noteRepository.recover(note);
+    }
   }
 }

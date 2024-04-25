@@ -1,5 +1,6 @@
 import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
+import { Student } from "../../user/entities/student.entity";
 
 @Exclude()
 export class GetNoteDto {
@@ -23,4 +24,8 @@ export class GetNoteDto {
   content: string;
 
   date: string;
+
+  @Expose()
+  student: Student;
+
 }

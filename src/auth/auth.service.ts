@@ -1,8 +1,8 @@
 import {
-  ConflictException,
+  ConflictException, ForbiddenException,
   Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+  NotFoundException, UnauthorizedException
+} from "@nestjs/common";
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginCredentialsDto } from './dto/login-credentials.dto';
 import { User } from '../user/entities/user.entity';
@@ -148,11 +148,11 @@ export class AuthService {
       .where('user.email = :email', { email })
       .getOne();
     if (!user) {
-      throw new NotFoundException('User or password incorrect');
+      throw new UnauthorizedException('Email or password incorrect');
     }
     const hashedPassword = await bcrypt.hash(password, user.salt);
     if (user.password !== hashedPassword) {
-      throw new NotFoundException('Password incorrect');
+      throw new UnauthorizedException('Email or password incorrect');
     }
     const payload = { id: user.id, email: user.email, role: user.role };
     const jwt = await this.jwtService.sign(payload);

@@ -13,6 +13,8 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskEntity } from './entities/task.entity';
 import { GetTaskDto } from './dto/get-task.dto';
+import { CurrentUser } from "../decorators/user.decorator";
+import { Teacher } from "../user/entities/teacher.entity";
 
 @Controller('task')
 export class TaskController {
@@ -21,14 +23,14 @@ export class TaskController {
   @Post()
   async create(
     @Body() createTaskDto: CreateTaskDto,
-    // , @User() teacher: Teacher
+    @CurrentUser() teacher: Teacher
   ): Promise<TaskEntity | null> {
-    return await this.taskService.create(createTaskDto);
+    return await this.taskService.create(createTaskDto,teacher);
   }
 
   @Get()
-  async findAll(): Promise<GetTaskDto[] | null> {
-    return await this.taskService.findAll();
+  async findAll(@CurrentUser() teacher: Teacher): Promise<GetTaskDto[] | null> {
+    return await this.taskService.findAll(teacher);
   }
 
   @Get(':id')
@@ -49,19 +51,22 @@ export class TaskController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTaskDto: UpdateTaskDto,
+    @CurrentUser() teacher: Teacher,
   ): Promise<TaskEntity | null> {
-    return this.taskService.update(id, updateTaskDto);
+    return this.taskService.update(id, updateTaskDto, teacher);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number): Promise<TaskEntity | null> {
-    return this.taskService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() teacher: Teacher
+  ): Promise<TaskEntity | null> {
+    return this.taskService.remove(id, teacher);
   }
 
   @Get('recover/:id')
   async recover(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: number, @CurrentUser() teacher: Teacher
+
   ): Promise<TaskEntity | null> {
-    return this.taskService.recover(id);
+    return this.taskService.recover(id, teacher);
   }
 }
