@@ -18,12 +18,15 @@ export class SessionEntity extends TimestampEntites {
   id: number;
 
   @Column()
+  name?: string;
+
+  @Column()
   date: Date;
 
   @Column()
   endTime: Date;
 
-  @Column('simple-array')
+  @Column('simple-array', { nullable: true })
   holidayName?: string[];
 
   @ManyToOne(() => SessionTypeEntity, (sessionType) => sessionType.sessions, {

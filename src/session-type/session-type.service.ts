@@ -30,6 +30,7 @@ export class SessionTypeService {
     );
     const consideredSubject = await this.subjectService.findBySubjectName(
       createSessionTypeGroupSectorLevelDto.subjectName,
+      createSessionTypeGroupSectorLevelDto.sectorLevel,
     );
     /*    const consideredTeacher = await this.teacherService.findOne(
       createSessionTypeGroupSectorLevelDto.teacherID,
