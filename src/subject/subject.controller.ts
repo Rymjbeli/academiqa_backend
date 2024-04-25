@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
@@ -49,11 +50,13 @@ export class SubjectController {
   //   return await this.subjectService.findByTeacher();
   // }
 
-  @Get('/Name/:name')
-  findBySubjectName(@Param('name') name: string) {
-    return this.subjectService.findBySubjectName(name);
+  @Get('/NameSectorLevel/:name/:sectorLevel')
+  findBySubjectName(
+    @Param('name') name: string,
+    @Param('sectorLevel') sectorLevel: string,
+  ) {
+    return this.subjectService.findBySubjectName(name, sectorLevel);
   }
-
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.subjectService.deleteSubject(+id);

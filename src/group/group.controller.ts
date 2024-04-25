@@ -9,12 +9,14 @@ import {
   UseInterceptors,
   UploadedFile,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { GroupService } from './group.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GroupEntity } from './entities/group.entity';
+import { GetGroupDto } from './dto/get-group.dto';
 
 @Controller('group')
 export class GroupController {
@@ -49,6 +51,11 @@ export class GroupController {
   @Get('/Sector/:sector')
   findBySector(@Param('sector') sector: string) {
     return this.groupService.findBySector(sector);
+  }
+
+  @Get('/SectorGroupLevel/:sector/:level/:group')
+  findBySectorGroupLevel(@Param() getGroupDto: GetGroupDto) {
+    return this.groupService.findBySectorGroupLevel(getGroupDto);
   }
 
   @Get('/SectorLevelGroup/:sectorLevel/:group')

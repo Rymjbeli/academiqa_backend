@@ -53,7 +53,7 @@ export class SessionTypeEntity extends TimestampEntites {
   group: GroupEntity;
 
   @ManyToOne(() => SubjectEntity, (subject) => subject.sessionTypes, {
-    nullable: false,
+    nullable: true,
   })
   subject: SubjectEntity;
 }
