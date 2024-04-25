@@ -12,6 +12,7 @@ import { GetSessionDto } from './dto/get-session.dto';
 import { AddSessionDto } from './dto/add-session.dto';
 import { GetGroupDto } from '../group/dto/get-group.dto';
 import { GroupService } from '../group/group.service';
+import { SessionTypeEnum } from '../Enums/session-type.enum';
 
 @Injectable()
 export class SessionService {
@@ -201,7 +202,59 @@ export class SessionService {
     }
   }
 
-  async addSession(addSessionDto: AddSessionDto, getGroupDto: GetGroupDto) {}
+  // this function is used to add a session
+  async addSession(addSessionDto: AddSessionDto, getGroupDto: GetGroupDto) {
+    const existingSession = await this.sessionRepository.find({
+      where: {
+        date: addSessionDto.date,
+        sessionType: {
+          group: {
+            sector: getGroupDto.sector,
+            level: getGroupDto.level,
+            group: getGroupDto.group,
+          },
+        },
+      },
+    });
+    if (existingSession.length > 0) {
+      throw {
+        type: 'SessionExists',
+        message: 'This date already has a session for this group',
+      };
+    }
+
+    const group = await this.groupService.findBySectorGroupLevel(getGroupDto);
+    const session = new SessionEntity();
+    session.name = addSessionDto.name;
+
+    const date = new Date(addSessionDto.date);
+    const endTime = new Date(addSessionDto.endTime);
+    console.log(date);
+    session.date = date;
+    session.endTime = endTime;
+
+    const sessionType = new SessionTypeEntity();
+
+    sessionType.type = SessionTypeEnum.Rattrapage;
+
+    sessionType.group = group;
+    sessionType.day = date.getDay().toString();
+
+    // Convert the start and end times to strings in the format 'HH:mm'
+    sessionType.startHour =
+      date.getHours().toString().padStart(2, '0') +
+      ':' +
+      date.getMinutes().toString().padStart(2, '0');
+    sessionType.endHour =
+      endTime.getHours().toString().padStart(2, '0') +
+      ':' +
+      endTime.getMinutes().toString().padStart(2, '0');
+
+    session.sessionType = sessionType;
+    await this.sessionTypeRepository.save(sessionType);
+    await this.sessionRepository.save(session);
+    return session;
+  }
 
   /*  async findAll() {
     return await this.sessionRepository.find();
@@ -223,6 +276,7 @@ export class SessionService {
     return session;
   }
 
+  // this function is used to find all sessions of a certain group(level, sector, group) returns a dto, not the entity
   async findSessionsOfSectorLevelGroup(getGroupDto: GetGroupDto) {
     const sessions = await this.sessionRepository.find({
       relations: ['sessionType', 'sessionType.group', 'sessionType.subject'],
@@ -236,6 +290,7 @@ export class SessionService {
         },
       },
     });
+
     const getSessionsDto: GetSessionDto[] = sessions.map((session) => {
       return {
         id: session.id,
@@ -245,17 +300,14 @@ export class SessionService {
 
         type: session.sessionType.type,
 
-        sector: session.sessionType.group.sector,
-        level: session.sessionType.group.level,
-        group: session.sessionType.group.group,
-
-        name: session.sessionType.subject.name,
+        name: session.name,
       };
     });
 
     return getSessionsDto;
   }
 
+  //this function is used to find a holiday by date
   async findOneHoliday(date: Date | string) {
     if (typeof date === 'string') {
       date = new Date(date);
@@ -268,20 +320,24 @@ export class SessionService {
     const session = await this.sessionRepository.findOne({
       where: { date: dateToFind },
     });
+    if (!session) {
+      throw new Error('Session not found');
+    }
     return session;
   }
 
-  async update(id: number, updateSessionDto: UpdateSessionDto) {
+  /*  async update(id: number, updateSessionDto: UpdateSessionDto) {
     const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
       throw new Error('Session not found');
     } else {
       return await this.sessionRepository.update(id, updateSessionDto);
     }
-  }
+  }*/
 
-  async remove(id: number) {
-    const session = await this.sessionRepository.findOne({ where: { id } });
+  async remove(id: number, groupDto: GetGroupDto) {
+    const sessions = await this.findSessionsOfSectorLevelGroup(groupDto);
+    const session = sessions.find((session) => session.id === id);
     if (!session) {
       throw new Error('Session not found');
     } else {

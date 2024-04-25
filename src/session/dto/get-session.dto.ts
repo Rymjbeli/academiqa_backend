@@ -22,7 +22,7 @@ export class GetSessionDto {
 
   @Expose()
   @IsString()
-  name: string;
+  name?: string;
 
   @Expose()
   @IsNotEmpty()
