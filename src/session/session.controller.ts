@@ -38,7 +38,7 @@ export class SessionController {
 
   @Post('addSession')
   addSession(
-    @Body('getGroupDto') addSessionDto: AddSessionDto,
+    @Body('addSessionDto') addSessionDto: AddSessionDto,
     @Body('getGroupDto') getGroupDto: GetGroupDto,
   ) {
     return this.sessionService.addSession(addSessionDto, getGroupDto);
@@ -69,17 +69,17 @@ export class SessionController {
     return this.sessionService.findOne(id);
   }
 
-  @Patch(':id')
+  /*  @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateSessionDto: UpdateSessionDto,
   ) {
     return this.sessionService.update(id, updateSessionDto);
-  }
+  }*/
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.sessionService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number, @Body() groupDto: GetGroupDto) {
+    return this.sessionService.remove(id, groupDto);
   }
 
   @Get('recover/:id')
