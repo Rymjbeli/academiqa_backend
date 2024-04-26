@@ -1,8 +1,8 @@
 import {
-  ConflictException,
+  ConflictException, ForbiddenException,
   Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+  NotFoundException, UnauthorizedException
+} from "@nestjs/common";
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginCredentialsDto } from './dto/login-credentials.dto';
 import { User } from '../user/entities/user.entity';
@@ -45,14 +45,17 @@ export class AuthService {
     const user = userRepository.create({
       ...userData,
     });
+
     user.role = userRepository.metadata.targetName;
     user.salt = await bcrypt.genSalt();
     user.password = await bcrypt.hash(user.password, user.salt);
+    // console.log("CreateUserDto",userData);
     try {
-      console.log('Creating user');
       await userRepository.save(user);
     } catch (e) {
-      throw new ConflictException();
+      throw new ConflictException(
+        `Email ${user.email} or cin ${user.cin} already exists`,
+      );
     }
 
     // Send welcome email
@@ -84,7 +87,7 @@ export class AuthService {
 
   async registerStudents(
     studentsFile: Express.Multer.File,
-  ): Promise<{ conflicts: string[] }> {
+  ): Promise<void> {
     const studentsData: any =
       await this.fileUploadService.uploadCSVFile(studentsFile);
     const conflictEmails: string[] = [];
@@ -94,14 +97,15 @@ export class AuthService {
       studentsData.map(async (studentData: any) => {
         try {
           // Get group using sectorLevel and groupNumber
-          const group = await this.groupService.getGroupBySLNum(
+          const group = await this.groupService.findBySectorLevelGroup(
             studentData.sectorLevel,
             studentData.groupNumber,
           );
+          console.log("group",group);
           if (!group) {
             // If group not found, add the email to conflicts array
-            conflictEmails.push(studentData.email);
-            return;
+            // conflictEmails.push(studentData.email);
+            // return;
           }
           // Create CreateStudentDto using group and other student data
           const createStudentDto: CreateStudentDto = {
@@ -116,15 +120,17 @@ export class AuthService {
         }
       }),
     );
-    return { conflicts: conflictEmails };
+    if (conflictEmails.length > 0) {
+      throw new ConflictException(conflictEmails);
+    }
   }
   async registerTeacher(teacherData: CreateTeacherDto): Promise<Partial<User>> {
-    return this.createUser(teacherData, this.teacherRepository);
+    return await this.createUser(teacherData, this.teacherRepository);
   }
 
   async registerTeachers(
     teacherDataFile: Express.Multer.File,
-  ): Promise<{ conflicts: string[] }> {
+  ): Promise<void> {
     const teachersData: any =
       await this.fileUploadService.uploadCSVFile(teacherDataFile);
 
@@ -142,7 +148,10 @@ export class AuthService {
       }),
     );
 
-    return { conflicts: conflictEmails };
+    // return { conflicts: conflictEmails };
+    if (conflictEmails.length > 0) {
+      throw new ConflictException(conflictEmails);
+    }
   }
 
   async login(credentials: LoginCredentialsDto) {
@@ -152,13 +161,18 @@ export class AuthService {
       .where('user.email = :email', { email })
       .getOne();
     if (!user) {
-      throw new NotFoundException('User or password incorrect');
+      throw new UnauthorizedException('Email or password incorrect');
     }
     const hashedPassword = await bcrypt.hash(password, user.salt);
     if (user.password !== hashedPassword) {
-      throw new NotFoundException('Password incorrect');
+      throw new UnauthorizedException('Email or password incorrect');
     }
-    const payload = { id: user.id, email: user.email, role: user.role };
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      username: user.username,
+    };
     const jwt = await this.jwtService.sign(payload);
     return {
       accessToken: jwt,

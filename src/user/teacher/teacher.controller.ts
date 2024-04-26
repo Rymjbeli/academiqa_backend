@@ -30,7 +30,7 @@ export class TeacherController {
   }
 
   @Get(':id')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async findOneTeacher(@Param('id', ParseIntPipe) id: number) {
     return await this.teacherService.findOneTeacher(id);
   }

@@ -18,8 +18,8 @@ export class ChatbotDiscussionsEntity extends TimestampEntites {
     },
   )
   messages: ChatbotMessagesEntity[];
-  // @ManyToOne(() => Student, {
-  //   nullable: false,
-  // })
-  // student: Student;
+  @ManyToOne(() => Student,(student)=>student.chatbotDiscussions, {
+    nullable: false,
+  })
+  student: Student;
 }

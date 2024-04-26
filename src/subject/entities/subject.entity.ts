@@ -10,6 +10,7 @@ import { SessionTypeEntity } from '../../session-type/entities/session-type.enti
 import { AnnouncementEntity } from '../../announcement/entities/announcement.entity';
 import { Teacher } from '../../user/entities/teacher.entity';
 import { AbsenceEntity } from '../../absence/entities/absence.entity';
+import { IsIn } from 'class-validator';
 
 @Entity('subject')
 export class SubjectEntity extends TimestampEntites {
@@ -27,25 +28,30 @@ export class SubjectEntity extends TimestampEntites {
   sectorLevel: string;
   @Column()
   module: string;
-  @Column()
+  @Column({
+    type: 'float',
+  })
   coefficient: number;
   @Column()
   hourlyLoad: number;
   @Column()
   absenceLimit: number;
 
+  @Column()
+  @IsIn([1, 2])
+  semester: number;
+
   @OneToMany(() => SessionTypeEntity, (sessionType) => sessionType.subject)
   sessionTypes: SessionTypeEntity[];
-  @OneToMany(() => AnnouncementEntity, (announcement) => announcement.subject, {
-    nullable: true,
-  })
-  announcements: AnnouncementEntity[];
-  @ManyToOne(() => Teacher, (teacher) => teacher.subjects, {
-    nullable: false,
-  })
-  teacher: Teacher;
-  @OneToMany(() => AbsenceEntity, (absence) => absence.subject, {
-    nullable: true,
-  })
-  absences: AbsenceEntity[];
+  // @OneToMany(() => AnnouncementEntity, (announcement) => announcement.subject, {
+  //  nullable: true,
+  //  cascade: ['soft-remove']
+  // })
+  // announcements: AnnouncementEntity[];
+
+  // @OneToMany(() => AbsenceEntity, (absence) => absence.subject, {
+  //   nullable: true,
+  //  cascade: ['soft-remove']
+  // })
+  // absences: AbsenceEntity[];
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -41,7 +41,13 @@ export class TeacherService {
     if (!teacher) {
       throw new NotFoundException(`Teacher with id ${id} not found`);
     }
-    await this.teacherRepository.update(id, data);
+    try {
+      await this.teacherRepository.update(id, data);
+    } catch (e) {
+      throw new ConflictException(
+        `Email ${data.email} or cin ${data.cin} already exists`,
+      );
+    }
     return await this.findOneTeacher(id);
   }
 }

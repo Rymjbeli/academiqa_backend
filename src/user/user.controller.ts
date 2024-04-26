@@ -30,7 +30,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.softDeleteUser(id);
   }

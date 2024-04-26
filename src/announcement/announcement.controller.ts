@@ -47,5 +47,4 @@ export class AnnouncementController {
   recover(@Param('id') id: string) {
     return this.announcementService.recover(+id);
   }
-
 }

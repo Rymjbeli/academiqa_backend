@@ -6,7 +6,9 @@ import { Student } from '../../user/entities/student.entity';
 export class NoteEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column()
+  @Column({
+    type: 'text',
+  })
   content: string;
   @Column()
   title: string;
@@ -14,8 +16,8 @@ export class NoteEntity extends TimestampEntites {
     nullable: false,
   })
   student: Student;
-  @ManyToOne(() => SessionEntity, (session) => session.notes, {
-    nullable: false,
-  })
-  session: SessionEntity;
+  // @ManyToOne(() => SessionEntity, (session) => session.notes, {
+  //   nullable: false,
+  // })
+  // session: SessionEntity;
 }

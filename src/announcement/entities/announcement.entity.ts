@@ -8,10 +8,10 @@ export class AnnouncementEntity extends TimestampEntites {
   id: number;
   @Column()
   content: string;
-  @ManyToOne(() => SubjectEntity, (subject) => subject.announcements, {
-    nullable: false,
-  })
-  subject: SubjectEntity;
+  // @ManyToOne(() => SubjectEntity, (subject) => subject.announcements, {
+  //   nullable: false,
+  // })
+  // subject: SubjectEntity;
   @ManyToOne(() => Teacher, (teacher) => teacher.announcements, {
     nullable: false,
   })
