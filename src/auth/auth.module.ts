@@ -14,6 +14,7 @@ import * as process from 'process';
 import {JwtStrategy} from "./strategy/passport-jwt.strategy";
 import {GroupService} from "../group/group.service";
 import {GroupEntity} from "../group/entities/group.entity";
+import {MailService} from "../mail/mail.service";
 
 dotenv.config();
 @Module({
@@ -28,7 +29,7 @@ dotenv.config();
         },
       }),
   ],
-  providers: [AuthService, UserService, JwtStrategy, GroupService],
+  providers: [AuthService, UserService, JwtStrategy, GroupService, MailService],
   controllers: [AuthController],
   exports: [AuthService],
 })

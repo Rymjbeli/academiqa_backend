@@ -9,29 +9,34 @@ import { SubjectService } from 'src/subject/subject.service';
 
 @Injectable()
 export class AnnouncementService {
-
   constructor(
     @InjectRepository(AnnouncementEntity)
     private announcementRepository: Repository<AnnouncementEntity>,
     private teacherService: UserService,
-    private subjectService: SubjectService
-  ){}
+    private subjectService: SubjectService,
+  ) {}
 
   async create(createAnnouncementDto: CreateAnnouncementDto) {
     // create a new announcement
-    const newAnnouncement = this.announcementRepository.create(createAnnouncementDto);
+    const newAnnouncement = this.announcementRepository.create(
+      createAnnouncementDto,
+    );
     // newAnnouncement.teacher = await this.teacherService.findOne(createAnnouncementDto.teacherId);
     // newAnnouncement.subject = this.subjectService.findOne(createAnnouncementDto.subjectId);
     return this.announcementRepository.save(newAnnouncement);
   }
 
   findAll() {
-    return this.announcementRepository.find(
-      {relations: ['subject', 'teacher']})
+    return this.announcementRepository.find({
+      relations: ['subject', 'teacher'],
+    });
   }
 
   findOne(id: number) {
-    return this.announcementRepository.findOne({where: {id}, relations: ['subject', 'teacher']})
+    return this.announcementRepository.findOne({
+      where: { id },
+      relations: ['subject', 'teacher'],
+    });
   }
 
   update(id: number, updateAnnouncementDto: UpdateAnnouncementDto) {
@@ -39,11 +44,11 @@ export class AnnouncementService {
     // const updatedAnnouncement = this.announcementRepository.create(updateAnnouncementDto);
     // console.log(updatedAnnouncement);
     // return this.announcementRepository.save({id, ...updatedAnnouncement});
-    return(this.announcementRepository.update(id, updateAnnouncementDto));
+    return this.announcementRepository.update(id, updateAnnouncementDto);
   }
 
   softRemove(id: number) {
-    return this.announcementRepository.softRemove({id});
+    return this.announcementRepository.softRemove({ id });
   }
 
   recover(id: number) {

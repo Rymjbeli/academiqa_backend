@@ -18,6 +18,7 @@ import { CreateTeacherDto } from '../user/teacher/dto/create-teacher.dto';
 import { CreateStudentDto } from '../user/student/dto/create-student.dto';
 import { GroupService } from '../group/group.service';
 import { FileUploadService } from '../file-upload/file-upload.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +35,7 @@ export class AuthService {
     private jwtService: JwtService,
     private groupService: GroupService,
     private readonly fileUploadService: FileUploadService,
+    private readonly mailService: MailService,
   ) {}
 
   async createUser(
@@ -47,12 +49,22 @@ export class AuthService {
     user.salt = await bcrypt.genSalt();
     user.password = await bcrypt.hash(user.password, user.salt);
     try {
+      console.log('Creating user');
       await userRepository.save(user);
     } catch (e) {
-      throw new ConflictException(
-        `Email ${user.email} and cin ${user.cin} already exists`,
-      );
+      throw new ConflictException();
     }
+
+    // Send welcome email
+    const receiver = user.email;
+    const subject = 'Welcome to AcademIQa';
+    const content = `<p>Dear ${user.username},</p>
+    <p>Welcome to our platform AcademIQa. We are glad to have you with us. You can now log in to your account with the following credentials:</p>
+    <p> <strong> Email: ${userData.email}</strong></p>
+    <p> <strong> Password: ${userData.password}</strong></p>
+    <p>Best regards,</p>`;
+    await this.mailService.sendEmail(receiver, subject, content);
+
     return {
       id: user.id,
       email: user.email,
