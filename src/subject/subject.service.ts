@@ -62,16 +62,16 @@ export class SubjectService {
   }
 
   async findBySectorLevel(sectorLevel: string) {
-    // const subjects = await this.subjectRepository.find({
-    //   where: { sectorLevel },
-    //   relations: ["teacher"],
-    // });
-    //
-    // return subjects.map((subject) => ({
-    //   ...subject,
-    //   teacherUsername: subject.teacher.username,
-    // }));
-    return await this.subjectRepository.findBy({ sectorLevel });
+    const subjects = await this.subjectRepository.find({
+      where: { sectorLevel },
+      relations: ["sessionTypes"],
+    });
+
+    return subjects.map((subject) => ({
+      ...subject,
+      teachersUsernames: subject.sessionTypes.map((sessionType) => sessionType.teacher.username),
+    }));
+    // return await this.subjectRepository.findBy({ sectorLevel });
   }
 
   // async findByTeacher() {

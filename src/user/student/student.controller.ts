@@ -30,7 +30,7 @@ export class StudentController {
   }
 
   @Get(':id')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async findOneStudent(@Param('id', ParseIntPipe) id: number) {
     return await this.studentService.findOneStudent(id);
   }

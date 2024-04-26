@@ -48,10 +48,7 @@ export class SubjectEntity extends TimestampEntites {
   //  cascade: ['soft-remove']
   // })
   // announcements: AnnouncementEntity[];
-  // @ManyToOne(() => Teacher, (teacher) => teacher.subjects, {
-  //   nullable: false,
-  // })
-  // teacher: Teacher;
+
   // @OneToMany(() => AbsenceEntity, (absence) => absence.subject, {
   //   nullable: true,
   //  cascade: ['soft-remove']
