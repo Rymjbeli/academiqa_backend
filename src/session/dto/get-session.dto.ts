@@ -11,11 +11,11 @@ export class GetSessionDto {
 
   @Expose()
   @IsNotEmpty()
-  date: Date;
+  StartTime: Date;
 
   @Expose()
   @IsNotEmpty()
-  endTime: Date;
+  EndTime: Date;
 
   @Expose()
   holidayName?: string[];

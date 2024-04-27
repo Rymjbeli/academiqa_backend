@@ -294,8 +294,8 @@ export class SessionService {
     const getSessionsDto: GetSessionDto[] = sessions.map((session) => {
       return {
         id: session.id,
-        date: session.date,
-        endTime: session.endTime,
+        StartTime: session.date,
+        EndTime: session.endTime,
         holidayName: session.holidayName,
 
         type: session.sessionType.type,

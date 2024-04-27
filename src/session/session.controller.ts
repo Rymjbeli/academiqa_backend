@@ -54,6 +54,7 @@ export class SessionController {
     return this.sessionService.findOneHoliday(date);
   }
 
+  // get by gl3/2
   @Get('OfSectorLevelGroup/:sector/:level/:group')
   findBySectorLevelGroup(@Param() getGroupDto: GetGroupDto) {
     return this.sessionService.findSessionsOfSectorLevelGroup(getGroupDto);
