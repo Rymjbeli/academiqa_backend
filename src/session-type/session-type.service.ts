@@ -129,6 +129,23 @@ export class SessionTypeService {
     });
   }
 
+  // get session types by groupId and subjectId
+  async findByGroupAndSubject(groupId: number, subjectId: number) {
+    return await this.sessionTypeRepository.find({
+      relations: {
+        teacher: true,
+      },
+      where: {
+        group: {
+          id: groupId,
+        },
+        subject: {
+          id: subjectId,
+        },
+      },
+    });
+  }
+
   /*  async findByTeacher(teacherId: number): Promise<SessionTypeEntity[]> {
     return await this.sessionTypeRepository.find({
       relations: {

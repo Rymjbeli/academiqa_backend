@@ -23,35 +23,49 @@ export class AnnouncementService {
     );
     // newAnnouncement.teacher = await this.teacherService.findOne(createAnnouncementDto.teacherId);
     // newAnnouncement.subject = this.subjectService.findOne(createAnnouncementDto.subjectId);
-    return this.announcementRepository.save(newAnnouncement);
+    return await this.announcementRepository.save(newAnnouncement);
   }
 
-  findAll() {
-    return this.announcementRepository.find({
+  async findAll() {
+    return await this.announcementRepository.find({
       relations: ['subject', 'teacher'],
     });
   }
 
-  findOne(id: number) {
-    return this.announcementRepository.findOne({
+  async findOne(id: number) {
+    return await this.announcementRepository.findOne({
       where: { id },
       relations: ['subject', 'teacher'],
     });
   }
 
-  update(id: number, updateAnnouncementDto: UpdateAnnouncementDto) {
+  async findBySubjectAndTeacher(subjectId: number, teacherId: number) {
+    return await this.announcementRepository.find({
+      relations: ['subject', 'teacher'],
+      where: { subject: { id: subjectId }, teacher: { id: teacherId } },
+    });
+  }
+
+  async findBySubject(subjectId: number) {
+    return await this.announcementRepository.find({
+      relations: ['subject', 'teacher'],
+      where: { subject: { id: subjectId } },
+    });
+  }
+
+  async update(id: number, updateAnnouncementDto: UpdateAnnouncementDto) {
     console.log(updateAnnouncementDto);
     // const updatedAnnouncement = this.announcementRepository.create(updateAnnouncementDto);
     // console.log(updatedAnnouncement);
     // return this.announcementRepository.save({id, ...updatedAnnouncement});
-    return this.announcementRepository.update(id, updateAnnouncementDto);
+    return await this.announcementRepository.update(id, updateAnnouncementDto);
   }
 
-  softRemove(id: number) {
-    return this.announcementRepository.softRemove({ id });
+  async softRemove(id: number) {
+    return await this.announcementRepository.softRemove({ id });
   }
 
-  recover(id: number) {
-    return this.announcementRepository.restore(id);
+  async recover(id: number) {
+    return await this.announcementRepository.restore(id);
   }
 }

@@ -48,7 +48,10 @@ export class SubjectService {
   }
 
   async findOne(id: number) {
-    return await this.subjectRepository.findOneBy({ id });
+    return await this.subjectRepository.findOne({
+      where: { id },
+      relations: ['sessionTypes'],
+    });
   }
 
   async findBySubjectName(name: string) {
@@ -64,12 +67,13 @@ export class SubjectService {
   async findBySectorLevel(sectorLevel: string) {
     const subjects = await this.subjectRepository.find({
       where: { sectorLevel },
-      relations: ["sessionTypes"],
     });
 
     return subjects.map((subject) => ({
       ...subject,
-      teachersUsernames: subject.sessionTypes.map((sessionType) => sessionType.teacher.username),
+      teachersUsernames: subject.sessionTypes.map(
+        (sessionType) => sessionType.teacher.username,
+      ),
     }));
     // return await this.subjectRepository.findBy({ sectorLevel });
   }

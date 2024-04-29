@@ -75,6 +75,14 @@ export class SessionTypeController {
     );
   }
 
+  @Get(':subjectId/:groupId')
+  findBySubjectGroup(
+    @Param('subjectId') subjectId: number,
+    @Param('groupId') groupId: number,
+  ) {
+    return this.sessionTypeService.findByGroupAndSubject(groupId, subjectId);
+  }
+
   /*  @Get('ByTeacher/:teacherID')
   findByTeacher(@Param('teacherID') teacherID: number) {
     return this.sessionTypeService.findByTeacher(teacherID);

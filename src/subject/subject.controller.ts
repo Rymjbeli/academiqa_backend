@@ -27,30 +27,30 @@ export class SubjectController {
   }
   @Post('CreateOne')
   @UseGuards(JwtAuthGuard)
-  createOne(@Body() createSubjectDto: CreateSubjectDto) {
+  async createOne(@Body() createSubjectDto: CreateSubjectDto) {
     console.log('createSubjectDto', createSubjectDto);
-    return this.subjectService.createOneSubject(createSubjectDto);
+    return await this.subjectService.createOneSubject(createSubjectDto);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAll() {
-    return this.subjectService.findAll();
+  async findAll() {
+    return await this.subjectService.findAll();
   }
   @Get('/GroupedByModule')
   @UseGuards(JwtAuthGuard)
-  findAllGroupedByModule() {
-    return this.subjectService.findAllGroupedByModule();
+  async findAllGroupedByModule() {
+    return await this.subjectService.findAllGroupedByModule();
   }
   @Get('/SectorLevel/:sectorLevel')
   @UseGuards(JwtAuthGuard)
-  findBySectorLevel(@Param('sectorLevel') sectorLevel: string) {
-    return this.subjectService.findBySectorLevel(sectorLevel);
+  async findBySectorLevel(@Param('sectorLevel') sectorLevel: string) {
+    return await this.subjectService.findBySectorLevel(sectorLevel);
   }
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.subjectService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.subjectService.findOne(+id);
   }
   // @Get('/teacher')
   // async findByTeacher() {
@@ -58,19 +58,19 @@ export class SubjectController {
   // }
 
   @Get('/Name/:name')
-  findBySubjectName(@Param('name') name: string) {
-    return this.subjectService.findBySubjectName(name);
+  async findBySubjectName(@Param('name') name: string) {
+    return await this.subjectService.findBySubjectName(name);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.subjectService.deleteSubject(+id);
+  async remove(@Param('id') id: string) {
+    return await this.subjectService.deleteSubject(+id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateSubjectDto: UpdateSubjectDto) {
-    return this.subjectService.update(+id, updateSubjectDto);
+  async update(@Param('id') id: string, @Body() updateSubjectDto: UpdateSubjectDto) {
+    return await this.subjectService.update(+id, updateSubjectDto);
   }
 }

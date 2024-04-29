@@ -43,11 +43,11 @@ export class SubjectEntity extends TimestampEntites {
 
   @OneToMany(() => SessionTypeEntity, (sessionType) => sessionType.subject)
   sessionTypes: SessionTypeEntity[];
-  // @OneToMany(() => AnnouncementEntity, (announcement) => announcement.subject, {
-  //  nullable: true,
-  //  cascade: ['soft-remove']
-  // })
-  // announcements: AnnouncementEntity[];
+  @OneToMany(() => AnnouncementEntity, (announcement) => announcement.subject, {
+   nullable: true,
+   cascade: ['soft-remove']
+  })
+  announcements: AnnouncementEntity[];
 
   // @OneToMany(() => AbsenceEntity, (absence) => absence.subject, {
   //   nullable: true,
