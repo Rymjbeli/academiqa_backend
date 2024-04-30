@@ -51,9 +51,9 @@ export class SubjectService {
     return await this.subjectRepository.findOneBy({ id });
   }
 
-  async findBySubjectName(name: string) {
+  async findBySubjectName(name: string, sectorLevel: string) {
     const foundSubject = await this.subjectRepository.findOne({
-      where: { name },
+      where: { name: name, sectorLevel: sectorLevel },
     });
     if (!foundSubject) {
       throw new Error('Subject not found' + name);

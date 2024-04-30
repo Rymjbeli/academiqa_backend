@@ -30,10 +30,11 @@ export class SessionTypeService {
     );
     const consideredSubject = await this.subjectService.findBySubjectName(
       createSessionTypeGroupSectorLevelDto.subjectName,
+      createSessionTypeGroupSectorLevelDto.sectorLevel,
     );
-    /*    const consideredTeacher = await this.teacherService.findOne(
+    const consideredTeacher = await this.teacherService.findOneTeacher(
       createSessionTypeGroupSectorLevelDto.teacherID,
-    );*/
+    );
     const createSessionTypeDto: CreateSessionTypeDto = {
       day: createSessionTypeGroupSectorLevelDto.day,
       startHour: createSessionTypeGroupSectorLevelDto.startHour,
@@ -41,7 +42,7 @@ export class SessionTypeService {
       type: createSessionTypeGroupSectorLevelDto.type,
       group: consideredGroup,
       subject: consideredSubject,
-      // teacher: consideredTeacher,
+      teacher: consideredTeacher,
     };
     const sessionType =
       await this.sessionTypeRepository.create(createSessionTypeDto);
@@ -59,35 +60,65 @@ export class SessionTypeService {
   }
 
   async findAll() {
-    return await this.sessionTypeRepository.find({
-      relations: [
-        'group',
-        'subject',
-        // 'teacher',
-      ],
-    });
+    return await this.sessionTypeRepository
+      .find({
+        relations: ['teacher'],
+      })
+      .then((sessionTypes) => {
+        return sessionTypes.map((sessionType) => {
+          return {
+            ...sessionType,
+            teacher: {
+              id: sessionType.teacher.id,
+              email: sessionType.teacher.email,
+              username: sessionType.teacher.username,
+              speciality: sessionType.teacher.speciality,
+              cin: sessionType.teacher.cin,
+            },
+          };
+        });
+      });
   }
 
   async findOne(id: number) {
-    return await this.sessionTypeRepository.findOne({
-      relations: [
-        'group',
-        'subject',
-        // 'teacher',
-      ],
+    const sessionType = await this.sessionTypeRepository.findOne({
+      relations: ['teacher'],
       where: { id },
     });
+    if (!sessionType) {
+      throw new Error('SessionType not found');
+    }
+    return {
+      ...sessionType,
+      teacher: {
+        id: sessionType.teacher.id,
+        email: sessionType.teacher.email,
+        username: sessionType.teacher.username,
+        speciality: sessionType.teacher.speciality,
+        cin: sessionType.teacher.cin,
+      },
+    };
   }
 
   async findByType(type: SessionTypeEnum) {
-    return await this.sessionTypeRepository.find({
-      where: { type },
-      relations: [
-        'group',
-        'subject',
-        // 'teacher',
-      ],
-    });
+    return await this.sessionTypeRepository
+      .find({
+        where: { type },
+        relations: ['teacher'],
+      })
+      .then((sessionTypes) => {
+        return sessionTypes.map((sessionType) => {
+          return {
+            ...sessionType,
+            teacher: {
+              id: sessionType.teacher.id,
+              email: sessionType.teacher.email,
+              username: sessionType.teacher.username,
+              speciality: sessionType.teacher.speciality,
+            },
+          };
+        });
+      });
   }
 
   async findByGroupSectorLevel(sectorLevel: string, groupNumber: number) {
@@ -95,66 +126,117 @@ export class SessionTypeService {
       sectorLevel,
       groupNumber,
     );*/
-    return await this.sessionTypeRepository.find({
-      relations: {
-        group: true,
-        subject: true,
-        // teacher: true,
-      },
-      where: {
-        group: {
-          sectorLevel: sectorLevel,
-          group: groupNumber,
+    return await this.sessionTypeRepository
+      .find({
+        relations: {
+          teacher: true,
         },
-      },
-    });
+        where: {
+          group: {
+            sectorLevel: sectorLevel,
+            group: groupNumber,
+          },
+        },
+      })
+      .then((sessionTypes) => {
+        return sessionTypes.map((sessionType) => {
+          return {
+            ...sessionType,
+            teacher: {
+              id: sessionType.teacher.id,
+              email: sessionType.teacher.email,
+              username: sessionType.teacher.username,
+              speciality: sessionType.teacher.speciality,
+              cin: sessionType.teacher.cin,
+            },
+          };
+        });
+      });
   }
 
   async findBySubjectSectorLevel(subjectName: string, sectorLevel: string) {
     /*    const consideredSubject = await this.subjectService.findBySubjectName(
       subjectName,
     );*/
-    return await this.sessionTypeRepository.find({
-      relations: {
-        subject: true,
-        group: true,
-        // teacher: true,
-      },
-      where: {
-        subject: {
-          name: subjectName,
-          sectorLevel: sectorLevel,
+    return await this.sessionTypeRepository
+      .find({
+        relations: {
+          teacher: true,
         },
-      },
-    });
+        where: {
+          subject: {
+            name: subjectName,
+            sectorLevel: sectorLevel,
+          },
+        },
+      })
+      .then((sessionTypes) => {
+        return sessionTypes.map((sessionType) => {
+          return {
+            ...sessionType,
+            teacher: {
+              id: sessionType.teacher.id,
+              email: sessionType.teacher.email,
+              username: sessionType.teacher.username,
+              speciality: sessionType.teacher.speciality,
+              cin: sessionType.teacher.cin,
+            },
+          };
+        });
+      });
   }
 
-  /*  async findByTeacher(teacherId: number): Promise<SessionTypeEntity[]> {
-    return await this.sessionTypeRepository.find({
-      relations: {
-        teacher: true,
-        group: true,
-        subject: true,
-      },
-      where: {
-        teacher: {
-          id: teacherId,
+  async findByTeacher(teacherId: number) {
+    return await this.sessionTypeRepository
+      .find({
+        relations: ['teacher'],
+        where: {
+          teacher: {
+            id: teacherId,
+          },
         },
-      },
-    });
-  }*/
+      })
+      .then((sessionTypes) => {
+        return sessionTypes.map((sessionType) => {
+          return {
+            ...sessionType,
+            teacher: {
+              id: sessionType.teacher.id,
+              email: sessionType.teacher.email,
+              username: sessionType.teacher.username,
+              speciality: sessionType.teacher.speciality,
+              cin: sessionType.teacher.cin,
+            },
+          };
+        });
+      });
+  }
 
   //////////getgroups by teacher
-  /*  async findGroupsByTeacher(teacherId: number) {
-    const sessionTypes = await this.sessionTypeRepository.find({
-      relations: ['group', 'teacher', 'subject'],
-      where: {
-        teacher: {
-          id: teacherId,
+  async findGroupsByTeacher(teacherId: number) {
+    const sessionTypes = await this.sessionTypeRepository
+      .find({
+        relations: ['teacher'],
+        where: {
+          teacher: {
+            id: teacherId,
+          },
         },
-      },
-    });
-
+      })
+      .then((sessionTypes) => {
+        return sessionTypes.map((sessionType) => {
+          return {
+            ...sessionType,
+            teacher: {
+              id: sessionType.teacher.id,
+              email: sessionType.teacher.email,
+              username: sessionType.teacher.username,
+              speciality: sessionType.teacher.speciality,
+              cin: sessionType.teacher.cin,
+            },
+          };
+        });
+      });
     const groups = sessionTypes.map((sessionType) => sessionType.group);
 
     const uniqueGroups = Array.from(
@@ -163,7 +245,7 @@ export class SessionTypeService {
       return groups.find((group) => group.id === id);
     });
     return uniqueGroups;
-  }*/
+  }
 
   async update(id: number, updateSessionTypeDto: UpdateSessionTypeDto) {
     const sessionType = await this.findOne(id);

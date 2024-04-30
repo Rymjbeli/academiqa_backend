@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { GetNoteDto } from './dto/get-note.dto';
@@ -28,7 +32,7 @@ export class NoteService {
       where: {
         student: { id: student.id },
       },
-      relations: ['session'],
+      // relations: ['session'],
     });
     if (!noteEntities) {
       throw new NotFoundException('No notes found');
@@ -51,7 +55,10 @@ export class NoteService {
   async findOne(id: number, student: Student): Promise<GetNoteDto | null> {
     const noteEntity = await this.noteRepository.findOne({
       where: { id },
-      relations: ['session', 'student'],
+      relations: [
+        // 'session',
+        'student',
+      ],
     });
     if (!noteEntity) {
       throw new NotFoundException('Note not found');
@@ -96,12 +103,15 @@ export class NoteService {
     updateNoteDto: UpdateNoteDto,
     student: Student,
   ): Promise<NoteEntity | null> {
-    let note = await this.noteRepository.findOne({ where: { id }, relations: ['student']});
+    let note = await this.noteRepository.findOne({
+      where: { id },
+      relations: ['student'],
+    });
     if (!note) {
       throw new NotFoundException('Note not found');
     }
     note = { ...note, ...updateNoteDto };
-    if(note.student.id !== student.id) {
+    if (note.student.id !== student.id) {
       throw new UnauthorizedException('Unauthorized');
     } else {
       return await this.noteRepository.save(note);
@@ -113,7 +123,7 @@ export class NoteService {
     if (!note) {
       throw new Error('Note not found');
     }
-    if(note.student.id !== student.id) {
+    if (note.student.id !== student.id) {
       throw new UnauthorizedException('Unauthorized');
     } else {
       return await this.noteRepository.softRemove(note);
@@ -128,7 +138,7 @@ export class NoteService {
     if (!note) {
       throw new Error('Note not found');
     }
-    if(note.student.id !== user.id) {
+    if (note.student && note.student.id !== user.id) {
       throw new UnauthorizedException('Unauthorized');
     } else {
       return await this.noteRepository.recover(note);

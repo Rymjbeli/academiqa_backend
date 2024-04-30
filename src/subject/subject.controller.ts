@@ -57,9 +57,13 @@ export class SubjectController {
   //   return await this.subjectService.findByTeacher();
   // }
 
-  @Get('/Name/:name')
-  async findBySubjectName(@Param('name') name: string) {
-    return await this.subjectService.findBySubjectName(name);
+
+  @Get('/NameSectorLevel/:name/:sectorLevel')
+  findBySubjectName(
+    @Param('name') name: string,
+    @Param('sectorLevel') sectorLevel: string,
+  ) {
+    return this.subjectService.findBySubjectName(name, sectorLevel);
   }
 
   @Delete(':id')
