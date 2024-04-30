@@ -87,4 +87,9 @@ export class SessionController {
   recover(@Param('id', ParseIntPipe) id: number) {
     return this.sessionService.recover(id);
   }
+
+  @Get('ByTeacher/:teacherID')
+  findByTeacher(@Param('teacherID') teacherID: number) {
+    return this.sessionService.findByTeacher(teacherID);
+  }
 }

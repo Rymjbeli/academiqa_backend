@@ -130,7 +130,7 @@ export class SessionTypeService {
     });
   }
 
-  /*  async findByTeacher(teacherId: number): Promise<SessionTypeEntity[]> {
+    async findByTeacher(teacherId: number): Promise<SessionTypeEntity[]> {
     return await this.sessionTypeRepository.find({
       relations: {
         teacher: true,
@@ -143,10 +143,10 @@ export class SessionTypeService {
         },
       },
     });
-  }*/
+  }
 
   //////////getgroups by teacher
-  /*  async findGroupsByTeacher(teacherId: number) {
+   async findGroupsByTeacher(teacherId: number) {
     const sessionTypes = await this.sessionTypeRepository.find({
       relations: ['group', 'teacher', 'subject'],
       where: {
@@ -164,7 +164,7 @@ export class SessionTypeService {
       return groups.find((group) => group.id === id);
     });
     return uniqueGroups;
-  }*/
+  }
 
   async update(id: number, updateSessionTypeDto: UpdateSessionTypeDto) {
     const sessionType = await this.findOne(id);

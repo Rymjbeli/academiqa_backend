@@ -45,4 +45,5 @@ export class SessionEntity extends TimestampEntites {
   ressources: RessourceEntity[];
   @OneToMany(() => TaskEntity, (task) => task.session, { nullable: true })
   tasks: TaskEntity[];
+  type: import("c:/Users/weszi/OneDrive/Bureau/gl3sem2/ppp/Academiqa/academiqa_backend/src/Enums/session-type.enum").SessionTypeEnum;
 }

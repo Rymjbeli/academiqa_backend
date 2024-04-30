@@ -261,11 +261,19 @@ export class SessionService {
   }*/
 
   async findAll() {
-    return await this.sessionRepository.find({
+    const result = await this.sessionRepository.find({
+      relations: ['sessionType','sessionType.subject'],
       order: {
         date: 'ASC', // 'ASC' for ascending and 'DESC' for descending
       },
     });
+
+    result.forEach((session) => {
+      session.name = session.sessionType.subject.name;
+      session.type = session.sessionType.type;
+    });
+
+    return result;
   }
 
   async findOne(id: number) {
@@ -300,7 +308,7 @@ export class SessionService {
 
         type: session.sessionType.type,
 
-        name: session.name,
+        name: session.name? session.name : session.sessionType.subject.name,
       };
     });
 
@@ -355,5 +363,24 @@ export class SessionService {
     } else {
       return await this.sessionRepository.recover(session);
     }
+  }
+
+  async findByTeacher(teacherId: number): Promise<SessionEntity[]> {
+    const result = await this.sessionRepository.find({
+      relations: ['sessionType', 'sessionType.teacher', 'sessionType.subject'],
+      where: {
+        sessionType: {
+          teacher: {
+            id: teacherId,
+          },
+        },
+      },
+    });
+    result.forEach((session) => {
+      session.name = session.sessionType.subject.name;
+      session.type = session.sessionType.type;
+    });
+    return result;
+
   }
 }

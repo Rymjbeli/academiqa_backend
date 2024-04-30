@@ -75,7 +75,7 @@ export class SessionTypeController {
     );
   }
 
-  /*  @Get('ByTeacher/:teacherID')
+    @Get('ByTeacher/:teacherID')
   findByTeacher(@Param('teacherID') teacherID: number) {
     return this.sessionTypeService.findByTeacher(teacherID);
   }
@@ -83,7 +83,7 @@ export class SessionTypeController {
   @Get('GroupsByTeacher/:teacherID')
   findGroupsByTeacher(@Param('teacherID') teacherID: number) {
     return this.sessionTypeService.findGroupsByTeacher(teacherID);
-  }*/
+  }
 
   @Patch(':id')
   update(

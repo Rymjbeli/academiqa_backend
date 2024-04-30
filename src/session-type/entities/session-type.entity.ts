@@ -42,7 +42,7 @@ export class SessionTypeEntity extends TimestampEntites {
 
 
   @ManyToOne(() => Teacher, (teacher) => teacher.sessionTypes, {
-    nullable: false,
+    nullable: true,
   })
   teacher: Teacher;
 
