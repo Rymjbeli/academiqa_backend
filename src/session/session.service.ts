@@ -107,7 +107,12 @@ export class SessionService {
     for (const date of dates) {
       const holidayNames = this.checkHoliday(date, holidays);
       if (holidayNames.length > 0) {
-        const existingSession = await this.findOneHoliday(date);
+        let existingSession;
+        try {
+          existingSession = await this.findOneHoliday(date);
+        } catch (e) {
+          console.log(e);
+        }
         if (existingSession) {
           existingSession.holidayName = holidayNames;
           await this.sessionRepository.save(existingSession);
@@ -120,7 +125,7 @@ export class SessionService {
           createSessionDto.date = date;
           createSessionDto.endTime = endTime;
           createSessionDto.holidayName = holidayNames;
-          createSessionDto.sessionType = sessionType;
+          // createSessionDto.sessionType = sessionType;
           const session = await this.createSession(createSessionDto);
           sessions.push(session);
         }
@@ -154,7 +159,7 @@ export class SessionService {
     semesterStartDate: string,
     holidaysFile: Express.Multer.File,
   ) {
-    const sessionTypes = await this.sessionTypeService.findAll();
+    const sessionTypes = await this.sessionTypeRepository.find();
     const sessions = await Promise.all(
       sessionTypes.map((sessionType) =>
         this.generateSessionsForOneSessionType(
@@ -320,9 +325,9 @@ export class SessionService {
     const session = await this.sessionRepository.findOne({
       where: { date: dateToFind },
     });
-    if (!session) {
-      throw new Error('Session not found');
-    }
+    /*    if (!session) {
+      throw new Error('Holiday Session not found');
+    }*/
     return session;
   }
 
