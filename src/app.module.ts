@@ -21,6 +21,7 @@ import { Student } from './user/entities/student.entity';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { AuthModule } from './auth/auth.module';
 import { GroupModule } from './group/group.module';
+import { MailModule } from './mail/mail.module';
 
 dotenv.config();
 @Module({
@@ -53,6 +54,7 @@ dotenv.config();
     TypeOrmModule.forFeature([User, Student]),
     AuthModule,
     GroupModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
