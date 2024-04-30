@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { SessionTypeEntity } from '../../session-type/entities/session-type.entity';
 
 export class CreateSessionDto {
@@ -13,5 +13,6 @@ export class CreateSessionDto {
 
   holidayName: string[];
 
+  @IsOptional()
   sessionType: SessionTypeEntity;
 }

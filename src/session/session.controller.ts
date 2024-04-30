@@ -17,7 +17,10 @@ import { UpdateSessionDto } from './dto/update-session.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GetGroupDto } from '../group/dto/get-group.dto';
 import { AddSessionDto } from './dto/add-session.dto';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
+@UseGuards(JwtAuthGuard)
 @Controller('session')
 export class SessionController {
   constructor(private readonly sessionService: SessionService) {}

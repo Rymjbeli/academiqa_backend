@@ -18,6 +18,7 @@ import { CreateTeacherDto } from '../user/teacher/dto/create-teacher.dto';
 import { CreateStudentDto } from '../user/student/dto/create-student.dto';
 import { GroupService } from '../group/group.service';
 import { FileUploadService } from '../file-upload/file-upload.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +35,7 @@ export class AuthService {
     private jwtService: JwtService,
     private groupService: GroupService,
     private readonly fileUploadService: FileUploadService,
+    private readonly mailService: MailService,
   ) {}
 
   async createUser(
@@ -43,18 +45,26 @@ export class AuthService {
     const user = userRepository.create({
       ...userData,
     });
-
     user.role = userRepository.metadata.targetName;
     user.salt = await bcrypt.genSalt();
     user.password = await bcrypt.hash(user.password, user.salt);
-    // console.log("CreateUserDto",userData);
     try {
+      console.log('Creating user');
       await userRepository.save(user);
     } catch (e) {
-      throw new ConflictException(
-        `Email ${user.email} or cin ${user.cin} already exists`,
-      );
+      throw new ConflictException();
     }
+
+    // Send welcome email
+    const receiver = user.email;
+    const subject = 'Welcome to AcademIQa';
+    const content = `<p>Dear ${user.username},</p>
+    <p>Welcome to our platform AcademIQa. We are glad to have you with us. You can now log in to your account with the following credentials:</p>
+    <p> <strong> Email: ${userData.email}</strong></p>
+    <p> <strong> Password: ${userData.password}</strong></p>
+    <p>Best regards,</p>`;
+    await this.mailService.sendEmail(receiver, subject, content);
+
     return {
       id: user.id,
       email: user.email,
@@ -74,7 +84,7 @@ export class AuthService {
 
   async registerStudents(
     studentsFile: Express.Multer.File,
-  ): Promise<void> {
+  ): Promise<{ conflicts: string[] }> {
     const studentsData: any =
       await this.fileUploadService.uploadCSVFile(studentsFile);
     const conflictEmails: string[] = [];
@@ -88,7 +98,6 @@ export class AuthService {
             studentData.sectorLevel,
             studentData.groupNumber,
           );
-          console.log("group",group);
           if (!group) {
             // If group not found, add the email to conflicts array
             // conflictEmails.push(studentData.email);
@@ -107,17 +116,15 @@ export class AuthService {
         }
       }),
     );
-    if (conflictEmails.length > 0) {
-      throw new ConflictException(conflictEmails);
-    }
+    return { conflicts: conflictEmails };
   }
   async registerTeacher(teacherData: CreateTeacherDto): Promise<Partial<User>> {
-    return await this.createUser(teacherData, this.teacherRepository);
+    return this.createUser(teacherData, this.teacherRepository);
   }
 
   async registerTeachers(
     teacherDataFile: Express.Multer.File,
-  ): Promise<void> {
+  ): Promise<{ conflicts: string[] }> {
     const teachersData: any =
       await this.fileUploadService.uploadCSVFile(teacherDataFile);
 
@@ -135,10 +142,7 @@ export class AuthService {
       }),
     );
 
-    // return { conflicts: conflictEmails };
-    if (conflictEmails.length > 0) {
-      throw new ConflictException(conflictEmails);
-    }
+    return { conflicts: conflictEmails };
   }
 
   async login(credentials: LoginCredentialsDto) {
@@ -148,18 +152,13 @@ export class AuthService {
       .where('user.email = :email', { email })
       .getOne();
     if (!user) {
-      throw new UnauthorizedException('Email or password incorrect');
+      throw new NotFoundException('User or password incorrect');
     }
     const hashedPassword = await bcrypt.hash(password, user.salt);
     if (user.password !== hashedPassword) {
-      throw new UnauthorizedException('Email or password incorrect');
+      throw new NotFoundException('Password incorrect');
     }
-    const payload = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      username: user.username,
-    };
+    const payload = { id: user.id, email: user.email, role: user.role };
     const jwt = await this.jwtService.sign(payload);
     return {
       accessToken: jwt,

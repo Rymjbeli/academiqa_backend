@@ -17,7 +17,10 @@ import { UpdateGroupDto } from './dto/update-group.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GroupEntity } from './entities/group.entity';
 import { GetGroupDto } from './dto/get-group.dto';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
+@UseGuards(JwtAuthGuard)
 @Controller('group')
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}

@@ -30,6 +30,7 @@ export class SessionEntity extends TimestampEntites {
   holidayName?: string[];
 
   @ManyToOne(() => SessionTypeEntity, (sessionType) => sessionType.sessions, {
+    eager: true,
     nullable: true,
   })
   sessionType: SessionTypeEntity;
@@ -37,8 +38,8 @@ export class SessionEntity extends TimestampEntites {
   //   nullable: true,
   // })
   // commonChats: CommonChatEntity[];
-  // /*  @OneToMany(() => NoteEntity, (note) => note.session)
-  // notes: NoteEntity[];*/
+  @OneToMany(() => NoteEntity, (note) => note.session)
+  notes: NoteEntity[];
   @OneToMany(() => RessourceEntity, (ressource) => ressource.session, {
     nullable: true,
   })
