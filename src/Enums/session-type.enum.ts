@@ -4,4 +4,6 @@ export enum SessionTypeEnum {
   TP = 'TP',
   CI = 'CI',
   Rattrapage = 'Rattrapage',
+
+  Holiday = 'Holiday',
 }
