@@ -20,9 +20,4 @@ export class Student extends User {
     nullable: true,
   })
   notes: NoteEntity[];
-  @OneToMany(()=>ChatbotDiscussionsEntity,(chatbotDiscussions)=>chatbotDiscussions.student,{
-    nullable:true,
-    cascade: ['soft-remove'],
-  })
-  chatbotDiscussions:ChatbotDiscussionsEntity[];
 }

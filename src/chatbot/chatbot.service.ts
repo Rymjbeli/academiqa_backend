@@ -6,7 +6,7 @@ import { Repository } from "typeorm";
 import { ChatbotMessagesEntity } from "./Entities/chatbot-messages.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FileUploadService } from "../file-upload/file-upload.service";
-import { Student } from "../user/entities/student.entity";
+import { User } from "../user/entities/user.entity";
 
 dotenv.config();
 @Injectable()
@@ -37,7 +37,7 @@ export class ChatbotService {
     prompt: string,
     image: Express.Multer.File,
     discussionId: number,
-    user: Student,
+    user: User,
   ): Promise<{ prompt: string; image: string; response: string }> {
     try {
       const genModel = image ? 'gemini-pro-vision' : 'gemini-pro';
@@ -87,15 +87,15 @@ export class ChatbotService {
   }
 
   async getAllDiscussions(
-    student: Student,
+    user: User,
   ): Promise<ChatbotDiscussionsEntity[]> {
     return await this.chatbotDiscussionsRepository.find({
       where: {
-        student: { id: student.id },
+        user: { id: user.id },
       },
     })
   }
-  async deleteDiscussionById(id: number, student: Student): Promise<void> {
+  async deleteDiscussionById(id: number, user: User): Promise<void> {
     const discussion = await this.chatbotDiscussionsRepository.findOneBy({
       id,
     });
@@ -103,7 +103,7 @@ export class ChatbotService {
     if (!discussion) {
       throw new UnauthorizedException(`Discussion with id ${id} not found`);
     }
-    if(discussion.student.id !== student.id) {
+    if(discussion.user.id !== user.id) {
       throw new UnauthorizedException(
         'You are not authorized to delete this discussion',
       );
@@ -114,9 +114,9 @@ export class ChatbotService {
   async getDiscussionById(id: number): Promise<ChatbotDiscussionsEntity> {
     return await this.chatbotDiscussionsRepository.findOneBy({ id });
   }
-  async createDiscussion(user: Student): Promise<ChatbotDiscussionsEntity> {
+  async createDiscussion(user: User): Promise<ChatbotDiscussionsEntity> {
     const newDiscussion = this.chatbotDiscussionsRepository.create();
-    newDiscussion.student = user;
+    newDiscussion.user = user;
     console.log(user);
     return await this.chatbotDiscussionsRepository.save(newDiscussion);
   }
@@ -126,7 +126,7 @@ export class ChatbotService {
     prompt: string,
     response: string,
     image: string,
-    user: Student,
+    user: User,
   ): Promise<ChatbotMessagesEntity> {
     if (!discussion) {
       discussion = await this.createDiscussion(user);

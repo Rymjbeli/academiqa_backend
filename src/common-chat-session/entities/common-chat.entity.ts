@@ -14,10 +14,10 @@ export class CommonChatEntity extends TimestampEntites {
   id: number;
   @Column()
   content: string;
-  // @ManyToOne(() => UserEntity, {
-  //   nullable: false,
-  // })
-  // author: UserEntity;
+  @ManyToOne(() => User, {
+    nullable: false,
+  })
+  author: User;
   @ManyToOne(() => CommonChatEntity, {
     nullable: true,
   })
@@ -28,8 +28,8 @@ export class CommonChatEntity extends TimestampEntites {
   })
   replies: CommonChatEntity[];
 
-  // @ManyToOne(() => SessionEntity, (session) => session.commonChats, {
-  //   nullable: false,
-  // })
-  // session: SessionEntity;
+  @ManyToOne(() => SessionEntity, (session) => session.commonChats, {
+    nullable: true,
+  })
+  session: SessionEntity;
 }
