@@ -8,16 +8,17 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  UploadedFile, UseGuards,
-  UseInterceptors
-} from "@nestjs/common";
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ChatbotService } from './chatbot.service';
 import { ChatbotDiscussionsEntity } from './Entities/chatbot-discussions.entity';
 import { FileUploadService } from '../file-upload/file-upload.service';
-import { CurrentUser } from "../decorators/user.decorator";
-import { Student } from "../user/entities/student.entity";
-import { JwtAuthGuard } from "../auth/guard/jwt-auth.guard";
+import { CurrentUser } from '../decorators/user.decorator';
+import { Student } from '../user/entities/student.entity';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @Controller('chatbot')
 export class ChatbotController {
@@ -53,7 +54,12 @@ export class ChatbotController {
       // const prompt = data.prompt;
       // const discussionId = data.discussionId;
       const { prompt, discussionId } = data;
-      return this.chatbotService.generateResponse(prompt, image, +discussionId,user);
+      return this.chatbotService.generateResponse(
+        prompt,
+        image,
+        +discussionId,
+        user,
+      );
     } catch (error) {
       throw new Error(`Failed to generate response: ${error.message}`);
     }
@@ -61,7 +67,9 @@ export class ChatbotController {
 
   @Get('GetAllDiscussions')
   @UseGuards(JwtAuthGuard)
-  async GetAllDiscussions(@CurrentUser() user: Student): Promise<ChatbotDiscussionsEntity[]> {
+  async GetAllDiscussions(
+    @CurrentUser() user: Student,
+  ): Promise<ChatbotDiscussionsEntity[]> {
     return await this.chatbotService.getAllDiscussions(user);
   }
   @Delete('DeleteDiscussion/:id')

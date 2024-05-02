@@ -1,6 +1,6 @@
 import { IsString, IsNumber, IsBoolean } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
-import { Teacher } from "../../user/entities/teacher.entity";
+import { Teacher } from '../../user/entities/teacher.entity';
 @Exclude()
 export class GetTaskDto {
   @Expose()

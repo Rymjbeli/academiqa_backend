@@ -20,12 +20,12 @@ import { GetGroupDto } from './dto/get-group.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 
-@UseGuards(JwtAuthGuard)
 @Controller('group')
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
 
   @Post('/CreateAll')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   async create(@UploadedFile() file: Express.Multer.File) {
     return await this.groupService.createGroups(file);

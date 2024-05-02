@@ -13,8 +13,8 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskEntity } from './entities/task.entity';
 import { GetTaskDto } from './dto/get-task.dto';
-import { CurrentUser } from "../decorators/user.decorator";
-import { Teacher } from "../user/entities/teacher.entity";
+import { CurrentUser } from '../decorators/user.decorator';
+import { Teacher } from '../user/entities/teacher.entity';
 
 @Controller('task')
 export class TaskController {
@@ -23,9 +23,9 @@ export class TaskController {
   @Post()
   async create(
     @Body() createTaskDto: CreateTaskDto,
-    @CurrentUser() teacher: Teacher
+    @CurrentUser() teacher: Teacher,
   ): Promise<TaskEntity | null> {
-    return await this.taskService.create(createTaskDto,teacher);
+    return await this.taskService.create(createTaskDto, teacher);
   }
 
   @Get()
@@ -57,15 +57,17 @@ export class TaskController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() teacher: Teacher
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() teacher: Teacher,
   ): Promise<TaskEntity | null> {
     return this.taskService.remove(id, teacher);
   }
 
   @Get('recover/:id')
   async recover(
-    @Param('id', ParseIntPipe) id: number, @CurrentUser() teacher: Teacher
-
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() teacher: Teacher,
   ): Promise<TaskEntity | null> {
     return this.taskService.recover(id, teacher);
   }

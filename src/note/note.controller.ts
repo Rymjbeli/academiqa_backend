@@ -7,16 +7,17 @@ import {
   Param,
   Delete,
   ParseIntPipe,
-  Query, UseGuards
-} from "@nestjs/common";
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { NoteService } from './note.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { GetNoteDto } from './dto/get-note.dto';
 import { NoteEntity } from './entities/note.entity';
-import { JwtAuthGuard } from "../auth/guard/jwt-auth.guard";
-import { CurrentUser } from "../decorators/user.decorator";
-import { Student } from "../user/entities/student.entity";
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { CurrentUser } from '../decorators/user.decorator';
+import { Student } from '../user/entities/student.entity';
 
 @Controller('note')
 export class NoteController {
@@ -60,7 +61,7 @@ export class NoteController {
     @Body() updateNoteDto: UpdateNoteDto,
     @CurrentUser() user: Student,
   ): Promise<NoteEntity | null> {
-    return await this.noteService.update(id, updateNoteDto,user);
+    return await this.noteService.update(id, updateNoteDto, user);
   }
 
   @Delete(':id')

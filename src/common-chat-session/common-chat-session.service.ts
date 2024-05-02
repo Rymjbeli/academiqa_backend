@@ -5,7 +5,7 @@ import { CommonChatEntity } from './entities/common-chat.entity';
 import { Repository } from 'typeorm';
 import { NotificationService } from '../notification/notification.service';
 import { NotifTypeEnum } from '../Enums/notif-type.enum';
-import { User } from "../user/entities/user.entity";
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class CommonChatSessionService {
@@ -21,8 +21,10 @@ export class CommonChatSessionService {
     const map = new Map();
 
     messages.forEach((message) => {
-      map.set(message.id, { ...message, replies: []
-        ,author: {
+      map.set(message.id, {
+        ...message,
+        replies: [],
+        author: {
           username: message.author.username,
           role: message.author.role,
           id: message.author.id,
@@ -63,9 +65,7 @@ export class CommonChatSessionService {
     }
     return null;
   }
-  async createMessage(
-    createCommonChatSessionDto: CreateCommonChatSessionDto,
-  ) {
+  async createMessage(createCommonChatSessionDto: CreateCommonChatSessionDto) {
     const notification = await this.notificationService.buildNotification(
       NotifTypeEnum.MESSAGE,
       'ramy',
@@ -76,8 +76,8 @@ export class CommonChatSessionService {
     const newMessage = this.commonChatSessionRepository.create(
       createCommonChatSessionDto,
     );
-    console.log("createCommonChatSessionDto", createCommonChatSessionDto);
-    console.log("new message", newMessage);
+    console.log('createCommonChatSessionDto', createCommonChatSessionDto);
+    console.log('new message', newMessage);
     // newMessage.author = this.clientToUser[user];
     await this.commonChatSessionRepository.save(newMessage);
     return { notification: notification, message: newMessage };

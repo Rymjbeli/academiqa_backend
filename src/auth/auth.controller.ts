@@ -25,6 +25,7 @@ export class AuthController {
   }
 
   @Post('student')
+  @UseGuards(JwtAuthGuard)
   async registerStudent(
     @Body() userData: CreateStudentDto,
   ): Promise<Partial<User>> {
@@ -32,6 +33,7 @@ export class AuthController {
   }
 
   @Post('teacher')
+  @UseGuards(JwtAuthGuard)
   async registerTeacher(
     @Body() userData: CreateTeacherDto,
   ): Promise<Partial<User>> {
@@ -39,14 +41,14 @@ export class AuthController {
   }
 
   @Post('students')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   async registerStudents(@UploadedFile() file: Express.Multer.File) {
     return await this.authService.registerStudents(file);
   }
 
   @Post('teachers')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   async registerTeachers(@UploadedFile() file: Express.Multer.File) {
     return await this.authService.registerTeachers(file);

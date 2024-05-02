@@ -5,6 +5,8 @@ import { FileUploadService } from '../file-upload/file-upload.service';
 import { SubjectEntity } from './entities/subject.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
+import { Teacher } from "../user/entities/teacher.entity";
 
 @Injectable()
 export class SubjectService {
@@ -12,6 +14,8 @@ export class SubjectService {
     private readonly fileUploadService: FileUploadService,
     @InjectRepository(SubjectEntity)
     private subjectRepository: Repository<SubjectEntity>,
+    @InjectRepository(SessionTypeEntity)
+    private sessionTypeRepository: Repository<SessionTypeEntity>,
   ) {}
   async createOneSubject(createSubjectDto: CreateSubjectDto) {
     const subject = await this.subjectRepository.create(createSubjectDto);
@@ -48,7 +52,19 @@ export class SubjectService {
   }
 
   async findOne(id: number) {
-    return await this.subjectRepository.findOneBy({ id });
+    const course = await this.subjectRepository.findOne({
+      where: { id },
+      relations: [
+        'sessionTypes',
+        'sessionTypes.teacher',
+        'sessionTypes.sessions',
+      ],
+    });
+    if (!course) {
+      throw new Error('Subject not found');
+    }
+
+    return this.filterOneSubject(course);
   }
 
   async findBySubjectName(name: string, sectorLevel: string) {
@@ -64,19 +80,31 @@ export class SubjectService {
   async findBySectorLevel(sectorLevel: string) {
     const subjects = await this.subjectRepository.find({
       where: { sectorLevel },
-      relations: ["sessionTypes"],
+      relations: [
+        'sessionTypes',
+        'sessionTypes.teacher',
+        'sessionTypes.sessions',
+      ],
     });
 
-    return subjects.map((subject) => ({
-      ...subject,
-      teachersUsernames: subject.sessionTypes.map((sessionType) => sessionType.teacher.username),
-    }));
-    // return await this.subjectRepository.findBy({ sectorLevel });
+    return this.filterSubjects(subjects);
   }
+  async findByTeacher(teacher: Teacher) {
+    const subjects = await this.subjectRepository.find({
+      where: {
+        sessionTypes: {
+          teacher: { id: teacher.id }, // Filter subjects by the provided teacher
+        },
+      },
+      relations: [
+        'sessionTypes', // Include the session types relation
+        'sessionTypes.sessions', // Include the sessions relation within session types
+        'sessionTypes.teacher', // Include the teacher relation within session types
+      ],
+    });
 
-  // async findByTeacher() {
-  //
-  // }
+    return this.filterSubjects(subjects);
+  }
   async deleteSubject(id: number) {
     const subject = await this.findOne(id);
     if (!subject) {
@@ -98,4 +126,45 @@ export class SubjectService {
       });
     }
   }
+
+  filterSubjects(subjects: SubjectEntity[]) {
+    return subjects.map((subject) => {
+      const sessionTypes = subject.sessionTypes.map(
+        ({ teacher, subject, ...sessionType }) => sessionType,
+      );
+
+      // Create a Set to remove duplicate usernames
+      const teacherUsernamesSet = new Set(
+        subject.sessionTypes.map(
+          (sessionType) => sessionType?.teacher.username,
+        )
+      );
+
+      // Convert the Set back to an array
+      const uniqueTeachersUsernames = Array.from(teacherUsernamesSet);
+
+      return {
+        ...subject,
+        sessionTypes,
+        teachersUsernames: uniqueTeachersUsernames,
+      };
+    });
+  }
+
+  filterOneSubject(course: SubjectEntity) {
+    return {
+      ...course,
+      sessionTypes: course.sessionTypes.map(
+        ({ teacher, subject, ...sessionType }) => sessionType
+      ),
+      teachersUsernames: Array.from(
+        new Set(
+          course.sessionTypes.map(
+            (sessionType) => sessionType?.teacher?.username
+          )
+        )
+      ),
+    };
+  }
+
 }

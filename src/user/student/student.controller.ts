@@ -22,6 +22,12 @@ export class StudentController {
   async findAllStudents() {
     return await this.studentService.findAllStudents();
   }
+  @Get('all/:sectorLevel')
+  @UseGuards(JwtAuthGuard)
+  async findAllStudentsBySectorLevel(@Param('sectorLevel') sectorLevel: string) {
+    console.log(sectorLevel);
+    return await this.studentService.findAllStudentsBySectorLevel(sectorLevel);
+  }
 
   @Get('count')
   // @UseGuards(JwtAuthGuard)

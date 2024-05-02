@@ -1,13 +1,14 @@
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 import {
   Column,
-  Entity, OneToMany,
+  Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
-  TableInheritance
-} from "typeorm";
+  TableInheritance,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { UserRoleEnum } from '../../Enums/user-role.enum';
-import { ChatbotDiscussionsEntity } from "../../chatbot/Entities/chatbot-discussions.entity";
+import { ChatbotDiscussionsEntity } from '../../chatbot/Entities/chatbot-discussions.entity';
 
 @Entity('user')
 @TableInheritance({
@@ -19,7 +20,7 @@ export class User extends TimestampEntites {
 
   @Column({ unique: true })
   email: string;
-
+  @Exclude()
   @Column()
   password: string;
 
@@ -31,16 +32,20 @@ export class User extends TimestampEntites {
 
   @Column({ nullable: true, length: 500 })
   Photo: string;
-
+  @Exclude()
   @Column()
   salt: string;
 
   @Column()
   role: string;
 
-  @OneToMany(()=>ChatbotDiscussionsEntity,(chatbotDiscussions)=>chatbotDiscussions.user,{
-    nullable:true,
-    cascade: ['soft-remove'],
-  })
-  chatbotDiscussions:ChatbotDiscussionsEntity[];
+  @OneToMany(
+    () => ChatbotDiscussionsEntity,
+    (chatbotDiscussions) => chatbotDiscussions.user,
+    {
+      nullable: true,
+      cascade: ['soft-remove'],
+    },
+  )
+  chatbotDiscussions: ChatbotDiscussionsEntity[];
 }
