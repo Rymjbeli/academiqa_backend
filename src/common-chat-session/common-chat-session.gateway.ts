@@ -12,6 +12,8 @@ import { CommonChatEntity } from './entities/common-chat.entity';
 import { ParseIntPipe } from '@nestjs/common';
 import { CurrentUser } from '../decorators/user.decorator';
 import { User } from '../user/entities/user.entity';
+import { SessionEntity } from "../session/entities/session.entity";
+import { DeleteCommonChatSessionDto } from "./dto/delete-common-chat-session.dto";
 
 @WebSocketGateway(8001, { cors: '*' })
 export class CommonChatSessionGateway {
@@ -27,14 +29,13 @@ export class CommonChatSessionGateway {
     @ConnectedSocket() socket: Socket,
   ): Promise<CreateCommonChatSessionDto> {
     try {
-      // console.log('socket', socket);
-      // console.log('message', createCommonChatSessionDto);
       // console.log('socket', this.commonChatSessionService.clientToUser[socket.id]);
       const sender = this.commonChatSessionService.clientToUser[socket.id];
       const { notification, message } =
         await this.commonChatSessionService.createMessage(
           createCommonChatSessionDto,
         );
+      // console.log('createCommonChatSessionDto', createCommonChatSessionDto);
       this.server.emit('message', message);
       socket.broadcast.emit('notify', notification);
 
@@ -49,10 +50,11 @@ export class CommonChatSessionGateway {
   }
 
   @SubscribeMessage('findAllMessages')
-  async findAllMessages(@ConnectedSocket() socket: Socket) {
+  async findAllMessages(@ConnectedSocket() socket: Socket,@MessageBody() session: SessionEntity) {
     try {
-      const messages = await this.commonChatSessionService.findAll();
-      this.server.emit('allMessages', messages);
+      // console.log('session', session);
+      const messages = await this.commonChatSessionService.findAll(session);
+      this.server.emit('allMessages', messages, session);
       return messages;
     } catch (error) {
       console.error('Error finding messages:', error);
@@ -64,30 +66,33 @@ export class CommonChatSessionGateway {
   }
 
   @SubscribeMessage('deleteMessage')
-  async deleteMessage(@MessageBody(ParseIntPipe) id: number): Promise<void> {
-    await this.commonChatSessionService.deleteMessage(id);
+  async deleteMessage(@MessageBody() data: DeleteCommonChatSessionDto ): Promise<void> {
+    const { id, session } = data;
+    await this.commonChatSessionService.deleteMessage(+id, session);
     this.server.emit('deletedMessage', id);
   }
   @SubscribeMessage('join')
   joinRoom(
-    @MessageBody('') sender: string,
+    @MessageBody() data: { sessionId: number; user: User },
     @ConnectedSocket() socket: Socket,
   ): void {
-    console.log('socket');
-    // socket.join(room);
-    console.log('this sender', sender);
-    this.commonChatSessionService.clientToUser[socket.id] = sender;
+    const { sessionId, user } = data;
+    console.log('this sender', user);
+    console.log('socket', sessionId);
+    socket.join(sessionId?.toString());
+    socket.to(sessionId?.toString()).emit('userJoined', user);
+    this.commonChatSessionService.clientToUser[socket.id] = user;
   }
 
   @SubscribeMessage('typing')
   typing(
-    @MessageBody('isTyping') isTyping: boolean,
+    @MessageBody() data: { isTyping: boolean; sessionId: number },
     @ConnectedSocket() socket: Socket,
   ): void {
-    // console.log('data', data);
-    // console.log('socket', socket);
-    // socket.to(data.room).emit('typing', data);
+    const { isTyping, sessionId} = data;
     const sender = this.commonChatSessionService.clientToUser[socket.id];
-    socket.broadcast.emit('typing', { sender: sender, isTyping });
+    socket
+      .to(sessionId?.toString())
+      .emit('typing', { sender: sender, isTyping });
   }
 }

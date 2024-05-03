@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { NotificationService } from '../notification/notification.service';
 import { NotifTypeEnum } from '../Enums/notif-type.enum';
 import { User } from '../user/entities/user.entity';
+import { SessionEntity } from "../session/entities/session.entity";
 
 @Injectable()
 export class CommonChatSessionService {
@@ -76,19 +77,23 @@ export class CommonChatSessionService {
     const newMessage = this.commonChatSessionRepository.create(
       createCommonChatSessionDto,
     );
-    console.log('createCommonChatSessionDto', createCommonChatSessionDto);
-    console.log('new message', newMessage);
+    // console.log('createCommonChatSessionDto', createCommonChatSessionDto);
+    // console.log('new message', newMessage);
     // newMessage.author = this.clientToUser[user];
     await this.commonChatSessionRepository.save(newMessage);
     return { notification: notification, message: newMessage };
   }
-  async findAll(): Promise<any[]> {
+  async findAll(session: SessionEntity): Promise<any[]> {
+    console.log("sessionId", session);
     const chats = await this.commonChatSessionRepository.find({
-      relations: ['parent', 'author'],
+      where: { session: { id: session?.id } },
+      relations: ['parent', 'author', 'session'],
     });
+    // console.log("chats", chats);
     const chatsWithAuthorDetails = chats.map((chat) => {
       return {
         ...chat,
+        session,
         author: {
           username: chat.author.username,
           role: chat.author.role,
@@ -100,8 +105,8 @@ export class CommonChatSessionService {
     return this.organizeMessages(chats);
   }
 
-  async deleteMessage(id: number) {
-    const messages = await this.findAll();
+  async deleteMessage(id: number, session: SessionEntity) {
+    const messages = await this.findAll(session);
     const messageToDelete = this.findMessageById(messages, id);
     if (messageToDelete) {
       await this.commonChatSessionRepository.softRemove(messageToDelete);

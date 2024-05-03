@@ -281,7 +281,6 @@ export class SessionService {
     if (sessionType) {
       const { subject, ...filteredSessionType } = sessionType;
 
-      // Create a new session object with the filtered sessionType
       const rank = await this.countSessionRank(session);
       return {
         ...session,
@@ -295,11 +294,26 @@ export class SessionService {
     const session = await this.sessionRepository.findOne({
       where: { id },
     });
+
     if (!session) {
       throw new NotFoundError('Session not found');
     }
+
+    if (session.sessionType) {
+      const sessionTypeWithTeacher = await this.sessionRepository.manager.getRepository(SessionTypeEntity)
+        .findOne({
+          where: { id: session.sessionType.id },
+          relations: ['teacher'],
+        });
+
+      if (sessionTypeWithTeacher) {
+        session.sessionType.teacher = sessionTypeWithTeacher.teacher;
+      }
+    }
+
     return session;
   }
+
   async countSessionRank(session: SessionEntity) {
     const { sessionType } = session;
     const sessions = await this.sessionRepository.find({

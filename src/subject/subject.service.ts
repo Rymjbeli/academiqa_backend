@@ -97,9 +97,9 @@ export class SubjectService {
         },
       },
       relations: [
-        'sessionTypes', // Include the session types relation
-        'sessionTypes.sessions', // Include the sessions relation within session types
-        'sessionTypes.teacher', // Include the teacher relation within session types
+        'sessionTypes',
+        'sessionTypes.sessions',
+        'sessionTypes.teacher',
       ],
     });
 
@@ -152,19 +152,45 @@ export class SubjectService {
   }
 
   filterOneSubject(course: SubjectEntity) {
+    // Create a map to store teachers and their types
+    const teacherMap = new Map();
+
+    // Iterate through the session types to create a map of teachers and their types
+    course.sessionTypes.forEach(({ teacher, type }) => {
+      if (teacher && teacher.username) {
+        // Check if teacher's username is already in the map
+        if (!teacherMap.has(teacher.username)) {
+          // Create a new entry with the teacher's ID and a new set for the types
+          teacherMap.set(teacher.username, {
+            id: teacher.id,
+            types: new Set([type])
+          });
+        } else {
+          // Add the type to the existing set for the teacher's entry
+          teacherMap.get(teacher.username).types.add(type);
+        }
+      }
+    });
+
+    // Convert the map to an array of objects, each containing a teacher's username, ID, and the types they teach
+    const teachersAndTypes = Array.from(teacherMap.entries()).map(([username, data]) => ({
+      username,
+      id: data.id,
+      types: Array.from(data.types), // Convert the set of types to an array
+    }));
+
     return {
       ...course,
-      sessionTypes: course.sessionTypes.map(
-        ({ teacher, subject, ...sessionType }) => sessionType
-      ),
-      teachersUsernames: Array.from(
-        new Set(
-          course.sessionTypes.map(
-            (sessionType) => sessionType?.teacher?.username
-          )
-        )
-      ),
+      sessionTypes: course.sessionTypes.map(({ teacher, subject, ...sessionType }) => ({
+        ...sessionType,
+        // Include the teacher's ID in the session type
+        teacherId: teacher?.id || null,
+      })),
+      // The `teachersUsernames` array now contains objects with the teacher's username, ID, and the types they teach
+      teachersUsernames: teachersAndTypes,
     };
   }
+
+
 
 }
