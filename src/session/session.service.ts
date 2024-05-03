@@ -209,6 +209,24 @@ export class SessionService {
 
   // this function is used to add a session
   async addSession(addSessionDto: AddSessionDto, getGroupDto: GetGroupDto) {
+    let date = addSessionDto.date;
+    if (!(date instanceof Date)) {
+      date = new Date(date);
+    }
+    const isHoliday = await this.findOneHoliday(date);
+    if (isHoliday) {
+      throw {
+        type: 'HolidayExists',
+        message: 'This date is a holiday',
+      };
+    } else if (date.getDay() === 0) {
+      throw {
+        type: 'HolidayExists',
+        message: 'This date is a sunday',
+      };
+    }
+    // else console.log('This date is not a holiday');
+
     const existingSession = await this.sessionRepository.find({
       where: {
         date: addSessionDto.date,
@@ -232,7 +250,7 @@ export class SessionService {
     const session = new SessionEntity();
     session.name = addSessionDto.name;
 
-    const date = new Date(addSessionDto.date);
+    // const date = new Date(addSessionDto.date);
     const endTime = new Date(addSessionDto.endTime);
     console.log(date);
     session.date = date;
@@ -243,7 +261,20 @@ export class SessionService {
     sessionType.type = SessionTypeEnum.Rattrapage;
 
     sessionType.group = group;
-    sessionType.day = date.getDay().toString();
+
+    // Create a mapping from day numbers to day names
+    const dayMapping = {
+      0: 'Dimanche',
+      1: 'Lundi',
+      2: 'Mardi',
+      3: 'Mercredi',
+      4: 'Jeudi',
+      5: 'Vendredi',
+      6: 'Samedi',
+    };
+
+    // Store the day name in sessionType.day
+    sessionType.day = dayMapping[date.getDay()];
 
     // Convert the start and end times to strings in the format 'HH:mm'
     sessionType.startHour =
@@ -344,14 +375,22 @@ export class SessionService {
     });
 
     const getSessionsDto: GetSessionDto[] = sessions.map((session) => {
+      if (!session.sessionType) {
+        return {
+          id: session.id,
+          StartTime: session.date,
+          EndTime: session.endTime,
+          holidayName: session.holidayName,
+          type: SessionTypeEnum.Holiday,
+          name: session.name,
+        };
+      }
       return {
         id: session.id,
         StartTime: session.date,
         EndTime: session.endTime,
         holidayName: session.holidayName,
-
         type: session.sessionType.type,
-
         name: session.name,
       };
     });
