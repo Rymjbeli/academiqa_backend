@@ -7,16 +7,16 @@ import {
   Param,
   Delete,
   ParseIntPipe,
-  Query, UseGuards
-} from "@nestjs/common";
+  UseGuards,
+} from '@nestjs/common';
 import { NoteService } from './note.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { GetNoteDto } from './dto/get-note.dto';
 import { NoteEntity } from './entities/note.entity';
-import { JwtAuthGuard } from "../auth/guard/jwt-auth.guard";
-import { CurrentUser } from "../decorators/user.decorator";
-import { Student } from "../user/entities/student.entity";
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { CurrentUser } from '../decorators/user.decorator';
+import { Student } from '../user/entities/student.entity';
 
 @Controller('note')
 export class NoteController {
@@ -46,12 +46,14 @@ export class NoteController {
     return await this.noteService.findOne(id, user);
   }
 
-  // @Get(':studentId/:sessionId')
-  // async getNotesByStudentBySession(
-  //   @Query() queryParams: GetNoteDto,
-  // ): Promise<NoteEntity[] | null> {
-  //   return await this.noteService.findAllByStudentBySession(queryParams);
-  // }
+  @Get('bySession/:sessionId')
+  @UseGuards(JwtAuthGuard)
+  async getNotesByStudentBySession(
+    @CurrentUser() user: Student,
+    @Param('sessionId', ParseIntPipe) sessionId: number,
+  ): Promise<NoteEntity[] | null> {
+    return await this.noteService.findAllByStudentBySession(user, sessionId);
+  }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
@@ -60,7 +62,7 @@ export class NoteController {
     @Body() updateNoteDto: UpdateNoteDto,
     @CurrentUser() user: Student,
   ): Promise<NoteEntity | null> {
-    return await this.noteService.update(id, updateNoteDto,user);
+    return await this.noteService.update(id, updateNoteDto, user);
   }
 
   @Delete(':id')

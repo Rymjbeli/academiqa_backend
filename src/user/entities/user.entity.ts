@@ -19,6 +19,7 @@ export class User extends TimestampEntites {
   @Column({ unique: true })
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 
@@ -31,6 +32,7 @@ export class User extends TimestampEntites {
   @Column({ nullable: true, length: 500 })
   Photo: string;
 
+  @Exclude()
   @Column()
   salt: string;
 

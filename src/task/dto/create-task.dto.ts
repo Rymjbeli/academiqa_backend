@@ -11,7 +11,7 @@ export class CreateTaskDto {
   @IsBoolean()
   isDone: boolean;
 
-  /*  @IsNotEmpty()
+  @IsNotEmpty()
   @Type(() => SessionEntity)
-  session: SessionEntity;*/
+  session: SessionEntity;
 }
