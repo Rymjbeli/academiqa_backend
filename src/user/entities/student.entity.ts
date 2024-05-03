@@ -3,7 +3,7 @@ import { User } from './user.entity';
 import { AbsenceEntity } from '../../absence/entities/absence.entity';
 import { NoteEntity } from '../../note/entities/note.entity';
 import { GroupEntity } from '../../group/entities/group.entity';
-import { ChatbotDiscussionsEntity } from "../../chatbot/Entities/chatbot-discussions.entity";
+import { ChatbotDiscussionsEntity } from '../../chatbot/Entities/chatbot-discussions.entity';
 @ChildEntity()
 export class Student extends User {
   @ManyToOne(() => GroupEntity, {
@@ -20,9 +20,4 @@ export class Student extends User {
     nullable: true,
   })
   notes: NoteEntity[];
-  @OneToMany(()=>ChatbotDiscussionsEntity,(chatbotDiscussions)=>chatbotDiscussions.student,{
-    nullable:true,
-    cascade: ['soft-remove'],
-  })
-  chatbotDiscussions:ChatbotDiscussionsEntity[];
 }

@@ -155,7 +155,12 @@ export class AuthService {
     if (user.password !== hashedPassword) {
       throw new NotFoundException('Password incorrect');
     }
-    const payload = { id: user.id, email: user.email, role: user.role };
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      username: user.username,
+    };
     const jwt = await this.jwtService.sign(payload);
     return {
       accessToken: jwt,

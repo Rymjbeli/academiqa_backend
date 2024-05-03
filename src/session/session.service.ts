@@ -1,6 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateSessionDto } from './dto/create-session.dto';
-import { UpdateSessionDto } from './dto/update-session.dto';
 import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
 import { SessionEntity } from './entities/session.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,6 +12,7 @@ import { AddSessionDto } from './dto/add-session.dto';
 import { GetGroupDto } from '../group/dto/get-group.dto';
 import { GroupService } from '../group/group.service';
 import { SessionTypeEnum } from '../Enums/session-type.enum';
+import { Student } from '../user/entities/student.entity';
 
 @Injectable()
 export class SessionService {
@@ -343,9 +343,56 @@ export class SessionService {
     if (!session) {
       throw new NotFoundError('Session not found');
     }
+    const { sessionType } = session;
+    if (sessionType) {
+      const { subject, ...filteredSessionType } = sessionType;
+
+      const rank = await this.countSessionRank(session);
+      return {
+        ...session,
+        sessionType: filteredSessionType,
+        rank: rank,
+      };
+    }
+    return session;
+  }
+  async findOneForGuard(id: number) {
+    const session = await this.sessionRepository.findOne({
+      where: { id },
+    });
+
+    if (!session) {
+      throw new NotFoundError('Session not found');
+    }
+
+    if (session.sessionType) {
+      const sessionTypeWithTeacher = await this.sessionRepository.manager
+        .getRepository(SessionTypeEntity)
+        .findOne({
+          where: { id: session.sessionType.id },
+          relations: ['teacher'],
+        });
+
+      if (sessionTypeWithTeacher) {
+        session.sessionType.teacher = sessionTypeWithTeacher.teacher;
+      }
+    }
+
     return session;
   }
 
+  async countSessionRank(session: SessionEntity) {
+    const { sessionType } = session;
+    const sessions = await this.sessionRepository.find({
+      where: { sessionType: { id: sessionType.id } },
+      order: { date: 'ASC' },
+      relations: ['sessionType'],
+    });
+    // console.log("sessions",sessions);
+    const sessionIndex = sessions.findIndex((s) => s.id === session.id);
+
+    return sessionIndex + 1;
+  }
   // this function is used to find all sessions of a certain group(level, sector, group) returns a dto, not the entity
   async findSessionsOfSectorLevelGroup(getGroupDto: GetGroupDto) {
     const sessionsOfSectorLevel = await this.sessionRepository.find({

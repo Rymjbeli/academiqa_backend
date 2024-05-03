@@ -1,7 +1,6 @@
 import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 import { Student } from '../../user/entities/student.entity';
-import { SessionEntity } from '../../session/entities/session.entity';
 
 @Exclude()
 export class GetNoteDto {
@@ -28,7 +27,4 @@ export class GetNoteDto {
 
   @Expose()
   student: Student;
-
-  @Expose()
-  session: SessionEntity;
 }
