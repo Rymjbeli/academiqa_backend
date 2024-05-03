@@ -31,7 +31,11 @@ export class SessionGuard implements CanActivate {
       return true;
     } else if (currentUser?.role === 'Teacher') {
       const teacher = sessionType?.teacher;
-      console.log("helllllllllllllloooooooooooooooooooo", currentUser?.id, teacher?.id);
+      console.log(
+        'helllllllllllllloooooooooooooooooooo',
+        currentUser?.id,
+        teacher?.id,
+      );
       return currentUser?.id === teacher?.id;
     } else if (currentUser?.role === 'Student') {
       const student = await this.studentService.findOneStudent(currentUser?.id);

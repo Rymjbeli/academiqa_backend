@@ -101,4 +101,5 @@ export class SessionController {
   recover(@Param('id', ParseIntPipe) id: number) {
     return this.sessionService.recover(id);
   }
+
 }

@@ -12,6 +12,7 @@ import { AddSessionDto } from './dto/add-session.dto';
 import { GetGroupDto } from '../group/dto/get-group.dto';
 import { GroupService } from '../group/group.service';
 import { SessionTypeEnum } from '../Enums/session-type.enum';
+import { Student } from '../user/entities/student.entity';
 
 @Injectable()
 export class SessionService {
@@ -300,7 +301,8 @@ export class SessionService {
     }
 
     if (session.sessionType) {
-      const sessionTypeWithTeacher = await this.sessionRepository.manager.getRepository(SessionTypeEntity)
+      const sessionTypeWithTeacher = await this.sessionRepository.manager
+        .getRepository(SessionTypeEntity)
         .findOne({
           where: { id: session.sessionType.id },
           relations: ['teacher'],

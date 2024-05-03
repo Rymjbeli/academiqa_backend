@@ -24,7 +24,9 @@ export class StudentController {
   }
   @Get('all/:sectorLevel')
   @UseGuards(JwtAuthGuard)
-  async findAllStudentsBySectorLevel(@Param('sectorLevel') sectorLevel: string) {
+  async findAllStudentsBySectorLevel(
+    @Param('sectorLevel') sectorLevel: string,
+  ) {
     console.log(sectorLevel);
     return await this.studentService.findAllStudentsBySectorLevel(sectorLevel);
   }

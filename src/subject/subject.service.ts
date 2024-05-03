@@ -6,7 +6,7 @@ import { SubjectEntity } from './entities/subject.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
-import { Teacher } from "../user/entities/teacher.entity";
+import { Teacher } from '../user/entities/teacher.entity';
 
 @Injectable()
 export class SubjectService {
@@ -137,7 +137,7 @@ export class SubjectService {
       const teacherUsernamesSet = new Set(
         subject.sessionTypes.map(
           (sessionType) => sessionType?.teacher.username,
-        )
+        ),
       );
 
       // Convert the Set back to an array
@@ -163,7 +163,7 @@ export class SubjectService {
           // Create a new entry with the teacher's ID and a new set for the types
           teacherMap.set(teacher.username, {
             id: teacher.id,
-            types: new Set([type])
+            types: new Set([type]),
           });
         } else {
           // Add the type to the existing set for the teacher's entry
@@ -173,24 +173,25 @@ export class SubjectService {
     });
 
     // Convert the map to an array of objects, each containing a teacher's username, ID, and the types they teach
-    const teachersAndTypes = Array.from(teacherMap.entries()).map(([username, data]) => ({
-      username,
-      id: data.id,
-      types: Array.from(data.types), // Convert the set of types to an array
-    }));
+    const teachersAndTypes = Array.from(teacherMap.entries()).map(
+      ([username, data]) => ({
+        username,
+        id: data.id,
+        types: Array.from(data.types), // Convert the set of types to an array
+      }),
+    );
 
     return {
       ...course,
-      sessionTypes: course.sessionTypes.map(({ teacher, subject, ...sessionType }) => ({
-        ...sessionType,
-        // Include the teacher's ID in the session type
-        teacherId: teacher?.id || null,
-      })),
+      sessionTypes: course.sessionTypes.map(
+        ({ teacher, subject, ...sessionType }) => ({
+          ...sessionType,
+          // Include the teacher's ID in the session type
+          teacherId: teacher?.id || null,
+        }),
+      ),
       // The `teachersUsernames` array now contains objects with the teacher's username, ID, and the types they teach
       teachersUsernames: teachersAndTypes,
     };
   }
-
-
-
 }

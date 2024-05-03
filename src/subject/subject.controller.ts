@@ -15,9 +15,9 @@ import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { CurrentUser } from "../decorators/user.decorator";
-import { User } from "../user/entities/user.entity";
-import { Teacher } from "../user/entities/teacher.entity";
+import { CurrentUser } from '../decorators/user.decorator';
+import { User } from '../user/entities/user.entity';
+import { Teacher } from '../user/entities/teacher.entity';
 
 @Controller('subject')
 @UseGuards(JwtAuthGuard)
@@ -48,8 +48,7 @@ export class SubjectController {
     return await this.subjectService.findBySectorLevel(sectorLevel);
   }
   @Get('/teacher')
-  async findByTeacher(@CurrentUser() user: Teacher ){
-
+  async findByTeacher(@CurrentUser() user: Teacher) {
     return await this.subjectService.findByTeacher(user);
   }
   @Get(':id')

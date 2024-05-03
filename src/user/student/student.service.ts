@@ -62,7 +62,7 @@ export class StudentService {
   async findAllStudentsBySectorLevel(sectorLevel: string) {
     return await this.studentRepository.find({
       relations: ['group'],
-      where: { group: { sectorLevel: sectorLevel} },
+      where: { group: { sectorLevel: sectorLevel } },
     });
   }
 }

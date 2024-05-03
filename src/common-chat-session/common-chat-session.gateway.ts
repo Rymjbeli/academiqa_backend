@@ -12,8 +12,8 @@ import { CommonChatEntity } from './entities/common-chat.entity';
 import { ParseIntPipe } from '@nestjs/common';
 import { CurrentUser } from '../decorators/user.decorator';
 import { User } from '../user/entities/user.entity';
-import { SessionEntity } from "../session/entities/session.entity";
-import { DeleteCommonChatSessionDto } from "./dto/delete-common-chat-session.dto";
+import { SessionEntity } from '../session/entities/session.entity';
+import { DeleteCommonChatSessionDto } from './dto/delete-common-chat-session.dto';
 
 @WebSocketGateway(8001, { cors: '*' })
 export class CommonChatSessionGateway {
@@ -50,7 +50,10 @@ export class CommonChatSessionGateway {
   }
 
   @SubscribeMessage('findAllMessages')
-  async findAllMessages(@ConnectedSocket() socket: Socket,@MessageBody() session: SessionEntity) {
+  async findAllMessages(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() session: SessionEntity,
+  ) {
     try {
       // console.log('session', session);
       const messages = await this.commonChatSessionService.findAll(session);
@@ -66,7 +69,9 @@ export class CommonChatSessionGateway {
   }
 
   @SubscribeMessage('deleteMessage')
-  async deleteMessage(@MessageBody() data: DeleteCommonChatSessionDto ): Promise<void> {
+  async deleteMessage(
+    @MessageBody() data: DeleteCommonChatSessionDto,
+  ): Promise<void> {
     const { id, session } = data;
     await this.commonChatSessionService.deleteMessage(+id, session);
     this.server.emit('deletedMessage', id);
@@ -89,7 +94,7 @@ export class CommonChatSessionGateway {
     @MessageBody() data: { isTyping: boolean; sessionId: number },
     @ConnectedSocket() socket: Socket,
   ): void {
-    const { isTyping, sessionId} = data;
+    const { isTyping, sessionId } = data;
     const sender = this.commonChatSessionService.clientToUser[socket.id];
     socket
       .to(sessionId?.toString())

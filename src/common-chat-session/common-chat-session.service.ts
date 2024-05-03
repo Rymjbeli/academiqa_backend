@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { NotificationService } from '../notification/notification.service';
 import { NotifTypeEnum } from '../Enums/notif-type.enum';
 import { User } from '../user/entities/user.entity';
-import { SessionEntity } from "../session/entities/session.entity";
+import { SessionEntity } from '../session/entities/session.entity';
 
 @Injectable()
 export class CommonChatSessionService {
@@ -84,7 +84,7 @@ export class CommonChatSessionService {
     return { notification: notification, message: newMessage };
   }
   async findAll(session: SessionEntity): Promise<any[]> {
-    console.log("sessionId", session);
+    console.log('sessionId', session);
     const chats = await this.commonChatSessionRepository.find({
       where: { session: { id: session?.id } },
       relations: ['parent', 'author', 'session'],
@@ -102,7 +102,7 @@ export class CommonChatSessionService {
       };
     });
     // console.log('chatsWithAuthorDetails', chatsWithAuthorDetails);
-    return this.organizeMessages(chats);
+    return this.organizeMessages(chatsWithAuthorDetails);
   }
 
   async deleteMessage(id: number, session: SessionEntity) {
