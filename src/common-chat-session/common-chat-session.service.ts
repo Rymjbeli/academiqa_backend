@@ -5,6 +5,8 @@ import { CommonChatEntity } from './entities/common-chat.entity';
 import { Repository } from 'typeorm';
 import { NotificationService } from '../notification/notification.service';
 import { NotifTypeEnum } from '../Enums/notif-type.enum';
+import { User } from '../user/entities/user.entity';
+import { SessionEntity } from '../session/entities/session.entity';
 
 @Injectable()
 export class CommonChatSessionService {
@@ -15,17 +17,24 @@ export class CommonChatSessionService {
   ) {}
   clientToUser: any = {};
 
-  private organizeMessages(messages: CommonChatEntity[]): any[] {
+  private organizeMessages(messages: any[]): any[] {
     const organizedMessages = [];
     const map = new Map();
 
     messages.forEach((message) => {
-      map.set(message.id, { ...message, replies: [] });
+      map.set(message.id, {
+        ...message,
+        replies: [],
+        author: {
+          username: message.author.username,
+          role: message.author.role,
+          id: message.author.id,
+        },
+      });
     });
 
     messages.forEach((message) => {
       if (message.parent) {
-        console.log('message.parent.id', message.parent);
         const parentMessage = map.get(message.parent.id);
         if (parentMessage) {
           parentMessage.replies.push(map.get(message.id));
@@ -68,19 +77,36 @@ export class CommonChatSessionService {
     const newMessage = this.commonChatSessionRepository.create(
       createCommonChatSessionDto,
     );
+    // console.log('createCommonChatSessionDto', createCommonChatSessionDto);
+    // console.log('new message', newMessage);
     // newMessage.author = this.clientToUser[user];
     await this.commonChatSessionRepository.save(newMessage);
-    return notification;
+    return { notification: notification, message: newMessage };
   }
-  async findAll(): Promise<any[]> {
+  async findAll(session: SessionEntity): Promise<any[]> {
+    console.log('sessionId', session);
     const chats = await this.commonChatSessionRepository.find({
-      relations: ['parent'],
+      where: { session: { id: session?.id } },
+      relations: ['parent', 'author', 'session'],
     });
-    return this.organizeMessages(chats);
+    // console.log("chats", chats);
+    const chatsWithAuthorDetails = chats.map((chat) => {
+      return {
+        ...chat,
+        session,
+        author: {
+          username: chat.author.username,
+          role: chat.author.role,
+          id: chat.author.id,
+        },
+      };
+    });
+    // console.log('chatsWithAuthorDetails', chatsWithAuthorDetails);
+    return this.organizeMessages(chatsWithAuthorDetails);
   }
 
-  async deleteMessage(id: number) {
-    const messages = await this.findAll();
+  async deleteMessage(id: number, session: SessionEntity) {
+    const messages = await this.findAll(session);
     const messageToDelete = this.findMessageById(messages, id);
     if (messageToDelete) {
       await this.commonChatSessionRepository.softRemove(messageToDelete);

@@ -16,12 +16,13 @@ import { SubjectModule } from './subject/subject.module';
 import { SessionTypeModule } from './session-type/session-type.module';
 import { SessionModule } from './session/session.module';
 import { UserModule } from './user/user.module';
-import { UserEntity } from './user/entities/user.entity';
-import { StudentEntity } from './user/entities/student.entity';
+import { User } from './user/entities/user.entity';
+import { Student } from './user/entities/student.entity';
 import { FileUploadModule } from './file-upload/file-upload.module';
+import { AuthModule } from './auth/auth.module';
 import { GroupModule } from './group/group.module';
-import { NewNotificationModule } from './new-notification/new-notification.module';
-import { EventEmitterModule } from "@nestjs/event-emitter";
+import { MailModule } from './mail/mail.module';
+
 dotenv.config();
 @Module({
   imports: [
@@ -37,10 +38,10 @@ dotenv.config();
       synchronize: true,
       debug: false,
     }),
-    EventEmitterModule.forRoot(),
     ChatbotModule,
     NotificationModule,
     NoteModule,
+    CommonChatSessionModule,
     RessourceModule,
     AnnouncementModule,
     AbsenceModule,
@@ -50,10 +51,10 @@ dotenv.config();
     SessionModule,
     UserModule,
     FileUploadModule,
-    TypeOrmModule.forFeature([UserEntity, StudentEntity]),
-    CommonChatSessionModule,
+    TypeOrmModule.forFeature([User, Student]),
+    AuthModule,
     GroupModule,
-    NewNotificationModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

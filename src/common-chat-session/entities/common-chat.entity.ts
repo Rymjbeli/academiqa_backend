@@ -7,17 +7,17 @@ import {
 } from 'typeorm';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 import { SessionEntity } from '../../session/entities/session.entity';
-import { UserEntity } from '../../user/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 @Entity('common-chat')
 export class CommonChatEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
   content: string;
-  // @ManyToOne(() => UserEntity, {
-  //   nullable: false,
-  // })
-  // author: UserEntity;
+  @ManyToOne(() => User, {
+    nullable: false,
+  })
+  author: User;
   @ManyToOne(() => CommonChatEntity, {
     nullable: true,
   })
@@ -28,8 +28,8 @@ export class CommonChatEntity extends TimestampEntites {
   })
   replies: CommonChatEntity[];
 
-  // @ManyToOne(() => SessionEntity, (session) => session.commonChats, {
-  //   nullable: false,
-  // })
-  // session: SessionEntity;
+  @ManyToOne(() => SessionEntity, (session) => session.commonChats, {
+    nullable: true,
+  })
+  session: SessionEntity;
 }

@@ -1,19 +1,21 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 import { SessionEntity } from '../../session/entities/session.entity';
-import { StudentEntity } from '../../user/entities/student.entity';
+import { Student } from '../../user/entities/student.entity';
 @Entity('note')
 export class NoteEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column()
+  @Column({
+    type: 'text',
+  })
   content: string;
   @Column()
   title: string;
-  @ManyToOne(() => StudentEntity, (user) => user.notes, {
+  @ManyToOne(() => Student, (user) => user.notes, {
     nullable: false,
   })
-  student: StudentEntity;
+  student: Student;
   @ManyToOne(() => SessionEntity, (session) => session.notes, {
     nullable: false,
   })

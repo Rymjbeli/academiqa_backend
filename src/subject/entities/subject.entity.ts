@@ -8,8 +8,9 @@ import {
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 import { SessionTypeEntity } from '../../session-type/entities/session-type.entity';
 import { AnnouncementEntity } from '../../announcement/entities/announcement.entity';
-import { TeacherEntity } from '../../user/entities/teacher.entity';
+import { Teacher } from '../../user/entities/teacher.entity';
 import { AbsenceEntity } from '../../absence/entities/absence.entity';
+import { IsIn } from 'class-validator';
 
 @Entity('subject')
 export class SubjectEntity extends TimestampEntites {
@@ -24,34 +25,36 @@ export class SubjectEntity extends TimestampEntites {
   @Column({
     length: 100,
   })
-  sector: string;
-
-  @Column()
-  level: number;
-
-  @Column({
-    length: 100,
-  })
   sectorLevel: string;
-
+  @Column()
+  module: string;
+  @Column({
+    type: 'float',
+  })
+  coefficient: number;
   @Column()
   hourlyLoad: number;
-
   @Column()
   absenceLimit: number;
 
-  @OneToMany(() => SessionTypeEntity, (sessionType) => sessionType.subject)
+  @Column()
+  @IsIn([1, 2])
+  semester: number;
+
+  @OneToMany(() => SessionTypeEntity, (sessionType) => sessionType.subject, {
+    nullable: true,
+    cascade: ['soft-remove'], //tzedou jdod hedhoumaa baad pull mtee rim
+  })
   sessionTypes: SessionTypeEntity[];
-  @OneToMany(() => AnnouncementEntity, (announcement) => announcement.subject, {
-    nullable: true,
-  })
-  announcements: AnnouncementEntity[];
-  @ManyToOne(() => TeacherEntity, (teacher) => teacher.subjects, {
-    nullable: false,
-  })
-  teacher: TeacherEntity;
-  @OneToMany(() => AbsenceEntity, (absence) => absence.subject, {
-    nullable: true,
-  })
-  absences: AbsenceEntity[];
+  // @OneToMany(() => AnnouncementEntity, (announcement) => announcement.subject, {
+  //  nullable: true,
+  //  cascade: ['soft-remove']
+  // })
+  // announcements: AnnouncementEntity[];
+
+  // @OneToMany(() => AbsenceEntity, (absence) => absence.subject, {
+  //   nullable: true,
+  //  cascade: ['soft-remove']
+  // })
+  // absences: AbsenceEntity[];
 }
