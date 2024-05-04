@@ -31,7 +31,7 @@ export class CreateSessionTypeGroupSectorLevelDto {
   @IsString()
   subjectName: string;
 
-  /*  @IsNotEmpty()
+  @IsNotEmpty()
   @IsNumber()
-  teacherID: number;*/
+  teacherID: number;
 }

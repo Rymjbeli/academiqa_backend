@@ -5,6 +5,8 @@ import { FileUploadService } from '../file-upload/file-upload.service';
 import { SubjectEntity } from './entities/subject.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
+import { Teacher } from '../user/entities/teacher.entity';
 
 @Injectable()
 export class SubjectService {
@@ -12,6 +14,8 @@ export class SubjectService {
     private readonly fileUploadService: FileUploadService,
     @InjectRepository(SubjectEntity)
     private subjectRepository: Repository<SubjectEntity>,
+    @InjectRepository(SessionTypeEntity)
+    private sessionTypeRepository: Repository<SessionTypeEntity>,
   ) {}
   async createOneSubject(createSubjectDto: CreateSubjectDto) {
     const subject = await this.subjectRepository.create(createSubjectDto);
@@ -48,15 +52,24 @@ export class SubjectService {
   }
 
   async findOne(id: number) {
-    return await this.subjectRepository.findOne({
+    const course = await this.subjectRepository.findOne({
       where: { id },
-      relations: ['sessionTypes'],
+      relations: [
+        'sessionTypes',
+        'sessionTypes.teacher',
+        'sessionTypes.sessions',
+      ],
     });
+    if (!course) {
+      throw new Error('Subject not found');
+    }
+
+    return this.filterOneSubject(course);
   }
 
-  async findBySubjectName(name: string) {
+  async findBySubjectName(name: string, sectorLevel: string) {
     const foundSubject = await this.subjectRepository.findOne({
-      where: { name },
+      where: { name: name, sectorLevel: sectorLevel },
     });
     if (!foundSubject) {
       throw new Error('Subject not found' + name);
@@ -67,20 +80,31 @@ export class SubjectService {
   async findBySectorLevel(sectorLevel: string) {
     const subjects = await this.subjectRepository.find({
       where: { sectorLevel },
+      relations: [
+        'sessionTypes',
+        'sessionTypes.teacher',
+        'sessionTypes.sessions',
+      ],
     });
 
-    return subjects.map((subject) => ({
-      ...subject,
-      teachersUsernames: subject.sessionTypes.map(
-        (sessionType) => sessionType.teacher.username,
-      ),
-    }));
-    // return await this.subjectRepository.findBy({ sectorLevel });
+    return this.filterSubjects(subjects);
   }
+  async findByTeacher(teacher: Teacher) {
+    const subjects = await this.subjectRepository.find({
+      where: {
+        sessionTypes: {
+          teacher: { id: teacher.id }, // Filter subjects by the provided teacher
+        },
+      },
+      relations: [
+        'sessionTypes',
+        'sessionTypes.sessions',
+        'sessionTypes.teacher',
+      ],
+    });
 
-  // async findByTeacher() {
-  //
-  // }
+    return this.filterSubjects(subjects);
+  }
   async deleteSubject(id: number) {
     const subject = await this.findOne(id);
     if (!subject) {
@@ -101,5 +125,73 @@ export class SubjectService {
         ...updateSubjectDto,
       });
     }
+  }
+
+  filterSubjects(subjects: SubjectEntity[]) {
+    return subjects.map((subject) => {
+      const sessionTypes = subject.sessionTypes.map(
+        ({ teacher, subject, ...sessionType }) => sessionType,
+      );
+
+      // Create a Set to remove duplicate usernames
+      const teacherUsernamesSet = new Set(
+        subject.sessionTypes.map(
+          (sessionType) => sessionType?.teacher.username,
+        ),
+      );
+
+      // Convert the Set back to an array
+      const uniqueTeachersUsernames = Array.from(teacherUsernamesSet);
+
+      return {
+        ...subject,
+        sessionTypes,
+        teachersUsernames: uniqueTeachersUsernames,
+      };
+    });
+  }
+
+  filterOneSubject(course: SubjectEntity) {
+    // Create a map to store teachers and their types
+    const teacherMap = new Map();
+
+    // Iterate through the session types to create a map of teachers and their types
+    course.sessionTypes.forEach(({ teacher, type }) => {
+      if (teacher && teacher.username) {
+        // Check if teacher's username is already in the map
+        if (!teacherMap.has(teacher.username)) {
+          // Create a new entry with the teacher's ID and a new set for the types
+          teacherMap.set(teacher.username, {
+            id: teacher.id,
+            types: new Set([type]),
+          });
+        } else {
+          // Add the type to the existing set for the teacher's entry
+          teacherMap.get(teacher.username).types.add(type);
+        }
+      }
+    });
+
+    // Convert the map to an array of objects, each containing a teacher's username, ID, and the types they teach
+    const teachersAndTypes = Array.from(teacherMap.entries()).map(
+      ([username, data]) => ({
+        username,
+        id: data.id,
+        types: Array.from(data.types), // Convert the set of types to an array
+      }),
+    );
+
+    return {
+      ...course,
+      sessionTypes: course.sessionTypes.map(
+        ({ teacher, subject, ...sessionType }) => ({
+          ...sessionType,
+          // Include the teacher's ID in the session type
+          teacherId: teacher?.id || null,
+        }),
+      ),
+      // The `teachersUsernames` array now contains objects with the teacher's username, ID, and the types they teach
+      teachersUsernames: teachersAndTypes,
+    };
   }
 }

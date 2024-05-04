@@ -5,6 +5,7 @@ import { GroupEntity } from './entities/group.entity';
 import { FileUploadService } from '../file-upload/file-upload.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { GetGroupDto } from './dto/get-group.dto';
 
 @Injectable()
 export class GroupService {
@@ -14,13 +15,14 @@ export class GroupService {
     private groupRepository: Repository<GroupEntity>,
   ) {}
   async createOneGroup(createGroupDto: CreateGroupDto) {
-    const group = await this.groupRepository.create(createGroupDto);
+    const group = this.groupRepository.create(createGroupDto);
     return await this.groupRepository.save(group);
   }
 
   async createGroups(groupFile: Express.Multer.File) {
     const groups: CreateGroupDto[] =
       await this.fileUploadService.uploadCSVFile(groupFile);
+    console.log('groups', groups);
     const groupEntities = groups.map((createGroupDto) =>
       this.createOneGroup(createGroupDto),
     );
@@ -43,6 +45,20 @@ export class GroupService {
     return await this.groupRepository.find({ where: { sector } });
   }
 
+  async findBySectorGroupLevel(getGroupDto: GetGroupDto) {
+    const group = await this.groupRepository.findOne({
+      where: {
+        sector: getGroupDto.sector,
+        level: getGroupDto.level,
+        group: getGroupDto.group,
+      },
+    });
+    if (!group) {
+      throw new Error('Group not found');
+    }
+    return group;
+  }
+
   async findBySectorLevelGroup(
     sectorLevel: string,
     group: number,
@@ -56,6 +72,7 @@ export class GroupService {
     }
     return foundGroup;
   }
+
   async findAllGroupedBySectorLevel() {
     const groups = await this.findAll();
 

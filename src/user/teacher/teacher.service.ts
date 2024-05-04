@@ -1,8 +1,13 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Teacher } from '../entities/teacher.entity';
+import { GetTeacherDto } from './dto/get-teacher.dto';
 
 @Injectable()
 export class TeacherService {
@@ -13,12 +18,11 @@ export class TeacherService {
 
   async findAllTeachers() {
     return await this.teacherRepository.find({
-
-      select: ['id', 'email', 'username','cin', 'speciality'],
+      select: ['id', 'email', 'username', 'cin', 'speciality'],
     });
   }
 
-  async countTeachers(): Promise<number>{
+  async countTeachers(): Promise<number> {
     return await this.teacherRepository.count();
   }
 
@@ -27,13 +31,14 @@ export class TeacherService {
     if (!teacher) {
       throw new NotFoundException(`Teacher with id ${id} not found`);
     }
-    return {
+    const teacherData: GetTeacherDto = {
       id: teacher.id,
       email: teacher.email,
       username: teacher.username,
       speciality: teacher.speciality,
       cin: teacher.cin,
     };
+    return teacherData;
   }
 
   async updateTeacher(id: number, data: Partial<Teacher>) {

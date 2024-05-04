@@ -40,20 +40,20 @@ export class SessionTypeEntity extends TimestampEntites {
   })
   sessions: SessionEntity[];
 
-
   @ManyToOne(() => Teacher, (teacher) => teacher.sessionTypes, {
-    nullable: false,
+    nullable: true,
   })
   teacher: Teacher;
 
-
   @ManyToOne(() => GroupEntity, {
+    eager: true,
     nullable: false,
   })
   group: GroupEntity;
 
   @ManyToOne(() => SubjectEntity, (subject) => subject.sessionTypes, {
-    nullable: false,
+    eager: true,
+    nullable: true,
   })
   subject: SubjectEntity;
 }

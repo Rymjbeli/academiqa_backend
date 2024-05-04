@@ -17,7 +17,10 @@ import { UpdateSessionTypeDto } from './dto/update-session-type.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateSessionTypeGroupSectorLevelDto } from './dto/create-session-type-group-sector-level.dto';
 import { SessionTypeEnum } from '../Enums/session-type.enum';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
+@UseGuards(JwtAuthGuard)
 @Controller('session-type')
 export class SessionTypeController {
   constructor(private readonly sessionTypeService: SessionTypeService) {}
@@ -83,15 +86,15 @@ export class SessionTypeController {
     return this.sessionTypeService.findByGroupAndSubject(groupId, subjectId);
   }
 
-  /*  @Get('ByTeacher/:teacherID')
-  findByTeacher(@Param('teacherID') teacherID: number) {
-    return this.sessionTypeService.findByTeacher(teacherID);
-  }
+    @Get('ByTeacher/:teacherID')
+    findByTeacher(@Param('teacherID') teacherID: number) {
+        return this.sessionTypeService.findByTeacher(teacherID);
+    }
 
-  @Get('GroupsByTeacher/:teacherID')
-  findGroupsByTeacher(@Param('teacherID') teacherID: number) {
-    return this.sessionTypeService.findGroupsByTeacher(teacherID);
-  }*/
+    @Get('GroupsByTeacher/:teacherID')
+    findGroupsByTeacher(@Param('teacherID') teacherID: number) {
+        return this.sessionTypeService.findGroupsByTeacher(teacherID);
+    }
 
   @Patch(':id')
   update(

@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -53,5 +57,12 @@ export class StudentService {
       );
     }
     return await this.findOneStudent(id);
+  }
+
+  async findAllStudentsBySectorLevel(sectorLevel: string) {
+    return await this.studentRepository.find({
+      relations: ['group'],
+      where: { group: { sectorLevel: sectorLevel } },
+    });
   }
 }

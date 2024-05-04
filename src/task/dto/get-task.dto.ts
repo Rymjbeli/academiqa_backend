@@ -1,6 +1,7 @@
 import { IsString, IsNumber, IsBoolean } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 import { Teacher } from "../../user/entities/teacher.entity";
+import { SessionEntity } from '../../session/entities/session.entity';
 @Exclude()
 export class GetTaskDto {
   @Expose()
@@ -17,4 +18,7 @@ export class GetTaskDto {
 
   @Expose()
   teacher: Teacher;
+
+  @Expose()
+  session: SessionEntity;
 }

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { GetNoteDto } from './dto/get-note.dto';
@@ -6,7 +10,7 @@ import { Repository } from 'typeorm';
 import { NoteEntity } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../user/entities/student.entity';
-import { Expose, plainToClass } from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class NoteService {
@@ -73,35 +77,39 @@ export class NoteService {
       return noteDto;
     }
   }
-  /*
 
   async findAllByStudentBySession(
-    queryParams: GetNoteDto,
+    student: Student,
+    sessionId: number,
   ): Promise<NoteEntity[] | null> {
-    const { studentId, sessionId } = queryParams;
-    const notes = await this.noteRepository.find({ relations: ['session'] });
-    if (!studentId && !sessionId) {
-      return notes;
-    }
-    return notes.filter((note) => {
-      if (studentId && note.student.id != studentId) {
-        return false;
-      }
-      return !(sessionId && note.session.id != sessionId);
+    const notes = await this.noteRepository.find({
+      relations: ['student', 'session'],
+      where: { session: { id: sessionId } },
     });
-  }*/
+    if (!notes) {
+      throw new NotFoundException('No notes found');
+    }
+    const studentNotes = notes.filter((note) => note.student.id === student.id);
+    if (studentNotes.length === 0) {
+      return [];
+    }
+    return studentNotes;
+  }
 
   async update(
     id: number,
     updateNoteDto: UpdateNoteDto,
     student: Student,
   ): Promise<NoteEntity | null> {
-    let note = await this.noteRepository.findOne({ where: { id }, relations: ['student']});
+    let note = await this.noteRepository.findOne({
+      where: { id },
+      relations: ['student'],
+    });
     if (!note) {
       throw new NotFoundException('Note not found');
     }
     note = { ...note, ...updateNoteDto };
-    if(note.student.id !== student.id) {
+    if (note.student.id !== student.id) {
       throw new UnauthorizedException('Unauthorized');
     } else {
       return await this.noteRepository.save(note);
@@ -113,7 +121,7 @@ export class NoteService {
     if (!note) {
       throw new Error('Note not found');
     }
-    if(note.student.id !== student.id) {
+    if (note.student.id !== student.id) {
       throw new UnauthorizedException('Unauthorized');
     } else {
       return await this.noteRepository.softRemove(note);
@@ -128,7 +136,7 @@ export class NoteService {
     if (!note) {
       throw new Error('Note not found');
     }
-    if(note.student.id !== user.id) {
+    if (note.student && note.student.id !== user.id) {
       throw new UnauthorizedException('Unauthorized');
     } else {
       return await this.noteRepository.recover(note);

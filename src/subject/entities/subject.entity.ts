@@ -41,7 +41,10 @@ export class SubjectEntity extends TimestampEntites {
   @IsIn([1, 2])
   semester: number;
 
-  @OneToMany(() => SessionTypeEntity, (sessionType) => sessionType.subject)
+  @OneToMany(() => SessionTypeEntity, (sessionType) => sessionType.subject, {
+    nullable: true,
+    cascade: ['soft-remove'], //tzedou jdod hedhoumaa baad pull mtee rim
+  })
   sessionTypes: SessionTypeEntity[];
   @OneToMany(() => AnnouncementEntity, (announcement) => announcement.subject, {
    nullable: true,

@@ -15,7 +15,7 @@ export class CreateNoteDto {
   @Type(() => Student)
   student: Student;*/
 
-  /*  @IsNotEmpty()
+  @IsNotEmpty()
   @Type(() => SessionEntity)
-  session: SessionEntity;*/
+  session: SessionEntity;
 }

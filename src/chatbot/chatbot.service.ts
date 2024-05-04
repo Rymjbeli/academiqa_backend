@@ -1,12 +1,12 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import * as dotenv from "dotenv";
-import { ChatbotDiscussionsEntity } from "./Entities/chatbot-discussions.entity";
-import { Repository } from "typeorm";
-import { ChatbotMessagesEntity } from "./Entities/chatbot-messages.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { FileUploadService } from "../file-upload/file-upload.service";
-import { Student } from "../user/entities/student.entity";
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import * as dotenv from 'dotenv';
+import { ChatbotDiscussionsEntity } from './Entities/chatbot-discussions.entity';
+import { Repository } from 'typeorm';
+import { ChatbotMessagesEntity } from './Entities/chatbot-messages.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FileUploadService } from '../file-upload/file-upload.service';
+import { User } from '../user/entities/user.entity';
 
 dotenv.config();
 @Injectable()
@@ -37,7 +37,7 @@ export class ChatbotService {
     prompt: string,
     image: Express.Multer.File,
     discussionId: number,
-    user: Student,
+    user: User,
   ): Promise<{ prompt: string; image: string; response: string }> {
     try {
       const genModel = image ? 'gemini-pro-vision' : 'gemini-pro';
@@ -79,23 +79,27 @@ export class ChatbotService {
 
       const result = await model.generateContent(requestPrompt);
       const response = result.response;
-      await this.createMessage(discussion, prompt, response.text(), imagePath,user);
+      await this.createMessage(
+        discussion,
+        prompt,
+        response.text(),
+        imagePath,
+        user,
+      );
       return { prompt: prompt, image: imagePath, response: response.text() };
     } catch (error) {
       throw new Error(`Failed to generate response: ${error.message}`);
     }
   }
 
-  async getAllDiscussions(
-    student: Student,
-  ): Promise<ChatbotDiscussionsEntity[]> {
+  async getAllDiscussions(user: User): Promise<ChatbotDiscussionsEntity[]> {
     return await this.chatbotDiscussionsRepository.find({
       where: {
-        student: { id: student.id },
+        user: { id: user.id },
       },
-    })
+    });
   }
-  async deleteDiscussionById(id: number, student: Student): Promise<void> {
+  async deleteDiscussionById(id: number, user: User): Promise<void> {
     const discussion = await this.chatbotDiscussionsRepository.findOneBy({
       id,
     });
@@ -103,7 +107,7 @@ export class ChatbotService {
     if (!discussion) {
       throw new UnauthorizedException(`Discussion with id ${id} not found`);
     }
-    if(discussion.student.id !== student.id) {
+    if (discussion.user.id !== user.id) {
       throw new UnauthorizedException(
         'You are not authorized to delete this discussion',
       );
@@ -114,9 +118,9 @@ export class ChatbotService {
   async getDiscussionById(id: number): Promise<ChatbotDiscussionsEntity> {
     return await this.chatbotDiscussionsRepository.findOneBy({ id });
   }
-  async createDiscussion(user: Student): Promise<ChatbotDiscussionsEntity> {
+  async createDiscussion(user: User): Promise<ChatbotDiscussionsEntity> {
     const newDiscussion = this.chatbotDiscussionsRepository.create();
-    newDiscussion.student = user;
+    newDiscussion.user = user;
     console.log(user);
     return await this.chatbotDiscussionsRepository.save(newDiscussion);
   }
@@ -126,7 +130,7 @@ export class ChatbotService {
     prompt: string,
     response: string,
     image: string,
-    user: Student,
+    user: User,
   ): Promise<ChatbotMessagesEntity> {
     if (!discussion) {
       discussion = await this.createDiscussion(user);
