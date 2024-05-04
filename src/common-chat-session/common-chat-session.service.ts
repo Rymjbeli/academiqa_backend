@@ -29,6 +29,7 @@ export class CommonChatSessionService {
           username: message.author.username,
           role: message.author.role,
           id: message.author.id,
+          photo: message.author.photo,
         },
       });
     });
@@ -95,13 +96,14 @@ export class CommonChatSessionService {
         ...chat,
         session,
         author: {
+          photo: chat.author.Photo,
           username: chat.author.username,
           role: chat.author.role,
           id: chat.author.id,
         },
       };
     });
-    // console.log('chatsWithAuthorDetails', chatsWithAuthorDetails);
+    console.log('chatsWithAuthorDetails', chatsWithAuthorDetails);
     return this.organizeMessages(chatsWithAuthorDetails);
   }
 

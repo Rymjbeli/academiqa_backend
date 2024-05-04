@@ -30,7 +30,9 @@ export class AdminService {
       id: admin.id,
       email: admin.email,
       username: admin.username,
-      cin: admin.cin,
+      // cin: admin.cin,
+      photo: admin.Photo,
+
     };
   }
 

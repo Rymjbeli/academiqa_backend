@@ -22,6 +22,7 @@ import { FileUploadModule } from './file-upload/file-upload.module';
 import { AuthModule } from './auth/auth.module';
 import { GroupModule } from './group/group.module';
 import { MailModule } from './mail/mail.module';
+import { NewNotificationModule } from './new-notification/new-notification.module';
 
 dotenv.config();
 @Module({
@@ -55,6 +56,7 @@ dotenv.config();
     AuthModule,
     GroupModule,
     MailModule,
+    NewNotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

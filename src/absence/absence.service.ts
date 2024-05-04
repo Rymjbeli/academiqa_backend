@@ -1,11 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAbsenceDto } from './dto/create-absence.dto';
 import { UpdateAbsenceDto } from './dto/update-absence.dto';
+import { AbsenceEntity } from "./entities/absence.entity";
+import { Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class AbsenceService {
-  create(createAbsenceDto: CreateAbsenceDto) {
-    return 'This action adds a new absence';
+  constructor(
+    @InjectRepository(AbsenceEntity)
+    private readonly absenceRepository: Repository<AbsenceEntity>,
+  ) {}
+  async create(createAbsenceDto: CreateAbsenceDto) {
+    const absence = this.absenceRepository.create(createAbsenceDto);
+    return this.absenceRepository.save(absence);
+
   }
 
   findAll() {

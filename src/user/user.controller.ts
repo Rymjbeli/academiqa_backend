@@ -18,6 +18,7 @@ import { User } from './entities/user.entity';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CurrentUser } from '../decorators/user.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from "multer";
 
 @Controller('user')
 export class UserController {
@@ -59,6 +60,12 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('photo', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        },
+      }),
       fileFilter: (req, file, e) => {
         const allowedFileTypes = /\.(png|jpeg|jpg)$/i;
         if (!file.originalname.match(allowedFileTypes)) {
@@ -78,6 +85,7 @@ export class UserController {
     @CurrentUser() user: User,
     @UploadedFile() photo: Express.Multer.File,
   ) {
+    console.log(photo);
     return await this.userService.editPhoto(user, photo);
   }
 }
