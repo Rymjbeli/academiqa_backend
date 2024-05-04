@@ -12,44 +12,44 @@ export class NotificationService {
     @InjectRepository(NotificationEntity)
     private notificationRepository: Repository<NotificationEntity>,
   ) {}
-  notifications: any[] = [
-    {
-      id: 1,
-      content:
-        'You have reached the **absence limit** in **Co Design**, please contact the administration',
-      type: 'absence-limit',
-      receiver: '1',
-      senderImage: 'administration.svg',
-    },
-    {
-      id: 2,
-      content: 'New Content has been added to **Web Development**',
-      type: 'content',
-      receiver: '1',
-      senderImage: 'Sellaouti.jpg',
-    },
-    {
-      id: 3,
-      content: 'You have a new message from **Abderrahmane Benghazi**',
-      type: 'message',
-      receiver: '1',
-      senderImage: 'Sellaouti.jpg',
-    },
-    {
-      id: 4,
-      content: 'You have been marked **absent** in **Co design**',
-      type: 'absent',
-      receiver: '1',
-      senderImage: 'administration.svg',
-    },
-    {
-      id: 5,
-      content: '**Aymen Sellaouti** added new announcement',
-      type: 'new-announcement',
-      receiver: '1',
-      senderImage: 'Sellaouti.jpg',
-    },
-  ];
+  // notifications: any[] = [
+  //   {
+  //     id: 1,
+  //     content:
+  //       'You have reached the **absence limit** in **Co Design**, please contact the administration',
+  //     type: 'absence-limit',
+  //     receiver: '1',
+  //     senderImage: 'administration.svg',
+  //   },
+  //   {
+  //     id: 2,
+  //     content: 'New Content has been added to **Web Development**',
+  //     type: 'content',
+  //     receiver: '1',
+  //     senderImage: 'Sellaouti.jpg',
+  //   },
+  //   {
+  //     id: 3,
+  //     content: 'You have a new message from **Abderrahmane Benghazi**',
+  //     type: 'message',
+  //     receiver: '1',
+  //     senderImage: 'Sellaouti.jpg',
+  //   },
+  //   {
+  //     id: 4,
+  //     content: 'You have been marked **absent** in **Co design**',
+  //     type: 'absent',
+  //     receiver: '1',
+  //     senderImage: 'administration.svg',
+  //   },
+  //   {
+  //     id: 5,
+  //     content: '**Aymen Sellaouti** added new announcement',
+  //     type: 'new-announcement',
+  //     receiver: '1',
+  //     senderImage: 'Sellaouti.jpg',
+  //   },
+  // ];
 
   // createNotification(sender, type) {
   //   const notification = {
@@ -77,7 +77,6 @@ export class NotificationService {
 
     return await this.notificationRepository.find();
   }
-
   generateContent(notificationType: NotifTypeEnum, content: string): string {
     switch (notificationType) {
       case NotifTypeEnum.ABSENCE_LIMIT:

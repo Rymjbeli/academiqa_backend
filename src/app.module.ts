@@ -20,6 +20,8 @@ import { UserEntity } from './user/entities/user.entity';
 import { StudentEntity } from './user/entities/student.entity';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { GroupModule } from './group/group.module';
+import { NewNotificationModule } from './new-notification/new-notification.module';
+import { EventEmitterModule } from "@nestjs/event-emitter";
 dotenv.config();
 @Module({
   imports: [
@@ -35,6 +37,7 @@ dotenv.config();
       synchronize: true,
       debug: false,
     }),
+    EventEmitterModule.forRoot(),
     ChatbotModule,
     NotificationModule,
     NoteModule,
@@ -50,6 +53,7 @@ dotenv.config();
     TypeOrmModule.forFeature([UserEntity, StudentEntity]),
     CommonChatSessionModule,
     GroupModule,
+    NewNotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
