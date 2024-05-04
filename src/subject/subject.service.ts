@@ -7,6 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
 import { Teacher } from '../user/entities/teacher.entity';
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { NotifTypeEnum } from "../Enums/notif-type.enum";
 
 @Injectable()
 export class SubjectService {
@@ -16,9 +18,18 @@ export class SubjectService {
     private subjectRepository: Repository<SubjectEntity>,
     @InjectRepository(SessionTypeEntity)
     private sessionTypeRepository: Repository<SessionTypeEntity>,
+    private eventEmitter: EventEmitter2,
   ) {}
   async createOneSubject(createSubjectDto: CreateSubjectDto) {
     const subject = await this.subjectRepository.create(createSubjectDto);
+    const payload = {
+      notificationType: NotifTypeEnum.CONTENT,
+      content:'ramroum',
+      broadcast: null,
+      link: null,
+      receiver: 0
+    }
+    this.eventEmitter.emit('notify', payload);
     return await this.subjectRepository.save(subject);
   }
   async createSubjects(subjectFile: Express.Multer.File) {

@@ -1,34 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Sse,
+} from '@nestjs/common';
 import { NewNotificationService } from './new-notification.service';
 import { CreateNewNotificationDto } from './dto/create-new-notification.dto';
 import { UpdateNewNotificationDto } from './dto/update-new-notification.dto';
+import { map } from 'rxjs';
 
 @Controller('new-notification')
 export class NewNotificationController {
-  constructor(private readonly newNotificationService: NewNotificationService) {}
-
-  @Post()
-  create(@Body() createNewNotificationDto: CreateNewNotificationDto) {
-    return this.newNotificationService.create(createNewNotificationDto);
-  }
-
+  constructor(
+    private readonly newNotificationService: NewNotificationService,
+  ) {}
   @Get()
-  findAll() {
-    return this.newNotificationService.findAll();
+  async findAll(@Body() receiver: string) {
+    return await this.newNotificationService.getAllNotifications(receiver);
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.newNotificationService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNewNotificationDto: UpdateNewNotificationDto) {
-    return this.newNotificationService.update(+id, updateNewNotificationDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.newNotificationService.remove(+id);
+  @Sse('events-for-user')
+  sseEvents(@Body() receiver: string) {
+    return this.newNotificationService
+      .userNotificationStream(receiver)
+      .pipe(map((notification) => ({ data: notification })));
   }
 }

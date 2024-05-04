@@ -14,5 +14,4 @@ export class GroupEntity extends TimestampEntites {
   group: number;
   @Column()
   sectorLevel: string;
-
 }

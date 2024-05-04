@@ -3,7 +3,7 @@ import { CreateCommonChatSessionDto } from './dto/create-common-chat-session.dto
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonChatEntity } from './entities/common-chat.entity';
 import { Repository } from 'typeorm';
-import { NotificationService } from '../notification/notification.service';
+import { NewNotificationService } from '../new-notification/new-notification.service';
 import { NotifTypeEnum } from '../Enums/notif-type.enum';
 import { User } from '../user/entities/user.entity';
 import { SessionEntity } from '../session/entities/session.entity';
@@ -13,7 +13,7 @@ export class CommonChatSessionService {
   constructor(
     @InjectRepository(CommonChatEntity)
     private readonly commonChatSessionRepository: Repository<CommonChatEntity>,
-    private notificationService: NotificationService,
+    private notificationService: NewNotificationService,
   ) {}
   clientToUser: any = {};
 

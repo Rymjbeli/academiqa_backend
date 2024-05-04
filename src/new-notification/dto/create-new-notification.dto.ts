@@ -1,5 +1,11 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
-import { NotifTypeEnum } from "../../Enums/notif-type.enum";
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { NotifTypeEnum } from '../../Enums/notif-type.enum';
 
 export class CreateNewNotificationDto {
   @IsString()
