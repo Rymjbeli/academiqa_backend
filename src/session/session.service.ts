@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateSessionDto } from './dto/create-session.dto';
 import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
 import { SessionEntity } from './entities/session.entity';
@@ -40,13 +40,13 @@ export class SessionService {
     sessionTypeDay: string,
   ) {
     const dayMapping = {
-      Lundi: 1,
-      Mardi: 2,
-      Mercredi: 3,
-      Jeudi: 4,
-      Vendredi: 5,
-      Samedi: 6,
-      Dimanche: 0,
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
+      Sunday: 0,
     };
     const dates = [];
     for (let i = 0; i < numberOfWeeks; i++) {
@@ -171,6 +171,7 @@ export class SessionService {
       ),
     );
     await this.deleteDuplicateHolidaySessions();
+    console.log('sessions', sessions);
     return sessions.flat();
   }
 
@@ -264,13 +265,13 @@ export class SessionService {
 
     // Create a mapping from day numbers to day names
     const dayMapping = {
-      0: 'Dimanche',
-      1: 'Lundi',
-      2: 'Mardi',
-      3: 'Mercredi',
-      4: 'Jeudi',
-      5: 'Vendredi',
-      6: 'Samedi',
+      0: 'Sunday',
+      1: 'Monday',
+      2: 'Tuesday',
+      3: 'Wednesday',
+      4: 'Thursday',
+      5: 'Friday',
+      6: 'Saturday',
     };
 
     // Store the day name in sessionType.day
@@ -446,5 +447,45 @@ export class SessionService {
     } else {
       return await this.sessionRepository.recover(session);
     }
+  }
+
+  async getStudentsFromSessionId(sessionId: number) {
+    const session = await this.sessionRepository.findOne({
+      where: { id: sessionId },
+      relations: ['sessionType', 'sessionType.group'],
+    });
+    console.log('session', session);
+    if (!session) {
+      throw new NotFoundException('Session not found');
+    }
+    let students: Student[];
+    if (session?.sessionType.type !== SessionTypeEnum.Lecture) {
+      const groupId = session.sessionType.group.id;
+      students = await this.sessionRepository.manager
+        .getRepository(Student)
+        .find({
+          where: { group: { id: groupId } },
+          relations: ['group'],
+        });
+    } else {
+      const sectorLevel = session.sessionType.group.sectorLevel;
+      students = await this.sessionRepository.manager
+        .getRepository(Student)
+        .find({
+          where: { group: { sectorLevel: sectorLevel } },
+          relations: ['group'],
+        });
+    }
+
+    return students.map((student) => {
+      return {
+        id: student.id,
+        username: student.username,
+        email: student.email,
+        photo: student.Photo,
+        enrollmentNumber: student.enrollmentNumber,
+        group: student.group,
+      };
+    });
   }
 }

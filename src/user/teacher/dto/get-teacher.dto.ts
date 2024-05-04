@@ -20,4 +20,7 @@ export class GetTeacherDto {
   @IsNotEmpty()
   @IsNumber()
   cin: number;
+
+  @IsString()
+  photo: string;
 }

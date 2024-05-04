@@ -10,6 +10,7 @@ export class CreateCommonChatSessionDto {
   @IsOptional()
   parent: CommonChatEntity;
   @Type(() => SessionEntity)
+  @IsNotEmpty()
   session: SessionEntity;
   @IsNotEmpty()
   author: User;
