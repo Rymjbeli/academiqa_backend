@@ -32,7 +32,7 @@ export class User extends TimestampEntites {
   cin: number;
 
   @Column({ nullable: true, length: 500 })
-  Photo: string;
+  photo: string;
 
   @Exclude()
   @Column()
