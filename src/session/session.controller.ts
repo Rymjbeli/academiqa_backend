@@ -73,17 +73,17 @@ export class SessionController {
     return this.sessionService.findOne(id);
   }
 
-  /*  @Patch(':id')
+  @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateSessionDto: UpdateSessionDto,
   ) {
     return this.sessionService.update(id, updateSessionDto);
-  }*/
+  }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number, @Body() groupDto: GetGroupDto) {
-    return this.sessionService.remove(id, groupDto);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.sessionService.remove(id);
   }
 
   @Get('recover/:id')

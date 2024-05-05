@@ -339,22 +339,31 @@ export class SessionService {
     return session;
   }
 
-  /*  async update(id: number, updateSessionDto: UpdateSessionDto) {
+    async update(id: number, updateSessionDto: UpdateSessionDto) {
     const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
       throw new Error('Session not found');
     } else {
       return await this.sessionRepository.update(id, updateSessionDto);
     }
-  }*/
+  }
 
-  async remove(id: number, groupDto: GetGroupDto) {
-    const sessions = await this.findSessionsOfSectorLevelGroup(groupDto);
-    const session = sessions.find((session) => session.id === id);
+  // async remove(id: number, groupDto: GetGroupDto) {
+  //   const sessions = await this.findSessionsOfSectorLevelGroup(groupDto);
+  //   const session = sessions.find((session) => session.id === id);
+  //   if (!session) {
+  //     throw new Error('Session not found');
+  //   } else {
+  //     return await this.sessionRepository.softRemove(session);
+  //   }
+  // }
+
+  async remove(id : number) {
+    const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
-      throw new Error('Session not found');
+      throw new NotFoundException('Session not found');
     } else {
-      return await this.sessionRepository.softRemove(session);
+      return await this.sessionRepository.remove(session);
     }
   }
 
