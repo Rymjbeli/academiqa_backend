@@ -15,13 +15,14 @@ export class GroupService {
     private groupRepository: Repository<GroupEntity>,
   ) {}
   async createOneGroup(createGroupDto: CreateGroupDto) {
-    const group = await this.groupRepository.create(createGroupDto);
+    const group = this.groupRepository.create(createGroupDto);
     return await this.groupRepository.save(group);
   }
 
   async createGroups(groupFile: Express.Multer.File) {
     const groups: CreateGroupDto[] =
       await this.fileUploadService.uploadCSVFile(groupFile);
+    console.log('groups', groups);
     const groupEntities = groups.map((createGroupDto) =>
       this.createOneGroup(createGroupDto),
     );

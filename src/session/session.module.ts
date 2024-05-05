@@ -11,6 +11,10 @@ import { TeacherService } from '../user/teacher/teacher.service';
 import { GroupEntity } from '../group/entities/group.entity';
 import { SubjectEntity } from '../subject/entities/subject.entity';
 import { Teacher } from '../user/entities/teacher.entity';
+import { SessionGuard } from './guard/session.guard';
+import { UserModule } from '../user/user.module';
+import { StudentService } from '../user/student/student.service';
+import { Student } from '../user/entities/student.entity';
 
 @Module({
   imports: [
@@ -20,6 +24,7 @@ import { Teacher } from '../user/entities/teacher.entity';
       GroupEntity,
       SubjectEntity,
       Teacher,
+      Student,
     ]),
   ],
   controllers: [SessionController],
@@ -29,6 +34,8 @@ import { Teacher } from '../user/entities/teacher.entity';
     GroupService,
     SubjectService,
     TeacherService,
+    SessionGuard,
+    StudentService,
   ],
 })
 export class SessionModule {}

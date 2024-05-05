@@ -7,55 +7,54 @@ import {
   Param,
   Delete,
   UseInterceptors,
-  UploadedFile, UseGuards
-} from "@nestjs/common";
+  UploadedFile,
+  UseGuards,
+} from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { JwtAuthGuard } from "../auth/guard/jwt-auth.guard";
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { CurrentUser } from '../decorators/user.decorator';
+import { User } from '../user/entities/user.entity';
+import { Teacher } from '../user/entities/teacher.entity';
 
 @Controller('subject')
+@UseGuards(JwtAuthGuard)
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
   @Post('/CreateAll')
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   async create(@UploadedFile() file: Express.Multer.File) {
     return await this.subjectService.createSubjects(file);
   }
   @Post('CreateOne')
-  @UseGuards(JwtAuthGuard)
-  createOne(@Body() createSubjectDto: CreateSubjectDto) {
+  async createOne(@Body() createSubjectDto: CreateSubjectDto) {
     console.log('createSubjectDto', createSubjectDto);
-    return this.subjectService.createOneSubject(createSubjectDto);
+    return await this.subjectService.createOneSubject(createSubjectDto);
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
-  findAll() {
-    return this.subjectService.findAll();
+  async findAll() {
+    return await this.subjectService.findAll();
   }
   @Get('/GroupedByModule')
-  @UseGuards(JwtAuthGuard)
-  findAllGroupedByModule() {
-    return this.subjectService.findAllGroupedByModule();
+  async findAllGroupedByModule() {
+    return await this.subjectService.findAllGroupedByModule();
   }
   @Get('/SectorLevel/:sectorLevel')
-  @UseGuards(JwtAuthGuard)
-  findBySectorLevel(@Param('sectorLevel') sectorLevel: string) {
-    return this.subjectService.findBySectorLevel(sectorLevel);
+  async findBySectorLevel(@Param('sectorLevel') sectorLevel: string) {
+    return await this.subjectService.findBySectorLevel(sectorLevel);
+  }
+  @Get('/teacher')
+  async findByTeacher(@CurrentUser() user: Teacher) {
+    return await this.subjectService.findByTeacher(user);
   }
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.subjectService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.subjectService.findOne(+id);
   }
-  // @Get('/teacher')
-  // async findByTeacher() {
-  //   return await this.subjectService.findByTeacher();
-  // }
 
   @Get('/NameSectorLevel/:name/:sectorLevel')
   findBySubjectName(
@@ -66,14 +65,15 @@ export class SubjectController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.subjectService.deleteSubject(+id);
+  async remove(@Param('id') id: string) {
+    return await this.subjectService.deleteSubject(+id);
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateSubjectDto: UpdateSubjectDto) {
-    return this.subjectService.update(+id, updateSubjectDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateSubjectDto: UpdateSubjectDto,
+  ) {
+    return await this.subjectService.update(+id, updateSubjectDto);
   }
 }

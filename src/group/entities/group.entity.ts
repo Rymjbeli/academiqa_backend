@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
+import { Student } from '../../user/entities/student.entity';
 
 @Entity('groups')
 export class GroupEntity extends TimestampEntites {
@@ -13,4 +14,5 @@ export class GroupEntity extends TimestampEntites {
   group: number;
   @Column()
   sectorLevel: string;
+
 }

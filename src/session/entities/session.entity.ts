@@ -34,17 +34,18 @@ export class SessionEntity extends TimestampEntites {
     nullable: true,
   })
   sessionType: SessionTypeEntity;
-  // @OneToMany(() => CommonChatEntity, (commonChat) => commonChat.session, {
-  //   nullable: true,
-  // })
-  // commonChats: CommonChatEntity[];
   @OneToMany(() => NoteEntity, (note) => note.session)
   notes: NoteEntity[];
+  @OneToMany(() => CommonChatEntity, (commonChat) => commonChat.session, {
+    nullable: true,
+  })
+  commonChats: CommonChatEntity[];
   @OneToMany(() => RessourceEntity, (ressource) => ressource.session, {
     nullable: true,
   })
   ressources: RessourceEntity[];
   @OneToMany(() => TaskEntity, (task) => task.session, { nullable: true })
   tasks: TaskEntity[];
-  type: import("c:/Users/weszi/OneDrive/Bureau/gl3sem2/ppp/Academiqa/academiqa_backend/src/Enums/session-type.enum").SessionTypeEnum;
+  // type: import("c:/Users/weszi/OneDrive/Bureau/gl3sem2/ppp/Academiqa/academiqa_backend/src/Enums/session-type.enum").SessionTypeEnum;
+  type: import('D:/projetPPPWeb/academiqa_backend/src/Enums/session-type.enum').SessionTypeEnum;
 }

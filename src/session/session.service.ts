@@ -1,6 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateSessionDto } from './dto/create-session.dto';
-import { UpdateSessionDto } from './dto/update-session.dto';
 import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
 import { SessionEntity } from './entities/session.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,6 +12,7 @@ import { AddSessionDto } from './dto/add-session.dto';
 import { GetGroupDto } from '../group/dto/get-group.dto';
 import { GroupService } from '../group/group.service';
 import { SessionTypeEnum } from '../Enums/session-type.enum';
+import { Student } from '../user/entities/student.entity';
 
 @Injectable()
 export class SessionService {
@@ -40,13 +40,13 @@ export class SessionService {
     sessionTypeDay: string,
   ) {
     const dayMapping = {
-      Lundi: 1,
-      Mardi: 2,
-      Mercredi: 3,
-      Jeudi: 4,
-      Vendredi: 5,
-      Samedi: 6,
-      Dimanche: 0,
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
+      Sunday: 0,
     };
     const dates = [];
     for (let i = 0; i < numberOfWeeks; i++) {
@@ -146,9 +146,35 @@ export class SessionService {
         createSessionDto.name = sessionType.subject.name;
         createSessionDto.date = date;
         createSessionDto.endTime = endTime;
-        createSessionDto.sessionType = sessionType;
-        const session = await this.createSession(createSessionDto);
-        sessions.push(session);
+        if (sessionType.type === SessionTypeEnum.Lecture) {
+          const sessionTypeForTheSameSectorLevel =
+            await this.sessionTypeRepository.find({
+              where: {
+                subject: {
+                  name: sessionType.subject.name,
+                },
+                type: SessionTypeEnum.Lecture,
+                group: {
+                  sectorLevel: sessionType.group.sectorLevel,
+                },
+              },
+            });
+          if (sessionTypeForTheSameSectorLevel.length > 1) {
+            if (sessionTypeForTheSameSectorLevel[0].id === sessionType.id) {
+              createSessionDto.sessionType = sessionType;
+              const session = await this.createSession(createSessionDto);
+              sessions.push(session);
+            }
+          } else {
+            createSessionDto.sessionType = sessionType;
+            const session = await this.createSession(createSessionDto);
+            sessions.push(session);
+          }
+        } else {
+          createSessionDto.sessionType = sessionType;
+          const session = await this.createSession(createSessionDto);
+          sessions.push(session);
+        }
       }
     }
     return sessions;
@@ -209,6 +235,24 @@ export class SessionService {
 
   // this function is used to add a session
   async addSession(addSessionDto: AddSessionDto, getGroupDto: GetGroupDto) {
+    let date = addSessionDto.date;
+    if (!(date instanceof Date)) {
+      date = new Date(date);
+    }
+    const isHoliday = await this.findOneHoliday(date);
+    if (isHoliday) {
+      throw {
+        type: 'HolidayExists',
+        message: 'This date is a holiday',
+      };
+    } else if (date.getDay() === 0) {
+      throw {
+        type: 'HolidayExists',
+        message: 'This date is a sunday',
+      };
+    }
+    // else console.log('This date is not a holiday');
+
     const existingSession = await this.sessionRepository.find({
       where: {
         date: addSessionDto.date,
@@ -232,7 +276,7 @@ export class SessionService {
     const session = new SessionEntity();
     session.name = addSessionDto.name;
 
-    const date = new Date(addSessionDto.date);
+    // const date = new Date(addSessionDto.date);
     const endTime = new Date(addSessionDto.endTime);
     console.log(date);
     session.date = date;
@@ -243,7 +287,20 @@ export class SessionService {
     sessionType.type = SessionTypeEnum.Rattrapage;
 
     sessionType.group = group;
-    sessionType.day = date.getDay().toString();
+
+    // Create a mapping from day numbers to day names
+    const dayMapping = {
+      0: 'Sunday',
+      1: 'Monday',
+      2: 'Tuesday',
+      3: 'Wednesday',
+      4: 'Thursday',
+      5: 'Friday',
+      6: 'Saturday',
+    };
+
+    // Store the day name in sessionType.day
+    sessionType.day = dayMapping[date.getDay()];
 
     // Convert the start and end times to strings in the format 'HH:mm'
     sessionType.startHour =
@@ -267,7 +324,7 @@ export class SessionService {
 
   async findAll() {
     const result = await this.sessionRepository.find({
-      relations: ['sessionType','sessionType.subject'],
+      relations: ['sessionType', 'sessionType.subject'],
       order: {
         date: 'ASC', // 'ASC' for ascending and 'DESC' for descending
       },
@@ -286,11 +343,76 @@ export class SessionService {
     if (!session) {
       throw new NotFoundError('Session not found');
     }
+    const { sessionType } = session;
+    if (sessionType) {
+      const { subject, ...filteredSessionType } = sessionType;
+
+      const rank = await this.countSessionRank(session);
+      return {
+        ...session,
+        sessionType: filteredSessionType,
+        rank: rank,
+      };
+    }
+    return session;
+  }
+  async findOneForGuard(id: number) {
+    const session = await this.sessionRepository.findOne({
+      where: { id },
+    });
+
+    if (!session) {
+      throw new NotFoundError('Session not found');
+    }
+
+    if (session.sessionType) {
+      const sessionTypeWithTeacher = await this.sessionRepository.manager
+        .getRepository(SessionTypeEntity)
+        .findOne({
+          where: { id: session.sessionType.id },
+          relations: ['teacher'],
+        });
+
+      if (sessionTypeWithTeacher) {
+        session.sessionType.teacher = sessionTypeWithTeacher.teacher;
+      }
+    }
+
     return session;
   }
 
+  async countSessionRank(session: SessionEntity) {
+    const { sessionType } = session;
+    const sessions = await this.sessionRepository.find({
+      where: { sessionType: { id: sessionType.id } },
+      order: { date: 'ASC' },
+      relations: ['sessionType'],
+    });
+    // console.log("sessions",sessions);
+    const sessionIndex = sessions.findIndex((s) => s.id === session.id);
+
+    return sessionIndex + 1;
+  }
   // this function is used to find all sessions of a certain group(level, sector, group) returns a dto, not the entity
   async findSessionsOfSectorLevelGroup(getGroupDto: GetGroupDto) {
+    const sessionsOfSectorLevel = await this.sessionRepository.find({
+      relations: ['sessionType', 'sessionType.group', 'sessionType.subject'],
+      where: {
+        sessionType: {
+          group: {
+            sector: getGroupDto.sector,
+            level: getGroupDto.level,
+          },
+        },
+      },
+    });
+    console.log('sessionofsector level ', sessionsOfSectorLevel);
+
+    const lectureSessions = sessionsOfSectorLevel.filter(
+      (session) => session.sessionType.type === SessionTypeEnum.Lecture,
+    );
+    console.log('lectureSessions', lectureSessions);
+
     const sessions = await this.sessionRepository.find({
       relations: ['sessionType', 'sessionType.group', 'sessionType.subject'],
       where: {
@@ -303,17 +425,53 @@ export class SessionService {
         },
       },
     });
+    console.log('session', sessions);
+
+    // Check if lectureSessions already exists in sessions
+    const isLectureSessionExists = sessions.some((session) =>
+      lectureSessions.find(
+        (lectureSession) => lectureSession.id === session.id,
+      ),
+    );
+
+    // If lectureSessions does not exist in sessions, add it
+    if (!isLectureSessionExists) {
+      sessions.push(...lectureSessions);
+    }
+
+    /*
+    const sessions = await this.sessionRepository.find({
+      relations: ['sessionType', 'sessionType.group', 'sessionType.subject'],
+      where: {
+        sessionType: {
+          group: {
+            sector: getGroupDto.sector,
+            level: getGroupDto.level,
+            group: getGroupDto.group,
+          },
+        },
+      },
+    });
+*/
 
     const getSessionsDto: GetSessionDto[] = sessions.map((session) => {
+      if (!session.sessionType) {
+        return {
+          id: session.id,
+          StartTime: session.date,
+          EndTime: session.endTime,
+          holidayName: session.holidayName,
+          type: SessionTypeEnum.Holiday,
+          name: session.name,
+        };
+      }
       return {
         id: session.id,
         StartTime: session.date,
         EndTime: session.endTime,
         holidayName: session.holidayName,
-
         type: session.sessionType.type,
-
-        name: session.name? session.name : session.sessionType.subject.name,
+        name: session.name ? session.name : session.sessionType.subject.name,
       };
     });
 
@@ -395,6 +553,5 @@ export class SessionService {
       session.type = session.sessionType.type;
     });
     return result;
-
   }
 }

@@ -19,6 +19,10 @@ import { GetGroupDto } from '../group/dto/get-group.dto';
 import { AddSessionDto } from './dto/add-session.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
+import { AddHolidaysDto } from './dto/add-holidays.dto';
+import { CurrentUser } from '../decorators/user.decorator';
+import { User } from '../user/entities/user.entity';
+import { SessionGuard } from './guard/session.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('session')
@@ -28,10 +32,13 @@ export class SessionController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async generateSessionsForAllSessionTypes(
-    @Query('numberOfWeeks') numberOfWeeks: number,
-    @Query('semesterStartDate') semesterStartDate: string,
+    @Body() addHolidaysDto: AddHolidaysDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    const { numberOfWeeks, semesterStartDate } = addHolidaysDto;
+    console.log(numberOfWeeks);
+    console.log(semesterStartDate);
+    console.log(file);
     return this.sessionService.generateSessionsForAllSessionTypes(
       numberOfWeeks,
       semesterStartDate,
@@ -69,7 +76,11 @@ export class SessionController {
   }
 
   @Get(':id')
-  findOneById(@Param('id', ParseIntPipe) id: number) {
+  @UseGuards(SessionGuard)
+  findOneById(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ) {
     return this.sessionService.findOne(id);
   }
 

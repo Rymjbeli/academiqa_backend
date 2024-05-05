@@ -10,7 +10,7 @@ import { Repository } from 'typeorm';
 import { NoteEntity } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../user/entities/student.entity';
-import { Expose, plainToClass } from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class NoteService {
@@ -32,7 +32,7 @@ export class NoteService {
       where: {
         student: { id: student.id },
       },
-      // relations: ['session'],
+      relations: ['session'],
     });
     if (!noteEntities) {
       throw new NotFoundException('No notes found');
@@ -55,10 +55,7 @@ export class NoteService {
   async findOne(id: number, student: Student): Promise<GetNoteDto | null> {
     const noteEntity = await this.noteRepository.findOne({
       where: { id },
-      relations: [
-        // 'session',
-        'student',
-      ],
+      relations: ['session', 'student'],
     });
     if (!noteEntity) {
       throw new NotFoundException('Note not found');
@@ -80,23 +77,24 @@ export class NoteService {
       return noteDto;
     }
   }
-  /*
 
   async findAllByStudentBySession(
-    queryParams: GetNoteDto,
+    student: Student,
+    sessionId: number,
   ): Promise<NoteEntity[] | null> {
-    const { studentId, sessionId } = queryParams;
-    const notes = await this.noteRepository.find({ relations: ['session'] });
-    if (!studentId && !sessionId) {
-      return notes;
-    }
-    return notes.filter((note) => {
-      if (studentId && note.student.id != studentId) {
-        return false;
-      }
-      return !(sessionId && note.session.id != sessionId);
+    const notes = await this.noteRepository.find({
+      relations: ['student', 'session'],
+      where: { session: { id: sessionId } },
     });
-  }*/
+    if (!notes) {
+      throw new NotFoundException('No notes found');
+    }
+    const studentNotes = notes.filter((note) => note.student.id === student.id);
+    if (studentNotes.length === 0) {
+      return [];
+    }
+    return studentNotes;
+  }
 
   async update(
     id: number,
