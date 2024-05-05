@@ -11,6 +11,7 @@ import { CommonChatEntity } from '../../common-chat-session/entities/common-chat
 import { NoteEntity } from '../../note/entities/note.entity';
 import { RessourceEntity } from '../../ressource/entities/ressource.entity';
 import { TaskEntity } from '../../task/entities/task.entity';
+import { SessionTypeEnum } from 'src/Enums/session-type.enum';
 
 @Entity('session')
 export class SessionEntity extends TimestampEntites {
@@ -46,6 +47,8 @@ export class SessionEntity extends TimestampEntites {
   ressources: RessourceEntity[];
   @OneToMany(() => TaskEntity, (task) => task.session, { nullable: true })
   tasks: TaskEntity[];
+  
+  type: SessionTypeEnum;
   // type: import("c:/Users/weszi/OneDrive/Bureau/gl3sem2/ppp/Academiqa/academiqa_backend/src/Enums/session-type.enum").SessionTypeEnum;
-  type: import('D:/projetPPPWeb/academiqa_backend/src/Enums/session-type.enum').SessionTypeEnum;
+  // type: import('D:/projetPPPWeb/academiqa_backend/src/Enums/session-type.enum').SessionTypeEnum;
 }

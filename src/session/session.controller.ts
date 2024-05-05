@@ -106,4 +106,5 @@ export class SessionController {
   findByTeacher(@Param('teacherID') teacherID: number) {
     return this.sessionService.findByTeacher(teacherID);
   }
+
 }

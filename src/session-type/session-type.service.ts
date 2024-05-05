@@ -279,4 +279,18 @@ export class SessionTypeService {
       return await this.sessionTypeRepository.recover(sessionType);
     }
   }
+
+  async findBySession(id: number){
+    const sessionType = await this.sessionTypeRepository.find(
+      {
+        relations:['teacher'],
+        where:{
+          sessions:{
+            id: id
+          }
+        }
+      }
+    )
+    return sessionType;
+  }
 }
