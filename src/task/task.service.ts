@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +11,8 @@ import { Repository } from 'typeorm';
 import { Teacher } from '../user/entities/teacher.entity';
 import { GetTaskDto } from './dto/get-task.dto';
 import { plainToClass } from 'class-transformer';
+import { SessionEntity } from '../session/entities/session.entity';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class TaskService {
@@ -18,16 +24,25 @@ export class TaskService {
     createTaskDto: CreateTaskDto,
     teacher: Teacher,
   ): Promise<TaskEntity> {
+    if (teacher.role !== 'Teacher') {
+      throw new UnauthorizedException('Unauthorized');
+    }
+    console.log('createTaskDto', createTaskDto);
     const newTask = this.taskRepository.create(createTaskDto);
     newTask.teacher = teacher;
+    console.log('newTask', newTask);
     return await this.taskRepository.save(newTask);
   }
 
-  async findAll(teacher: Teacher): Promise<GetTaskDto[] | null> {
+  async findAllBySession(
+    sessionId: number,
+    user: User,
+  ): Promise<GetTaskDto[] | null> {
     const taskEntities = await this.taskRepository.find({
       where: {
-        teacher: { id: teacher.id },
+        session: { id: sessionId },
       },
+      // relations: ['session', 'teacher'],
     });
     if (!taskEntities) {
       throw new NotFoundException('No tasks found');
@@ -37,58 +52,85 @@ export class TaskService {
     });
   }
 
-  async findOne(id: number): Promise<GetTaskDto | null> {
-    const taskEntity = await this.taskRepository.findOne({ where: { id } });
+  async findTasksOfTeacher(teacher: Teacher): Promise<GetTaskDto[] | null> {
+    const taskEntities = await this.taskRepository.find({
+      where: {
+        teacher: { id: teacher.id },
+      },
+      relations: ['session', 'teacher'],
+    });
+    if (!taskEntities) {
+      console.log('tasks', taskEntities);
+      throw new NotFoundException('No tasks found');
+    }
+    console.log('tasks', taskEntities);
+    return taskEntities.map((task) => {
+      return plainToClass(GetTaskDto, task);
+    });
+  }
+
+  async findOne(id: number, teacherId: number): Promise<GetTaskDto | null> {
+    const taskEntity = await this.taskRepository.findOne({
+      where: {
+        id,
+        teacher: { id: teacherId },
+      },
+      relations: ['session', 'teacher'],
+    });
     if (!taskEntity) {
-      throw new Error('Task not found');
+      throw new NotFoundException('Task not found');
     }
     return plainToClass(GetTaskDto, taskEntity);
   }
-
-  // async findBySession(sessionId: number): Promise<TaskEntity[] | null> {
-  //   const tasks = await this.findAll();
-  //   return tasks.filter((task) => task.session.id == sessionId);
-  // }
 
   async update(
     id: number,
     updateTaskDto: UpdateTaskDto,
     teacher: Teacher,
   ): Promise<TaskEntity | null> {
-    let task = await this.findOne(id);
+    if (teacher.role !== 'Teacher') {
+      throw new UnauthorizedException('Unauthorized');
+    }
+    let task = await this.findOne(id, teacher.id);
     if (!task) {
-      throw new Error('Task not found');
+      throw new NotFoundException('Task not found');
     }
     task = { ...task, ...updateTaskDto };
     if (task.teacher.id !== teacher.id) {
-      throw new Error('Unauthorized');
+      throw new UnauthorizedException('Unauthorized');
     } else {
       return await this.taskRepository.save(task);
     }
   }
 
   async remove(id: number, teacher: Teacher): Promise<TaskEntity | null> {
-    const task = await this.findOne(id);
+    if (teacher.role !== 'Teacher') {
+      throw new UnauthorizedException('Unauthorized');
+    }
+    const task = await this.findOne(id, teacher.id);
     if (!task) {
-      throw new Error('Task not found');
+      throw new NotFoundException('Task not found');
     }
     if (task.teacher.id !== teacher.id) {
-      throw new Error('Unauthorized');
+      throw new UnauthorizedException('Unauthorized');
     } else {
       return await this.taskRepository.softRemove(task);
     }
   }
 
   async recover(id: number, teacher: Teacher): Promise<TaskEntity | null> {
+    if (teacher.role !== 'Teacher') {
+      throw new UnauthorizedException('Unauthorized');
+    }
     const task = await this.taskRepository.findOne({
       where: { id },
       withDeleted: true,
     });
     if (!task) {
-      throw new Error('Task not found');
+      throw new NotFoundException('Task not found');
     }
     if (task.teacher.id !== teacher.id) {
-      throw new Error('Unauthorized');
+      throw new UnauthorizedException('Unauthorized');
     } else {
       return await this.taskRepository.recover(task);
     }

@@ -92,6 +92,7 @@ export class AuthService {
             studentData.sectorLevel,
             studentData.groupNumber,
           );
+          console.log('Group', group);
           if (!group) {
             // If group not found, add the email to conflicts array
             // conflictEmails.push(studentData.email);

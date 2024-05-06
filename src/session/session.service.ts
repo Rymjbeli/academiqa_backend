@@ -13,6 +13,7 @@ import { GetGroupDto } from '../group/dto/get-group.dto';
 import { GroupService } from '../group/group.service';
 import { SessionTypeEnum } from '../Enums/session-type.enum';
 import { Student } from '../user/entities/student.entity';
+import { UpdateSessionDto } from './dto/update-session.dto';
 
 @Injectable()
 export class SessionService {
@@ -146,9 +147,35 @@ export class SessionService {
         createSessionDto.name = sessionType.subject.name;
         createSessionDto.date = date;
         createSessionDto.endTime = endTime;
-        createSessionDto.sessionType = sessionType;
-        const session = await this.createSession(createSessionDto);
-        sessions.push(session);
+        if (sessionType.type === SessionTypeEnum.Lecture) {
+          const sessionTypeForTheSameSectorLevel =
+            await this.sessionTypeRepository.find({
+              where: {
+                subject: {
+                  name: sessionType.subject.name,
+                },
+                type: SessionTypeEnum.Lecture,
+                group: {
+                  sectorLevel: sessionType.group.sectorLevel,
+                },
+              },
+            });
+          if (sessionTypeForTheSameSectorLevel.length > 1) {
+            if (sessionTypeForTheSameSectorLevel[0].id === sessionType.id) {
+              createSessionDto.sessionType = sessionType;
+              const session = await this.createSession(createSessionDto);
+              sessions.push(session);
+            }
+          } else {
+            createSessionDto.sessionType = sessionType;
+            const session = await this.createSession(createSessionDto);
+            sessions.push(session);
+          }
+        } else {
+          createSessionDto.sessionType = sessionType;
+          const session = await this.createSession(createSessionDto);
+          sessions.push(session);
+        }
       }
     }
     return sessions;
@@ -171,7 +198,6 @@ export class SessionService {
       ),
     );
     await this.deleteDuplicateHolidaySessions();
-    console.log('sessions', sessions);
     return sessions.flat();
   }
 
@@ -298,11 +324,19 @@ export class SessionService {
   }*/
 
   async findAll() {
-    return await this.sessionRepository.find({
+    const result = await this.sessionRepository.find({
+      relations: ['sessionType', 'sessionType.subject'],
       order: {
         date: 'ASC', // 'ASC' for ascending and 'DESC' for descending
       },
     });
+
+    result.forEach((session) => {
+      session.name = session.sessionType.subject.name;
+      session.type = session.sessionType.type;
+    });
+
+    return result;
   }
 
   async findOne(id: number) {
@@ -362,6 +396,24 @@ export class SessionService {
   }
   // this function is used to find all sessions of a certain group(level, sector, group) returns a dto, not the entity
   async findSessionsOfSectorLevelGroup(getGroupDto: GetGroupDto) {
+    const sessionsOfSectorLevel = await this.sessionRepository.find({
+      relations: ['sessionType', 'sessionType.group', 'sessionType.subject'],
+      where: {
+        sessionType: {
+          group: {
+            sector: getGroupDto.sector,
+            level: getGroupDto.level,
+          },
+        },
+      },
+    });
+    console.log('sessionofsector level ', sessionsOfSectorLevel);
+
+    const lectureSessions = sessionsOfSectorLevel.filter(
+      (session) => session.sessionType.type === SessionTypeEnum.Lecture,
+    );
+    console.log('lectureSessions', lectureSessions);
+
     const sessions = await this.sessionRepository.find({
       relations: ['sessionType', 'sessionType.group', 'sessionType.subject'],
       where: {
@@ -374,6 +426,34 @@ export class SessionService {
         },
       },
     });
+    console.log('session', sessions);
+
+    // Check if lectureSessions already exists in sessions
+    const isLectureSessionExists = sessions.some((session) =>
+      lectureSessions.find(
+        (lectureSession) => lectureSession.id === session.id,
+      ),
+    );
+
+    // If lectureSessions does not exist in sessions, add it
+    if (!isLectureSessionExists) {
+      sessions.push(...lectureSessions);
+    }
+
+    /*
+    const sessions = await this.sessionRepository.find({
+      relations: ['sessionType', 'sessionType.group', 'sessionType.subject'],
+      where: {
+        sessionType: {
+          group: {
+            sector: getGroupDto.sector,
+            level: getGroupDto.level,
+            group: getGroupDto.group,
+          },
+        },
+      },
+    });
+*/
 
     const getSessionsDto: GetSessionDto[] = sessions.map((session) => {
       if (!session.sessionType) {
@@ -392,7 +472,7 @@ export class SessionService {
         EndTime: session.endTime,
         holidayName: session.holidayName,
         type: session.sessionType.type,
-        name: session.name,
+        name: session.name ? session.name : session.sessionType.subject.name,
       };
     });
 
@@ -418,22 +498,31 @@ export class SessionService {
     return session;
   }
 
-  /*  async update(id: number, updateSessionDto: UpdateSessionDto) {
+    async update(id: number, updateSessionDto: UpdateSessionDto) {
     const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
       throw new Error('Session not found');
     } else {
       return await this.sessionRepository.update(id, updateSessionDto);
     }
-  }*/
+  }
 
-  async remove(id: number, groupDto: GetGroupDto) {
-    const sessions = await this.findSessionsOfSectorLevelGroup(groupDto);
-    const session = sessions.find((session) => session.id === id);
+  // async remove(id: number, groupDto: GetGroupDto) {
+  //   const sessions = await this.findSessionsOfSectorLevelGroup(groupDto);
+  //   const session = sessions.find((session) => session.id === id);
+  //   if (!session) {
+  //     throw new Error('Session not found');
+  //   } else {
+  //     return await this.sessionRepository.softRemove(session);
+  //   }
+  // }
+
+  async remove(id : number) {
+    const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
-      throw new Error('Session not found');
+      throw new NotFoundException('Session not found');
     } else {
-      return await this.sessionRepository.softRemove(session);
+      return await this.sessionRepository.remove(session);
     }
   }
 
@@ -447,6 +536,24 @@ export class SessionService {
     } else {
       return await this.sessionRepository.recover(session);
     }
+  }
+
+  async findByTeacher(teacherId: number): Promise<SessionEntity[]> {
+    const result = await this.sessionRepository.find({
+      relations: ['sessionType', 'sessionType.teacher', 'sessionType.subject'],
+      where: {
+        sessionType: {
+          teacher: {
+            id: teacherId,
+          },
+        },
+      },
+    });
+    result.forEach((session) => {
+      session.name = session.sessionType.subject.name;
+      session.type = session.sessionType.type;
+    });
+    return result;
   }
 
   async getStudentsFromSessionId(sessionId: number) {

@@ -216,7 +216,7 @@ export class SessionTypeService {
   async findGroupsByTeacher(teacherId: number) {
     const sessionTypes = await this.sessionTypeRepository
       .find({
-        relations: ['teacher'],
+        relations: ['group', 'teacher', 'subject'],
         where: {
           teacher: {
             id: teacherId,
