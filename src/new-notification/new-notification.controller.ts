@@ -6,8 +6,8 @@ import {
   Patch,
   Param,
   Delete,
-  Sse,
-} from '@nestjs/common';
+  Sse, Query
+} from "@nestjs/common";
 import { NewNotificationService } from './new-notification.service';
 import { CreateNewNotificationDto } from './dto/create-new-notification.dto';
 import { UpdateNewNotificationDto } from './dto/update-new-notification.dto';
@@ -23,7 +23,7 @@ export class NewNotificationController {
     return await this.newNotificationService.getAllNotifications(receiver);
   }
   @Sse('events-for-user')
-  sseEvents(@Body() receiver: string) {
+  sseEvents(@Query('receiver') receiver: number) {
     return this.newNotificationService
       .userNotificationStream(receiver)
       .pipe(map((notification) => ({ data: notification })));

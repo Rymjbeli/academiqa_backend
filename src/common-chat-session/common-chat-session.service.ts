@@ -70,17 +70,17 @@ export class CommonChatSessionService {
   async createMessage(createCommonChatSessionDto: CreateCommonChatSessionDto) {
     const notification = await this.notificationService.buildNotification(
       NotifTypeEnum.MESSAGE,
-      'ramy',
+      createCommonChatSessionDto?.author?.username,
       null,
-      null,
+      createCommonChatSessionDto?.session?.id,
       0,
+      createCommonChatSessionDto?.author?.photo,
+      createCommonChatSessionDto?.author?.id,
     );
+    console.log('notification', notification);
     const newMessage = this.commonChatSessionRepository.create(
       createCommonChatSessionDto,
     );
-    // console.log('createCommonChatSessionDto', createCommonChatSessionDto);
-    // console.log('new message', newMessage);
-    // newMessage.author = this.clientToUser[user];
     await this.commonChatSessionRepository.save(newMessage);
     return { notification: notification, message: newMessage };
   }
@@ -90,13 +90,12 @@ export class CommonChatSessionService {
       where: { session: { id: session?.id } },
       relations: ['parent', 'author', 'session'],
     });
-    // console.log("chats", chats);
     const chatsWithAuthorDetails = chats.map((chat) => {
       return {
         ...chat,
         session,
         author: {
-          photo: chat.author.Photo,
+          photo: chat.author.photo,
           username: chat.author.username,
           role: chat.author.role,
           id: chat.author.id,

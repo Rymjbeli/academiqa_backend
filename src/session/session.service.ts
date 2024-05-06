@@ -482,7 +482,7 @@ export class SessionService {
         id: student.id,
         username: student.username,
         email: student.email,
-        photo: student.Photo,
+        photo: student.photo,
         enrollmentNumber: student.enrollmentNumber,
         group: student.group,
       };

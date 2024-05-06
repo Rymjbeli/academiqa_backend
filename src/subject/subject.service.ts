@@ -21,13 +21,14 @@ export class SubjectService {
     private eventEmitter: EventEmitter2,
   ) {}
   async createOneSubject(createSubjectDto: CreateSubjectDto) {
-    const subject = await this.subjectRepository.create(createSubjectDto);
+    const subject = this.subjectRepository.create(createSubjectDto);
     const payload = {
       notificationType: NotifTypeEnum.CONTENT,
-      content:'ramroum',
+      content: 'ramroum',
       broadcast: null,
       link: null,
-      receiver: 0
+      receiver: 0,
+      sender: 0,
     }
     this.eventEmitter.emit('notify', payload);
     return await this.subjectRepository.save(subject);

@@ -23,4 +23,6 @@ export class GetTeacherDto {
 
   @IsString()
   photo: string;
+  @IsString()
+  role: string;
 }

@@ -31,7 +31,8 @@ export class AdminService {
       email: admin.email,
       username: admin.username,
       // cin: admin.cin,
-      photo: admin.Photo,
+      photo: admin.photo,
+      role: admin.role,
 
     };
   }

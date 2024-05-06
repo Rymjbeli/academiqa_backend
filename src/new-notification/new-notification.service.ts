@@ -60,6 +60,7 @@ export class NewNotificationService {
     const notification = this.notificationRepository.create(
       createNotificationDto,
     );
+    console.log('notificationnnnnnnnnnnnn', notification);
     return await this.notificationRepository.save(notification);
   }
   async getAllNotifications(
@@ -93,14 +94,18 @@ export class NewNotificationService {
     broadcast: string,
     link: number,
     receiver: number,
+    senderImage: string,
+    sender: number,
   ) {
     const notifContent = this.generateContent(notificationType, content);
     const createNotificationDto: CreateNewNotificationDto = {
       content: notifContent,
       broadcast: broadcast,
       link: link,
-      notificationType: NotifTypeEnum.MESSAGE,
+      notificationType: notificationType,
       receiver: receiver,
+      senderImage: senderImage,
+      sender: 0,
     };
     const notification = await this.createNotification(createNotificationDto);
     console.log('notification', notification);
@@ -109,22 +114,36 @@ export class NewNotificationService {
   async deleteNotification(id: number): Promise<void> {
     await this.notificationRepository.softDelete(id);
   }
-  userNotificationStream(receiver: string) {
+  userNotificationStream(receiver: number) {
+    const activeObservers = new Set();
     return new Observable<CreateNewNotificationDto>((observer) => {
-      this.eventEmitter.on('notify', async (data) => {
-        const notification = await this.buildNotification(
-          data.notificationType,
-          data.content,
-          data.broadcast,
-          data.link,
-          data.receiver,
-        );
+      if (activeObservers.has(receiver)) {
+        // Return if observer for this receiver is already active
+        return;
+      }
+      activeObservers.add(receiver);
+      const eventListener = async (data) => {
         // if (data.receiver === receiver) {
-          observer.next( notification);
-        // } else {
-        //   console.log('Not the same user');
+          const notification = await this.buildNotification(
+            data.notificationType,
+            data.content,
+            data.broadcast,
+            data.link,
+            data.receiver,
+            data.senderImage,
+            data.sender,
+          );
+          observer.next(notification);
         // }
-      });
+      };
+
+      this.eventEmitter.on('notify', eventListener);
+
+      // Clean up the observer and event listener when the observable completes
+      return () => {
+        this.eventEmitter.off('notify', eventListener);
+        activeObservers.delete(receiver);
+      };
     });
   }
 }

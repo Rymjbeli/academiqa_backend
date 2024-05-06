@@ -17,11 +17,17 @@ export class CreateNewNotificationDto {
   @IsNumber()
   @IsOptional()
   link: number;
-  //senderImage will be taken from the logged in user
+  @IsString()
+  @IsOptional()
+  senderImage: string;
   @IsEnum(NotifTypeEnum)
   @IsNotEmpty()
   notificationType: string;
   @IsNumber()
   @IsOptional()
   receiver: number;
+  @IsNumber()
+  @IsOptional()
+  sender: number;
+
 }

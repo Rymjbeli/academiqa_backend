@@ -77,7 +77,7 @@ export class UserService {
     };
   }
 
-  async editPhoto(user: User, photo: Express.Multer.File) {
+  async editphoto(user: User, photo: Express.Multer.File) {
     let photoPath: string;
     if (photo) {
       console.log(photo, user.id, user.username);
@@ -91,14 +91,14 @@ export class UserService {
       );
       console.log(photoId.id);
       photoPath = 'https://drive.google.com/thumbnail?id=' + photoId.id;
-      await this.userRepository.update(user.id, { Photo: photoPath });
+      await this.userRepository.update(user.id, { photo: photoPath });
       return {
         id: user.id,
         email: user.email,
         username: user.username,
         cin: user.cin,
         role: user.role,
-        Photo: photoPath,
+        photo: photoPath,
       };
     } else {
       throw new NotFoundException('No photo provided');

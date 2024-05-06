@@ -28,4 +28,7 @@ export class NewNotificationEntity extends TimestampEntites {
   notificationType: string;
   @Column()
   receiver: number;
+
+  @Column()
+  sender: number;
 }

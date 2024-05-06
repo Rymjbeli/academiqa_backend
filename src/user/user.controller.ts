@@ -81,11 +81,11 @@ export class UserController {
       },
     }),
   )
-  async editPhoto(
+  async editphoto(
     @CurrentUser() user: User,
     @UploadedFile() photo: Express.Multer.File,
   ) {
     console.log(photo);
-    return await this.userService.editPhoto(user, photo);
+    return await this.userService.editphoto(user, photo);
   }
 }
