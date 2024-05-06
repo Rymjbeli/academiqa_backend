@@ -106,5 +106,8 @@ export class SessionController {
   findByTeacher(@Param('teacherID') teacherID: number) {
     return this.sessionService.findByTeacher(teacherID);
   }
-
+  @Get('students/:id')
+  getStudents(@Param('id', ParseIntPipe) id: number) {
+    return this.sessionService.getStudentsFromSessionId(id);
+  }
 }

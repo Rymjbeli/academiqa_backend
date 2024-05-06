@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateSessionDto } from './dto/create-session.dto';
 import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
 import { SessionEntity } from './entities/session.entity';
@@ -554,5 +554,45 @@ export class SessionService {
       session.type = session.sessionType.type;
     });
     return result;
+  }
+
+  async getStudentsFromSessionId(sessionId: number) {
+    const session = await this.sessionRepository.findOne({
+      where: { id: sessionId },
+      relations: ['sessionType', 'sessionType.group'],
+    });
+    console.log('session', session);
+    if (!session) {
+      throw new NotFoundException('Session not found');
+    }
+    let students: Student[];
+    if (session?.sessionType.type !== SessionTypeEnum.Lecture) {
+      const groupId = session.sessionType.group.id;
+      students = await this.sessionRepository.manager
+        .getRepository(Student)
+        .find({
+          where: { group: { id: groupId } },
+          relations: ['group'],
+        });
+    } else {
+      const sectorLevel = session.sessionType.group.sectorLevel;
+      students = await this.sessionRepository.manager
+        .getRepository(Student)
+        .find({
+          where: { group: { sectorLevel: sectorLevel } },
+          relations: ['group'],
+        });
+    }
+
+    return students.map((student) => {
+      return {
+        id: student.id,
+        username: student.username,
+        email: student.email,
+        photo: student.photo,
+        enrollmentNumber: student.enrollmentNumber,
+        group: student.group,
+      };
+    });
   }
 }

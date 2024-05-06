@@ -79,6 +79,10 @@ export class ChatbotService {
 
       const result = await model.generateContent(requestPrompt);
       const response = result.response;
+      console.log(response);
+      console.log(response?.candidates[0]?.content);
+      console.log("helo",response.text);
+      console.log(response?.functionCalls);
       await this.createMessage(
         discussion,
         prompt,

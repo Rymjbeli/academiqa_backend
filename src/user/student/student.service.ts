@@ -41,6 +41,8 @@ export class StudentService {
       email: student.email,
       username: student.username,
       group: student.group,
+      photo: student.photo,
+      role: student.role,
     };
   }
 

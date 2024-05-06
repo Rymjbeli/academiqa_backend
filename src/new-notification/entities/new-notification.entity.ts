@@ -2,8 +2,8 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { NotifTypeEnum } from '../../Enums/notif-type.enum';
 import { TimestampEntites } from '../../Generics/timestamp.entities';
 
-@Entity('notifications')
-export class NotificationEntity extends TimestampEntites {
+@Entity('notification')
+export class NewNotificationEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
@@ -28,4 +28,7 @@ export class NotificationEntity extends TimestampEntites {
   notificationType: string;
   @Column()
   receiver: number;
+
+  @Column()
+  sender: number;
 }
