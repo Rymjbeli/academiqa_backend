@@ -60,7 +60,7 @@ export class UserService {
       userData.password,
     );
     if (!isPasswordValid) {
-      throw new NotFoundException('Invalid password');
+      throw new NotFoundException('Invalid Old password');
     }
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(newPassword, salt);
