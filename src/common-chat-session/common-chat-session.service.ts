@@ -3,7 +3,7 @@ import { CreateCommonChatSessionDto } from './dto/create-common-chat-session.dto
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonChatEntity } from './entities/common-chat.entity';
 import { Repository } from 'typeorm';
-import { NotificationService } from '../notification/notification.service';
+import { NewNotificationService } from '../new-notification/new-notification.service';
 import { NotifTypeEnum } from '../Enums/notif-type.enum';
 import { User } from '../user/entities/user.entity';
 import { SessionEntity } from '../session/entities/session.entity';
@@ -13,7 +13,7 @@ export class CommonChatSessionService {
   constructor(
     @InjectRepository(CommonChatEntity)
     private readonly commonChatSessionRepository: Repository<CommonChatEntity>,
-    private notificationService: NotificationService,
+    private notificationService: NewNotificationService,
   ) {}
   clientToUser: any = {};
 
@@ -29,6 +29,7 @@ export class CommonChatSessionService {
           username: message.author.username,
           role: message.author.role,
           id: message.author.id,
+          photo: message.author.photo,
         },
       });
     });
@@ -69,17 +70,17 @@ export class CommonChatSessionService {
   async createMessage(createCommonChatSessionDto: CreateCommonChatSessionDto) {
     const notification = await this.notificationService.buildNotification(
       NotifTypeEnum.MESSAGE,
-      'ramy',
+      createCommonChatSessionDto?.author?.username,
       null,
-      null,
+      createCommonChatSessionDto?.session?.id,
       0,
+      createCommonChatSessionDto?.author?.photo,
+      createCommonChatSessionDto?.author?.id,
     );
+    console.log('notification', notification);
     const newMessage = this.commonChatSessionRepository.create(
       createCommonChatSessionDto,
     );
-    // console.log('createCommonChatSessionDto', createCommonChatSessionDto);
-    // console.log('new message', newMessage);
-    // newMessage.author = this.clientToUser[user];
     await this.commonChatSessionRepository.save(newMessage);
     return { notification: notification, message: newMessage };
   }
@@ -89,19 +90,19 @@ export class CommonChatSessionService {
       where: { session: { id: session?.id } },
       relations: ['parent', 'author', 'session'],
     });
-    // console.log("chats", chats);
     const chatsWithAuthorDetails = chats.map((chat) => {
       return {
         ...chat,
         session,
         author: {
+          photo: chat.author.photo,
           username: chat.author.username,
           role: chat.author.role,
           id: chat.author.id,
         },
       };
     });
-    // console.log('chatsWithAuthorDetails', chatsWithAuthorDetails);
+    console.log('chatsWithAuthorDetails', chatsWithAuthorDetails);
     return this.organizeMessages(chatsWithAuthorDetails);
   }
 

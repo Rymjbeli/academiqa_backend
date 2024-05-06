@@ -14,5 +14,6 @@ export class GroupEntity extends TimestampEntites {
   group: number;
   @Column()
   sectorLevel: string;
-
+  @OneToMany(() => Student, (student) => student.group)
+  students: Student[];
 }

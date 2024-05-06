@@ -27,8 +27,10 @@ export class TaskService {
     if (teacher.role !== 'Teacher') {
       throw new UnauthorizedException('Unauthorized');
     }
+    console.log('createTaskDto', createTaskDto);
     const newTask = this.taskRepository.create(createTaskDto);
     newTask.teacher = teacher;
+    console.log('newTask', newTask);
     return await this.taskRepository.save(newTask);
   }
 
@@ -40,7 +42,7 @@ export class TaskService {
       where: {
         session: { id: sessionId },
       },
-      relations: ['session', 'teacher'],
+      // relations: ['session', 'teacher'],
     });
     if (!taskEntities) {
       throw new NotFoundException('No tasks found');

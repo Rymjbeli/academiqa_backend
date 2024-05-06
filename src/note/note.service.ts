@@ -11,18 +11,21 @@ import { NoteEntity } from './entities/note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../user/entities/student.entity';
 import { plainToClass } from 'class-transformer';
+import { SessionEntity } from '../session/entities/session.entity';
 
 @Injectable()
 export class NoteService {
   constructor(
     @InjectRepository(NoteEntity)
     private noteRepository: Repository<NoteEntity>,
+    @InjectRepository(SessionEntity)
+    private sessionRepository: Repository<SessionEntity>,
   ) {}
   async create(
     createNoteDto: CreateNoteDto,
     student: Student,
   ): Promise<NoteEntity> {
-    const newNote = this.noteRepository.create(createNoteDto);
+    const newNote = await this.noteRepository.create(createNoteDto);
     newNote.student = student;
     return await this.noteRepository.save(newNote);
   }
@@ -52,6 +55,53 @@ export class NoteService {
     });
   }
 
+  async findAllBySession(
+    student: Student,
+    sessionId: number,
+  ): Promise<GetNoteDto[] | null> {
+    console.log(student.id);
+    const noteEntities = await this.noteRepository.find({
+      where: {
+        student: { id: student.id },
+        session: { id: sessionId },
+      },
+      relations: ['session'],
+    });
+    if (!noteEntities) {
+      throw new NotFoundException('No notes found');
+    }
+    return noteEntities.map((note) => {
+      const noteDto = plainToClass(GetNoteDto, note);
+      const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+      };
+      noteDto.date = Intl.DateTimeFormat('en-US', options).format(
+        note.createdAt,
+      );
+      return noteDto;
+    });
+  }
+
+  async findAllByStudentBySession(
+    student: Student,
+    sessionId: number,
+  ): Promise<NoteEntity[] | null> {
+    const notes = await this.noteRepository.find({
+      relations: ['student', 'session'],
+      where: { session: { id: sessionId } },
+    });
+    if (!notes) {
+      throw new NotFoundException('No notes found');
+    }
+    const studentNotes = notes.filter((note) => note.student.id === student.id);
+    if (studentNotes.length === 0) {
+      return [];
+    }
+    return studentNotes;
+  }
   async findOne(id: number, student: Student): Promise<GetNoteDto | null> {
     const noteEntity = await this.noteRepository.findOne({
       where: { id },
@@ -76,24 +126,6 @@ export class NoteService {
       );
       return noteDto;
     }
-  }
-
-  async findAllByStudentBySession(
-    student: Student,
-    sessionId: number,
-  ): Promise<NoteEntity[] | null> {
-    const notes = await this.noteRepository.find({
-      relations: ['student', 'session'],
-      where: { session: { id: sessionId } },
-    });
-    if (!notes) {
-      throw new NotFoundException('No notes found');
-    }
-    const studentNotes = notes.filter((note) => note.student.id === student.id);
-    if (studentNotes.length === 0) {
-      return [];
-    }
-    return studentNotes;
   }
 
   async update(

@@ -18,6 +18,7 @@ export class NoteEntity extends TimestampEntites {
   student: Student;
   @ManyToOne(() => SessionEntity, (session) => session.notes, {
     nullable: false,
+    // eager: true,
   })
   session: SessionEntity;
 }

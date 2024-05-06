@@ -34,7 +34,6 @@ export class User extends TimestampEntites {
 
   @Column({ nullable: true, length: 500 })
   photo: string;
-
   @Exclude()
   @Column()
   salt: string;

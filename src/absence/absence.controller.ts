@@ -16,8 +16,8 @@ export class AbsenceController {
   constructor(private readonly absenceService: AbsenceService) {}
 
   @Post()
-  create(@Body() createAbsenceDto: CreateAbsenceDto) {
-    return this.absenceService.create(createAbsenceDto);
+  async create(@Body() createAbsenceDto: CreateAbsenceDto) {
+    return await this.absenceService.create(createAbsenceDto);
   }
 
   @Get()

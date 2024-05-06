@@ -34,7 +34,7 @@ export class TaskController {
     return await this.taskService.create(createTaskDto, teacher);
   }
 
-  @Get(':SessionId')
+  @Get('/:SessionId')
   async findAll(
     @Param('SessionId', ParseIntPipe) sessionId: number,
     @CurrentUser() user: User,

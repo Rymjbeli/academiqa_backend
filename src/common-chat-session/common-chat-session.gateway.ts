@@ -38,7 +38,6 @@ export class CommonChatSessionGateway {
       // console.log('createCommonChatSessionDto', createCommonChatSessionDto);
       this.server.emit('message', message);
       socket.broadcast.emit('notify', notification);
-
       return createCommonChatSessionDto;
     } catch (error) {
       console.error('Error creating message:', error);

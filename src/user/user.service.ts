@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserRoleEnum } from '../Enums/user-role.enum';
 import { FileUploadService } from '../file-upload/file-upload.service';
+import * as fs from "fs";
 
 @Injectable()
 export class UserService {
@@ -76,18 +77,19 @@ export class UserService {
     };
   }
 
-  async editPhoto(user: User, photo: Express.Multer.File) {
+  async editphoto(user: User, photo: Express.Multer.File) {
     let photoPath: string;
     if (photo) {
       console.log(photo, user.id, user.username);
       const authClient = await this.fileUploadService.authorize();
       console.log('after auth');
+      const fileBuffer = await fs.promises.readFile(photo.path);
       const photoId: any = await this.fileUploadService.uploadFile(
         authClient,
-        photo,
-        process.env.STUDENT_UPLOADS,
+        { ...photo, buffer: fileBuffer },
+        process.env.IMAGES,
       );
-      console.log(photoId);
+      console.log(photoId.id);
       photoPath = 'https://drive.google.com/thumbnail?id=' + photoId.id;
       await this.userRepository.update(user.id, { photo: photoPath });
       return {

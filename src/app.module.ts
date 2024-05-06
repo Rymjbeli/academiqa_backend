@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { HelmetMiddleware } from '@nest-middlewares/helmet';
 import { ChatbotModule } from './chatbot/chatbot.module';
-import { NotificationModule } from './notification/notification.module';
 import { NoteModule } from './note/note.module';
 import { CommonChatSessionModule } from './common-chat-session/common-chat-session.module';
 import { RessourceModule } from './ressource/ressource.module';
@@ -22,6 +21,8 @@ import { FileUploadModule } from './file-upload/file-upload.module';
 import { AuthModule } from './auth/auth.module';
 import { GroupModule } from './group/group.module';
 import { MailModule } from './mail/mail.module';
+import { NewNotificationModule } from './new-notification/new-notification.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 dotenv.config();
 @Module({
@@ -38,8 +39,9 @@ dotenv.config();
       synchronize: true,
       debug: false,
     }),
+    EventEmitterModule.forRoot(),
+    NewNotificationModule,
     ChatbotModule,
-    NotificationModule,
     NoteModule,
     CommonChatSessionModule,
     RessourceModule,
