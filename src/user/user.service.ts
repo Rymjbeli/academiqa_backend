@@ -89,7 +89,7 @@ export class UserService {
       );
       console.log(photoId);
       photoPath = 'https://drive.google.com/thumbnail?id=' + photoId.id;
-      await this.userRepository.update(user.id, { Photo: photoPath });
+      await this.userRepository.update(user.id, { photo: photoPath });
       return {
         id: user.id,
         email: user.email,

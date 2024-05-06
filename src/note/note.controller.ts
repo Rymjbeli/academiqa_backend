@@ -8,6 +8,7 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { NoteService } from './note.service';
 import { CreateNoteDto } from './dto/create-note.dto';
@@ -31,7 +32,16 @@ export class NoteController {
     return this.noteService.create(createNoteDto, user);
   }
 
-  @Get()
+  @Get('/:sessionId')
+  @UseGuards(JwtAuthGuard)
+  async findAllBySession(
+    @CurrentUser() user: Student,
+    @Param('sessionId') sessionID: number,
+  ): Promise<GetNoteDto[] | null> {
+    return await this.noteService.findAllBySession(user, sessionID);
+  }
+
+  @Get('')
   @UseGuards(JwtAuthGuard)
   async findAll(@CurrentUser() user: Student): Promise<GetNoteDto[] | null> {
     return await this.noteService.findAll(user);
