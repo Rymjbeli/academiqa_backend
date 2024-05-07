@@ -104,8 +104,10 @@ export class ChatbotService {
     });
   }
   async deleteDiscussionById(id: number, user: User): Promise<void> {
-    const discussion = await this.chatbotDiscussionsRepository.findOneBy({
-      id,
+    console.log("idddddddddddddddddddddddddddd", id);
+    const discussion = await this.chatbotDiscussionsRepository.findOne({
+      where: { id: id },
+      relations: ['user'],
     });
     console.log(discussion);
     if (!discussion) {
