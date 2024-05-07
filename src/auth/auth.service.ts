@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -44,6 +45,11 @@ export class AuthService {
     userData: CreateUserDto,
     userRepository: Repository<User>,
   ): Promise<Partial<User>> {
+
+    // Check if all required fields are provided
+    if (!userData.email || !userData.password || !userData.cin) {
+      throw new BadRequestException('Email, password, and cin are required');
+    }
     const user = userRepository.create({
       ...userData,
     });

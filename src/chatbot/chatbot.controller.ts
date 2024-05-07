@@ -78,7 +78,7 @@ export class ChatbotController {
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: Student,
   ): Promise<void> {
-    console.log(id);
+    console.log("iddddddd", id);
     return await this.chatbotService.deleteDiscussionById(+id, user);
   }
 

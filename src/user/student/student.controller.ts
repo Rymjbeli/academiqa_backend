@@ -12,6 +12,8 @@ import {
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
 import { StudentService } from './student.service';
 import { Student } from '../entities/student.entity';
+import {CurrentUser} from "../../decorators/user.decorator";
+import {Teacher} from "../entities/teacher.entity";
 
 @Controller('student')
 export class StudentController {
@@ -50,5 +52,13 @@ export class StudentController {
     @Body() data: Partial<Student>,
   ) {
     return await this.studentService.updateStudent(id, data);
+  }
+
+  @Get('group/teacher')
+    @UseGuards(JwtAuthGuard)
+    async findAllStudentsByTeacher(
+        @CurrentUser() teacher: Teacher,
+    ) {
+        return await this.studentService.getStudentsByTeacherId(teacher.id);
   }
 }

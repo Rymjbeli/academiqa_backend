@@ -21,5 +21,6 @@ import { TeacherService } from '../user/teacher/teacher.service';
   ],
   controllers: [SessionTypeController],
   providers: [SessionTypeService, GroupService, SubjectService, TeacherService],
+  exports: [SessionTypeService],
 })
 export class SessionTypeModule {}
