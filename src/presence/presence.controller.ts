@@ -57,6 +57,10 @@ export class PresenceController {
   async getAbsencesForOneStudent(@Param('id', ParseIntPipe) id: number) {
     return this.presenceService.getAbsencesForOneStudent(+id);
   }
+  // @Get('studentsAbsenceAndCourses/:id')
+  // async getAbsencesAndCoursesForAdmin(@Param('id', ParseIntPipe) id: number) {
+  //   return this.presenceService.getAbsencesAndCoursesForAdmin(+id);
+  // }
   @Get('monthlyAbsence/:id')
   async getSectorMonthlyAbsence(@Param('id', ParseIntPipe) id: number) {
     return this.presenceService.getSectorMonthlyAbsence(+id);

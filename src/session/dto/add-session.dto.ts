@@ -1,15 +1,11 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { SessionTypeEntity } from '../../session-type/entities/session-type.entity';
 import { SessionTypeEnum } from '../../Enums/session-type.enum';
-import { Exclude, Expose } from 'class-transformer';
 
-@Exclude()
 export class AddSessionDto {
-  @Expose()
   @IsNotEmpty()
   date: Date;
 
-  @Expose()
   @IsNotEmpty()
   endTime: Date;
 
@@ -19,7 +15,6 @@ export class AddSessionDto {
   type: SessionTypeEnum = SessionTypeEnum.Rattrapage;
 */
 
-  @Expose()
   @IsNotEmpty()
   @IsString()
   name: string;

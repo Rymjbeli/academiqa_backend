@@ -135,7 +135,7 @@ export class NoteService {
   ): Promise<NoteEntity | null> {
     let note = await this.noteRepository.findOne({
       where: { id },
-      relations: ['student'],
+      relations: ['student', 'session'],
     });
     if (!note) {
       throw new NotFoundException('Note not found');
