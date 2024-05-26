@@ -148,6 +148,7 @@ export class PresenceService {
       if (!acc[key]) {
         acc[key] = {
           name: subjectName,
+          id: session.subject.id,
           module: subjectModule,
           numberOfAbsence: 1,
         };
