@@ -166,6 +166,14 @@ export class PresenceService {
     const { pastSessions, presences } = await this.fetchAndPrepareData(id);
     return this.calculateAbsences(pastSessions, presences);
   }
+  async GetAvrageAbsence(){
+  return await this.constructQuery()
+      .select(
+          'COUNT(students.id)/(select sum((select count(*) from `groups` as g left join user as e on (g.id = e.groupId) AND exists (select * from session_type as stype where stype.id = se.sessionTypeId) )) from session as se)  * 100', 'Absence'
+      )
+      .getRawOne();
+}
+
   async getSectorMonthlyAbsence(year: number) {
     return await this.constructQuery()
       .addSelect('MONTH(session.endTime)', 'month') // Alias the month field properly
@@ -177,7 +185,7 @@ export class PresenceService {
         'MONTH(session.endTime)', 'Month'
       )
       .addSelect(
-        'COUNT(students.id)', 'Absence'
+        'COUNT(students.id)/(select count(*)*(select count(*) from session as e where exists(select * from session_type as st where st.id = e.sessionTypeId AND st.groupId = group.id)) from user as s where s.groupId = group.id)*100', 'Absence'
       )
       .getRawMany();
   }

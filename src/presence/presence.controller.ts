@@ -44,6 +44,10 @@ export class PresenceController {
   async getSectorsAbsence() {
     return this.presenceService.getSectorsAbsence();
   }
+  @Get('sectorAvrageAbsence')
+  async sectorAvrageAbsence() {
+    return this.presenceService.GetAvrageAbsence();
+  }
   // @Get('studentsAbsence/:id')
   // async getStudentsAbsence(@Param('id', ParseIntPipe) id: number) {
   //   return this.presenceService.getStudentSubjectAbsences(+id);
