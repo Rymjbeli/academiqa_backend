@@ -75,6 +75,8 @@ export class FileUploadService {
     folderPath: string,
   ): Promise<any> {
     try {
+      console.log('Received file:', image); // Log the received file
+
       const blobName = `${folderPath}/${Date.now()}-${image.originalname}`;
       console.log('Container client:', this.containerClient);
       const blockBlobClient: BlockBlobClient =
@@ -99,8 +101,6 @@ export class FileUploadService {
       );
 
       console.log('Upload response:', uploadResponse);
-
-      // await this.setContainerPublicAccess();
 
       return {
         url: blockBlobClient.url,

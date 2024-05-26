@@ -77,37 +77,34 @@ export class UserService {
   }
 
   async editphoto(user: User, photo: Express.Multer.File) {
-    console.log('userrrrr', user);
     let photoPath: string;
     if (photo) {
-      console.log('Image received:', photo);
-      console.log(photo, user.id, user.username);
-
       try {
         // Upload photo to Azure Blob Storage
         const uploadResult = await this.fileUploadService.uploadFile(
           photo,
           'user_uploads',
         );
-        // Construct the photo URL
+
+        // Construct the photo URL from the upload result
         photoPath = uploadResult.url;
 
-        console.log(photoPath);
-      } catch (uploadError) {
-        console.error('Error uploading image to Azure:', uploadError);
-        throw new Error('Failed to upload image to Azure');
+        // Update the user's photo field in the database
+        await this.userRepository.update(user.id, { photo: photoPath });
+
+        // Return the updated user object with the new photo URL
+        return {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          cin: user.cin,
+          role: user.role,
+          photo: photoPath,
+        };
+      } catch (error) {
+        console.error('Error uploading photo:', error);
+        throw new Error('Failed to upload photo');
       }
-
-      await this.userRepository.update(user.id, { photo: photoPath });
-
-      return {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        cin: user.cin,
-        role: user.role,
-        photo: photoPath,
-      };
     } else {
       throw new NotFoundException('No photo provided');
     }

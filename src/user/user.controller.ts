@@ -57,15 +57,8 @@ export class UserController {
   }
 
   @Patch('edit-photo')
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(
-    FileInterceptor('photo', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          cb(null, file.originalname);
-        },
-      }),
+    FileInterceptor('image', {
       fileFilter: (req, file, e) => {
         const allowedFileTypes = /\.(png|jpeg|jpg)$/i;
         if (!file.originalname.match(allowedFileTypes)) {
@@ -81,11 +74,12 @@ export class UserController {
       },
     }),
   )
-  async editphoto(
+  @UseGuards(JwtAuthGuard)
+  async editPhoto(
     @CurrentUser() user: User,
-    @UploadedFile() photo: Express.Multer.File,
+    @UploadedFile() image: Express.Multer.File,
   ) {
-    console.log(photo);
-    return await this.userService.editphoto(user, photo);
+    console.log(image);
+    return await this.userService.editphoto(user, image);
   }
 }
