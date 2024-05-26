@@ -317,4 +317,18 @@ export class SessionTypeService {
 
     return uniqueGroups;
   }
+
+  async findBySession(id: number){
+    const sessionType = await this.sessionTypeRepository.find(
+      {
+        relations:['teacher'],
+        where:{
+          sessions:{
+            id: id
+          }
+        }
+      }
+    )
+    return sessionType;
+  }
 }

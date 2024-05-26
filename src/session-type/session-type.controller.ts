@@ -113,4 +113,9 @@ export class SessionTypeController {
   recover(@Param('id', ParseIntPipe) id: number) {
     return this.sessionTypeService.recover(id);
   }
+
+  @Get('bySession/:id')
+  findBySession (@Param('id', ParseIntPipe) id: number){
+    return this.sessionTypeService.findBySession(id);
+  }
 }
