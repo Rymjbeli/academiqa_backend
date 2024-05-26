@@ -10,17 +10,25 @@ import {
 } from '@azure/storage-blob';
 @Injectable()
 export class FileUploadService {
-  private blobServiceClient: BlobServiceClient;
   private containerClient: ContainerClient;
 
   constructor() {
-    const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-    const containerName = process.env.AZURE_CONTAINER_NAME;
-    this.blobServiceClient =
-      BlobServiceClient.fromConnectionString(connectionString);
-    this.containerClient =
-      this.blobServiceClient.getContainerClient(containerName);
+    const blobServiceClient = BlobServiceClient.fromConnectionString(
+      process.env.AZURE_STORAGE_CONNECTION_STRING,
+    );
+    this.containerClient = blobServiceClient.getContainerClient(
+      process.env.AZURE_CONTAINER_NAME,
+    );
   }
+
+  // async setContainerPublicAccess(): Promise<void> {
+  //   try {
+  //     await this.containerClient.setAccessPolicy('blob');
+  //     console.log('Public access level set to blob.');
+  //   } catch (error) {
+  //     console.error('Failed to set container public access level:', error);
+  //   }
+  // }
 
   async onModuleInit() {
     await this.listContainers();
@@ -29,7 +37,9 @@ export class FileUploadService {
   async listContainers(): Promise<void> {
     try {
       console.log('Listing containers...');
-      for await (const container of this.blobServiceClient.listContainers()) {
+      for await (const container of BlobServiceClient.fromConnectionString(
+        process.env.AZURE_STORAGE_CONNECTION_STRING,
+      ).listContainers()) {
         console.log(`- ${container.name}`);
       }
     } catch (error) {
@@ -89,6 +99,8 @@ export class FileUploadService {
       );
 
       console.log('Upload response:', uploadResponse);
+
+      // await this.setContainerPublicAccess();
 
       return {
         url: blockBlobClient.url,

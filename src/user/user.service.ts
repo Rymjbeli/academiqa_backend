@@ -16,7 +16,7 @@ export class UserService {
   ) {}
 
   async findOneUser(id: number): Promise<Partial<User | null>> {
-    const user = await this.userRepository.findOneBy({ id });
+    const user = await this.userRepository.findOne({ where: { id } });
     return {
       id: user.id,
       email: user.email,
@@ -77,30 +77,26 @@ export class UserService {
   }
 
   async editphoto(user: User, photo: Express.Multer.File) {
+    console.log('userrrrr', user);
     let photoPath: string;
     if (photo) {
+      console.log('Image received:', photo);
       console.log(photo, user.id, user.username);
 
-      /*const authClient = await this.fileUploadService.authorize();
-      console.log('after auth');
-      const photoId: any = await this.fileUploadService.uploadFile(
-        authClient,
-        photo,
-        process.env.STUDENT_UPLOADS,
-      );*/
+      try {
+        // Upload photo to Azure Blob Storage
+        const uploadResult = await this.fileUploadService.uploadFile(
+          photo,
+          'user_uploads',
+        );
+        // Construct the photo URL
+        photoPath = uploadResult.url;
 
-      // Upload photo to Azure Blob Storage
-      const uploadResult = await this.fileUploadService.uploadFile(
-        photo,
-        'user_uploads',
-      );
-      console.log(uploadResult);
-
-      // Construct the photo URL
-      photoPath = uploadResult.url;
-
-      // console.log(photoId);
-      // photoPath = 'https://drive.google.com/thumbnail?id=' + photoId.id;
+        console.log(photoPath);
+      } catch (uploadError) {
+        console.error('Error uploading image to Azure:', uploadError);
+        throw new Error('Failed to upload image to Azure');
+      }
 
       await this.userRepository.update(user.id, { photo: photoPath });
 
