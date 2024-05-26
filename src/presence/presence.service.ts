@@ -107,7 +107,7 @@ export class PresenceService {
       .getRawMany();
   }
 
-  async getAbsencesForOneStudent(id: number) {
+  async fetchAndPrepareData(id: number) {
     const student = await this.studentService.findOneStudent(id);
     if (!student) {
       throw new Error('Student not found');
@@ -131,6 +131,11 @@ export class PresenceService {
     const presences = await this.presenceRepository.find({
       where: { student: student },
     });
+
+    return { pastSessions, presences };
+  }
+
+  async calculateAbsences(pastSessions, presences) {
     const absentSessions = pastSessions.filter(session => {
       return !presences.some(presence => presence.session.id === session.id);
     });
@@ -142,19 +147,24 @@ export class PresenceService {
 
       if (!acc[key]) {
         acc[key] = {
-          course: subjectName,
+          name: subjectName,
           module: subjectModule,
-          nbAbsence: 1,
+          numberOfAbsence: 1,
         };
       } else {
-        acc[key].nbAbsence++;
+        acc[key].numberOfAbsence++;
       }
 
       return acc;
     }, {});
 
     return Object.values(absences);
-    }
+  }
+
+  async getAbsencesForOneStudent(id: number) {
+    const { pastSessions, presences } = await this.fetchAndPrepareData(id);
+    return this.calculateAbsences(pastSessions, presences);
+  }
   async getSectorMonthlyAbsence(year: number) {
     return await this.constructQuery()
       .addSelect('MONTH(session.endTime)', 'month') // Alias the month field properly
