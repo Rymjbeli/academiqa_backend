@@ -115,7 +115,7 @@ export class SessionTypeController {
   }
 
   @Get('bySession/:id')
-  findBySession (@Param('id', ParseIntPipe) id: number){
+  findBySession(@Param('id', ParseIntPipe) id: number) {
     return this.sessionTypeService.findBySession(id);
   }
 }

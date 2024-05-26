@@ -29,7 +29,7 @@ export class SubjectService {
       link: null,
       receiver: 0,
       sender: 0,
-    }
+    };
     this.eventEmitter.emit('notify', payload);
     return await this.subjectRepository.save(subject);
   }

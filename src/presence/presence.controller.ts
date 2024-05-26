@@ -8,13 +8,14 @@ import {
   Delete,
   UseGuards,
   NotFoundException,
-  BadRequestException
-} from "@nestjs/common";
+  BadRequestException,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { PresenceService } from './presence.service';
 import { CreatePresenceDto } from './dto/create-presence.dto';
 import { UpdatePresenceDto } from './dto/update-presence.dto';
-import { JwtAuthGuard } from "../auth/guard/jwt-auth.guard";
-import { SessionGuard } from "../session/guard/session.guard";
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { SessionGuard } from '../session/guard/session.guard';
 
 @Controller('presence')
 @UseGuards(JwtAuthGuard)
@@ -37,5 +38,19 @@ export class PresenceController {
       throw new NotFoundException('Presence not found');
     }
     return this.presenceService.delete(presence.id);
+  }
+
+  @Get('sectorsAbsence')
+  async getSectorsAbsence() {
+    return this.presenceService.getSectorsAbsence();
+  }
+  // @Get('studentsAbsence/:id')
+  // async getStudentsAbsence(@Param('id', ParseIntPipe) id: number) {
+  //   return this.presenceService.getStudentSubjectAbsences(+id);
+  // }
+
+  @Get('studentsAbsence/:id')
+  async getAbsencesForOneStudent(@Param('id', ParseIntPipe) id: number) {
+    return this.presenceService.getAbsencesForOneStudent(+id);
   }
 }

@@ -14,13 +14,17 @@ import { GroupService } from '../group/group.service';
 import { SessionTypeEnum } from '../Enums/session-type.enum';
 import { Student } from '../user/entities/student.entity';
 import { UpdateSessionDto } from './dto/update-session.dto';
+import { NotifTypeEnum } from '../Enums/notif-type.enum';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NewNotificationService } from '../new-notification/new-notification.service';
 
 @Injectable()
 export class SessionService {
   constructor(
     @InjectRepository(SessionTypeEntity)
     private sessionTypeRepository: Repository<SessionTypeEntity>,
-
+    private eventEmitter: EventEmitter2,
+    private notificationService: NewNotificationService,
     @InjectRepository(SessionEntity)
     private sessionRepository: Repository<SessionEntity>,
     private readonly fileUploadService: FileUploadService,
@@ -573,7 +577,11 @@ export class SessionService {
   }
   async getPresentStudentsFromSessionId(sessionId: number) {
     const { session, students } = await this.getSessionAndStudents(sessionId);
-    const filteredStudents = this.filterAbsenceStudents(students, sessionId, false);
+    const filteredStudents = this.filterAbsenceStudents(
+      students,
+      sessionId,
+      false,
+    );
     return filteredStudents.map((student) => {
       return {
         id: student.id,
@@ -582,13 +590,28 @@ export class SessionService {
       };
     });
   }
-
-  filterAbsenceStudents(students: Student[], sessionId: number, absence: boolean) {
+  async getStudentsFromSessionId(sessionId: number) {
+    const { session, students } = await this.getSessionAndStudents(sessionId);
+    return students.map((student) => {
+      return {
+        id: student.id,
+        username: student.username,
+        email: student.email,
+        photo: student.photo,
+        enrollmentNumber: student.enrollmentNumber,
+        group: student.group,
+      };
+    });
+  }
+  filterAbsenceStudents(
+    students: Student[],
+    sessionId: number,
+    absence: boolean,
+  ) {
     return students.filter((student) => {
-      if(absence){
+      if (absence) {
         return !student.presences.some(
-          (presence) =>
-            presence.session?.id === sessionId,
+          (presence) => presence.session?.id === sessionId,
         );
       }
       console.log('student.presences', student.presences);
@@ -627,5 +650,21 @@ export class SessionService {
     }
 
     return { session, students };
+  }
+
+  finishSession(session, absentStudents: any[]) {
+    absentStudents.forEach(async (student) => {
+      const notification = await this.notificationService.buildNotification(
+        NotifTypeEnum.ABSENT,
+        session?.name,
+        null,
+        null,
+        student.id,
+        'admin',
+        0,
+      );
+      console.log('notification', notification);
+      this.eventEmitter.emit('notify', notification);
+    });
   }
 }

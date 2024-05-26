@@ -3,7 +3,7 @@ import { SessionService } from '../session.service';
 import { User } from '../../user/entities/user.entity';
 import { StudentService } from '../../user/student/student.service';
 import { SessionTypeEnum } from '../../Enums/session-type.enum';
-import { UserRoleEnum } from "../../Enums/user-role.enum";
+import { UserRoleEnum } from '../../Enums/user-role.enum';
 
 @Injectable()
 export class SessionGuard implements CanActivate {

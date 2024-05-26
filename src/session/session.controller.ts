@@ -23,6 +23,8 @@ import { AddHolidaysDto } from './dto/add-holidays.dto';
 import { CurrentUser } from '../decorators/user.decorator';
 import { User } from '../user/entities/user.entity';
 import { SessionGuard } from './guard/session.guard';
+import { SessionEntity } from './entities/session.entity';
+import { Student } from '../user/entities/student.entity';
 
 @UseGuards(JwtAuthGuard)
 @Controller('session')
@@ -113,5 +115,14 @@ export class SessionController {
   @Get('presentStudents/:id')
   getPresentStudents(@Param('id', ParseIntPipe) id: number) {
     return this.sessionService.getPresentStudentsFromSessionId(id);
+  }
+  @Get('students/:id')
+  getStudents(@Param('id', ParseIntPipe) id: number) {
+    return this.sessionService.getStudentsFromSessionId(id);
+  }
+  @Post('finish')
+  finishSession(@Body() finishSession: any) {
+    const { session, absentStudents } = finishSession;
+    return this.sessionService.finishSession(session, absentStudents);
   }
 }

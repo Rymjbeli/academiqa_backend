@@ -15,44 +15,6 @@ export class NewNotificationService {
     private notificationRepository: Repository<NewNotificationEntity>,
     private eventEmitter: EventEmitter2,
   ) {}
-  // notifications: any[] = [
-  //   {
-  //     id: 1,
-  //     content:
-  //       'You have reached the **absence limit** in **Co Design**, please contact the administration',
-  //     type: 'absence-limit',
-  //     receiver: '1',
-  //     senderImage: 'administration.svg',
-  //   },
-  //   {
-  //     id: 2,
-  //     content: 'New Content has been added to **Web Development**',
-  //     type: 'content',
-  //     receiver: '1',
-  //     senderImage: 'Sellaouti.jpg',
-  //   },
-  //   {
-  //     id: 3,
-  //     content: 'You have a new message from **Abderrahmane Benghazi**',
-  //     type: 'message',
-  //     receiver: '1',
-  //     senderImage: 'Sellaouti.jpg',
-  //   },
-  //   {
-  //     id: 4,
-  //     content: 'You have been marked **absent** in **Co design**',
-  //     type: 'absent',
-  //     receiver: '1',
-  //     senderImage: 'administration.svg',
-  //   },
-  //   {
-  //     id: 5,
-  //     content: '**Aymen Sellaouti** added new announcement',
-  //     type: 'new-announcement',
-  //     receiver: '1',
-  //     senderImage: 'Sellaouti.jpg',
-  //   },
-  // ];
 
   async createNotification(
     createNotificationDto: CreateNewNotificationDto,
@@ -60,7 +22,6 @@ export class NewNotificationService {
     const notification = this.notificationRepository.create(
       createNotificationDto,
     );
-    // console.log('notificationnnnnnnnnnnnn', notification);
     return await this.notificationRepository.save(notification);
   }
   async getAllNotifications(
@@ -125,10 +86,10 @@ export class NewNotificationService {
       // console.log('receiver', receiver);
 
       const eventListener = async (data) => {
-          console.log('receiver', receiver);
-          console.log('receiver', data.sender);
-          console.log(typeof data.sender);
-          console.log(typeof receiver);
+        console.log('receiver', receiver);
+        console.log('receiver', data.sender);
+        console.log(typeof data.sender);
+        console.log(typeof receiver);
         observer.next(data);
       };
 

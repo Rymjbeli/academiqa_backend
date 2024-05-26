@@ -13,7 +13,7 @@ import { GetTaskDto } from './dto/get-task.dto';
 import { plainToClass } from 'class-transformer';
 import { SessionEntity } from '../session/entities/session.entity';
 import { User } from '../user/entities/user.entity';
-import { UserRoleEnum } from "../Enums/user-role.enum";
+import { UserRoleEnum } from '../Enums/user-role.enum';
 
 @Injectable()
 export class TaskService {

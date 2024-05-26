@@ -25,10 +25,11 @@ export class RessourceController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
-  create( @Body() createRessourceDto: CreateRessourceDto,     
-          @CurrentUser()user:User,
-          @UploadedFile() file: Express.Multer.File
-         ){
+  create(
+    @Body() createRessourceDto: CreateRessourceDto,
+    @CurrentUser() user: User,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     return this.ressourceService.create(createRessourceDto, user, file);
   }
 
