@@ -9,8 +9,22 @@ export class RessourceEntity extends TimestampEntites {
   @ManyToOne(() => SessionEntity, (session) => session.ressources, {
     nullable: false,
   })
-  session: SessionEntity;
+  session: number;
 
   @Column()
-  path: string;
+  type: string;
+
+  @Column(
+    {
+      nullable: true,
+    }
+  )
+  link: string;
+
+  @Column(
+    {
+      nullable: true,
+    }
+  )
+  fileUrl: string;
 }
