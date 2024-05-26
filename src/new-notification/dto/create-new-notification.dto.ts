@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { NotifTypeEnum } from '../../Enums/notif-type.enum';
 
-export class CreateNotificationDto {
+export class CreateNewNotificationDto {
   @IsString()
   @IsNotEmpty()
   content: string;
@@ -17,11 +17,16 @@ export class CreateNotificationDto {
   @IsNumber()
   @IsOptional()
   link: number;
-  //senderImage will be taken from the logged in user
+  @IsString()
+  @IsOptional()
+  senderImage: string;
   @IsEnum(NotifTypeEnum)
   @IsNotEmpty()
   notificationType: string;
   @IsNumber()
   @IsOptional()
   receiver: number;
+  @IsNumber()
+  @IsOptional()
+  sender: number;
 }

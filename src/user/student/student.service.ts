@@ -7,12 +7,14 @@ import {
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../entities/student.entity';
+import { SessionTypeService } from '../../session-type/session-type.service';
 
 @Injectable()
 export class StudentService {
   constructor(
     @InjectRepository(Student)
     private studentRepository: Repository<Student>,
+    private readonly SessionTypeService: SessionTypeService,
   ) {}
 
   async findAllStudents() {
@@ -41,6 +43,8 @@ export class StudentService {
       email: student.email,
       username: student.username,
       group: student.group,
+      photo: student.photo,
+      role: student.role,
     };
   }
 
@@ -64,5 +68,61 @@ export class StudentService {
       relations: ['group'],
       where: { group: { sectorLevel: sectorLevel } },
     });
+  }
+
+  async getStudentsByTeacherId(teacherId: number) {
+    // Get unique groups associated with the teacher
+    const uniqueGroups =
+      await this.SessionTypeService.getUniqueGroupsByTeacherId(teacherId);
+
+    // For each group, find all students that belong to the group
+    const result = await Promise.all(
+      uniqueGroups.map(async (group) => {
+        const students = await this.studentRepository.find({
+          select: ['username', 'photo'],
+          where: { group: { id: group.id } },
+        });
+
+        // Extract student usernames and photos
+        const studentData = students.map((student) => ({
+          username: student.username,
+          photo: student.photo,
+        }));
+
+        return {
+          group: {
+            group: group.group,
+            sectorLevel: group.sectorLevel,
+          },
+          students: studentData,
+        };
+      }),
+    );
+
+    return await Promise.all(
+      uniqueGroups.map(async (group) => {
+        const students = await this.studentRepository.find({
+          select: ['username', 'photo'],
+          where: { group: { id: group.id } },
+        });
+
+        // Extract student usernames and photos
+        const studentData = students.map((student) => ({
+          username: student.username,
+          photo: student.photo,
+        }));
+
+        const groupData = {
+          group: group.group,
+          sectorLevel: group.sectorLevel,
+        };
+
+        return {
+          group: groupData.group,
+          sectorLevel: groupData.sectorLevel,
+          students: studentData,
+        };
+      }),
+    );
   }
 }

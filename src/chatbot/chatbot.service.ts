@@ -96,6 +96,10 @@ export class ChatbotService {
 
       const result = await model.generateContent(requestPrompt);
       const response = result.response;
+      console.log(response);
+      console.log(response?.candidates[0]?.content);
+      console.log('helo', response.text);
+      console.log(response?.functionCalls);
       await this.createMessage(
         discussion,
         prompt,
@@ -118,8 +122,9 @@ export class ChatbotService {
     });
   }
   async deleteDiscussionById(id: number, user: User): Promise<void> {
-    const discussion = await this.chatbotDiscussionsRepository.findOneBy({
-      id,
+    const discussion = await this.chatbotDiscussionsRepository.findOne({
+      where: { id: id },
+      relations: ['user'],
     });
     console.log(discussion);
     if (!discussion) {

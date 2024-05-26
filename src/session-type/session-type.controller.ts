@@ -78,6 +78,14 @@ export class SessionTypeController {
     );
   }
 
+  @Get(':subjectId/:groupId')
+  findBySubjectGroup(
+    @Param('subjectId') subjectId: number,
+    @Param('groupId') groupId: number,
+  ) {
+    return this.sessionTypeService.findByGroupAndSubject(groupId, subjectId);
+  }
+
   @Get('ByTeacher/:teacherID')
   findByTeacher(@Param('teacherID') teacherID: number) {
     return this.sessionTypeService.findByTeacher(teacherID);
@@ -104,5 +112,10 @@ export class SessionTypeController {
   @Get('recover/:id')
   recover(@Param('id', ParseIntPipe) id: number) {
     return this.sessionTypeService.recover(id);
+  }
+
+  @Get('bySession/:id')
+  findBySession (@Param('id', ParseIntPipe) id: number){
+    return this.sessionTypeService.findBySession(id);
   }
 }

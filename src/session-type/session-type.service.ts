@@ -10,6 +10,7 @@ import { GroupService } from '../group/group.service';
 import { SessionTypeEnum } from '../Enums/session-type.enum';
 import { SubjectService } from '../subject/subject.service';
 import { TeacherService } from '../user/teacher/teacher.service';
+import { GroupEntity } from '../group/entities/group.entity';
 
 @Injectable()
 export class SessionTypeService {
@@ -154,6 +155,23 @@ export class SessionTypeService {
       });
   }
 
+  // get session types by groupId and subjectId
+  async findByGroupAndSubject(groupId: number, subjectId: number) {
+    return await this.sessionTypeRepository.find({
+      relations: {
+        teacher: true,
+      },
+      where: {
+        group: {
+          id: groupId,
+        },
+        subject: {
+          id: subjectId,
+        },
+      },
+    });
+  }
+
   async findBySubjectSectorLevel(subjectName: string, sectorLevel: string) {
     /*    const consideredSubject = await this.subjectService.findBySubjectName(
       subjectName,
@@ -278,5 +296,39 @@ export class SessionTypeService {
     } else {
       return await this.sessionTypeRepository.recover(sessionType);
     }
+  }
+  async getUniqueGroupsByTeacherId(teacherId: number): Promise<GroupEntity[]> {
+    // Query session types associated with the given teacher
+    const sessionTypes = await this.sessionTypeRepository.find({
+      where: { teacher: { id: teacherId } },
+      relations: ['group'], // Ensure the 'group' relation is loaded
+    });
+
+    // Extract unique group IDs associated with the teacher
+    const uniqueGroups: GroupEntity[] = [];
+    const uniqueGroupIds = new Set<number>();
+    sessionTypes.forEach((sessionType) => {
+      const groupId = sessionType.group.id;
+      if (!uniqueGroupIds.has(groupId)) {
+        uniqueGroupIds.add(groupId);
+        uniqueGroups.push(sessionType.group);
+      }
+    });
+
+    return uniqueGroups;
+  }
+
+  async findBySession(id: number){
+    const sessionType = await this.sessionTypeRepository.find(
+      {
+        relations:['teacher'],
+        where:{
+          sessions:{
+            id: id
+          }
+        }
+      }
+    )
+    return sessionType;
   }
 }

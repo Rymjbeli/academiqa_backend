@@ -1,9 +1,9 @@
 import { ChildEntity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './user.entity';
-import { AbsenceEntity } from '../../absence/entities/absence.entity';
 import { NoteEntity } from '../../note/entities/note.entity';
 import { GroupEntity } from '../../group/entities/group.entity';
 import { ChatbotDiscussionsEntity } from '../../chatbot/Entities/chatbot-discussions.entity';
+import { PresenceEntity } from "../../presence/entities/presence.entity";
 @ChildEntity()
 export class Student extends User {
   @ManyToOne(() => GroupEntity, {
@@ -12,10 +12,10 @@ export class Student extends User {
   group: GroupEntity;
   @Column()
   enrollmentNumber: number;
-  @OneToMany(() => AbsenceEntity, (absence) => absence.student, {
+  @OneToMany(() => PresenceEntity, (presence) => presence.student, {
     nullable: true,
   })
-  absences: AbsenceEntity[];
+  presences: PresenceEntity[];
   @OneToMany(() => NoteEntity, (note) => note.student, {
     nullable: true,
   })

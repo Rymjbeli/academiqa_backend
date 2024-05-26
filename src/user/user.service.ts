@@ -60,7 +60,7 @@ export class UserService {
       userData.password,
     );
     if (!isPasswordValid) {
-      throw new NotFoundException('Invalid password');
+      throw new NotFoundException('Invalid Old password');
     }
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(newPassword, salt);
@@ -76,7 +76,7 @@ export class UserService {
     };
   }
 
-  async editPhoto(user: User, photo: Express.Multer.File) {
+  async editphoto(user: User, photo: Express.Multer.File) {
     let photoPath: string;
     if (photo) {
       console.log(photo, user.id, user.username);
@@ -110,7 +110,7 @@ export class UserService {
         username: user.username,
         cin: user.cin,
         role: user.role,
-        Photo: photoPath,
+        photo: photoPath,
       };
     } else {
       throw new NotFoundException('No photo provided');

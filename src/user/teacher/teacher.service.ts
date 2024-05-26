@@ -37,6 +37,8 @@ export class TeacherService {
       username: teacher.username,
       speciality: teacher.speciality,
       cin: teacher.cin,
+      photo: teacher.photo,
+      role: teacher.role,
     };
     return teacherData;
   }

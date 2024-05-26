@@ -9,6 +9,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { UserRoleEnum } from '../../Enums/user-role.enum';
 import { ChatbotDiscussionsEntity } from '../../chatbot/Entities/chatbot-discussions.entity';
+import { Min, MinLength } from 'class-validator';
 
 @Entity('user')
 @TableInheritance({
@@ -33,7 +34,6 @@ export class User extends TimestampEntites {
 
   @Column({ nullable: true, length: 500 })
   photo: string;
-
   @Exclude()
   @Column()
   salt: string;

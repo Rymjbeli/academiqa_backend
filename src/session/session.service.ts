@@ -498,7 +498,7 @@ export class SessionService {
     return session;
   }
 
-    async update(id: number, updateSessionDto: UpdateSessionDto) {
+  async update(id: number, updateSessionDto: UpdateSessionDto) {
     const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
       throw new Error('Session not found');
@@ -517,7 +517,7 @@ export class SessionService {
   //   }
   // }
 
-  async remove(id : number) {
+  async remove(id: number) {
     const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
       throw new NotFoundException('Session not found');
@@ -554,5 +554,78 @@ export class SessionService {
       session.type = session.sessionType.type;
     });
     return result;
+  }
+
+  async getAbsentStudentsFromSessionId(sessionId: number) {
+    const { session, students } = await this.getSessionAndStudents(sessionId);
+    const filteredStudents = this.filterAbsenceStudents(
+      students,
+      sessionId,
+      true,
+    );
+    return filteredStudents.map((student) => {
+      return {
+        id: student.id,
+        username: student.username,
+        photo: student.photo,
+      };
+    });
+  }
+  async getPresentStudentsFromSessionId(sessionId: number) {
+    const { session, students } = await this.getSessionAndStudents(sessionId);
+    const filteredStudents = this.filterAbsenceStudents(students, sessionId, false);
+    return filteredStudents.map((student) => {
+      return {
+        id: student.id,
+        username: student.username,
+        photo: student.photo,
+      };
+    });
+  }
+
+  filterAbsenceStudents(students: Student[], sessionId: number, absence: boolean) {
+    return students.filter((student) => {
+      if(absence){
+        return !student.presences.some(
+          (presence) =>
+            presence.session?.id === sessionId,
+        );
+      }
+      console.log('student.presences', student.presences);
+      return student.presences.some(
+        (presence) => presence.session?.id === sessionId,
+      );
+    });
+  }
+  async getSessionAndStudents(sessionId: number) {
+    const session = await this.sessionRepository.findOne({
+      where: { id: sessionId },
+      relations: ['sessionType', 'sessionType.group'],
+    });
+
+    if (!session) {
+      throw new NotFoundException('Session not found');
+    }
+
+    let students: Student[];
+    if (session?.sessionType.type !== SessionTypeEnum.Lecture) {
+      const groupId = session.sessionType?.group?.id;
+      students = await this.sessionRepository.manager
+        .getRepository(Student)
+        .find({
+          where: { group: { id: groupId } },
+          relations: ['group', 'presences'],
+        });
+    } else {
+      const sectorLevel = session.sessionType.group.sectorLevel;
+      students = await this.sessionRepository.manager
+        .getRepository(Student)
+        .find({
+          where: { group: { sectorLevel: sectorLevel } },
+          relations: ['group', 'presences'],
+        });
+    }
+
+    return { session, students };
   }
 }

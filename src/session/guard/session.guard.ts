@@ -3,6 +3,7 @@ import { SessionService } from '../session.service';
 import { User } from '../../user/entities/user.entity';
 import { StudentService } from '../../user/student/student.service';
 import { SessionTypeEnum } from '../../Enums/session-type.enum';
+import { UserRoleEnum } from "../../Enums/user-role.enum";
 
 @Injectable()
 export class SessionGuard implements CanActivate {
@@ -27,17 +28,12 @@ export class SessionGuard implements CanActivate {
 
     const { sessionType } = session;
 
-    if (currentUser?.role === 'Admin') {
+    if (currentUser?.role === UserRoleEnum.ADMIN) {
       return true;
-    } else if (currentUser?.role === 'Teacher') {
+    } else if (currentUser?.role === UserRoleEnum.TEACHER) {
       const teacher = sessionType?.teacher;
-      console.log(
-        'helllllllllllllloooooooooooooooooooo',
-        currentUser?.id,
-        teacher?.id,
-      );
       return currentUser?.id === teacher?.id;
-    } else if (currentUser?.role === 'Student') {
+    } else if (currentUser?.role === UserRoleEnum.STUDENT) {
       const student = await this.studentService.findOneStudent(currentUser?.id);
       // console.log('student', student);
       console.log(student?.group?.id === sessionType?.group?.id);

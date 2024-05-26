@@ -14,10 +14,13 @@ import { TeacherService } from './teacher/teacher.service';
 import { StudentService } from './student/student.service';
 import { AdminController } from './admin/admin.controller';
 import { AdminService } from './admin/admin.service';
+import { SessionTypeService } from '../session-type/session-type.service';
+import { SessionTypeModule } from '../session-type/session-type.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Teacher, Student, Admin, GroupEntity]),
+    SessionTypeModule,
   ],
   controllers: [
     UserController,

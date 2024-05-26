@@ -37,5 +37,6 @@ import { Student } from '../user/entities/student.entity';
     SessionGuard,
     StudentService,
   ],
+  exports: [SessionService],
 })
 export class SessionModule {}

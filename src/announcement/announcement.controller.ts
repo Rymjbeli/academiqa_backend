@@ -16,35 +16,51 @@ export class AnnouncementController {
   constructor(private readonly announcementService: AnnouncementService) {}
 
   @Post()
-  create(@Body() createAnnouncementDto: CreateAnnouncementDto) {
-    return this.announcementService.create(createAnnouncementDto);
+  async create(@Body() createAnnouncementDto: CreateAnnouncementDto) {
+    return await this.announcementService.create(createAnnouncementDto);
   }
 
   @Get()
-  findAll() {
-    return this.announcementService.findAll();
+  async findAll() {
+    return await this.announcementService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.announcementService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.announcementService.findOne(+id);
+  }
+
+  @Get('subject/:subjectId')
+  async findBySubject(@Param('subjectId') subjectId: string) {
+    return await this.announcementService.findBySubject(+subjectId);
+  }
+
+  @Get('subject/:subjectId/teacher/:teacherId')
+  async findBySubjectAndTeacher(
+    @Param('subjectId') subjectId: string,
+    @Param('teacherId') teacherId: string,
+  ) {
+    return await this.announcementService.findBySubjectAndTeacher(
+      +subjectId,
+      +teacherId,
+    );
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateAnnouncementDto: UpdateAnnouncementDto,
   ) {
-    return this.announcementService.update(+id, updateAnnouncementDto);
+    return await this.announcementService.update(+id, updateAnnouncementDto);
   }
 
   @Delete(':id')
-  softRemove(@Param('id') id: string) {
-    return this.announcementService.softRemove(+id);
+  async softRemove(@Param('id') id: string) {
+    return await this.announcementService.softRemove(+id);
   }
 
   @Patch('recover/:id')
-  recover(@Param('id') id: string) {
-    return this.announcementService.recover(+id);
+  async recover(@Param('id') id: string) {
+    return await this.announcementService.recover(+id);
   }
 }
