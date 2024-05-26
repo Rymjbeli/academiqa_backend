@@ -155,5 +155,20 @@ export class PresenceService {
 
     return Object.values(absences);
     }
+  async getSectorMonthlyAbsence(year: number) {
+    return await this.constructQuery()
+      .addSelect('MONTH(session.endTime)', 'month') // Alias the month field properly
+      .groupBy('group.sectorLevel, month')
+      .select(
+        'group.sectorLevel', 'Label'
+      )
+      .addSelect(
+        'MONTH(session.endTime)', 'Month'
+      )
+      .addSelect(
+        'COUNT(students.id)', 'Absence'
+      )
+      .getRawMany();
+  }
 
 }
