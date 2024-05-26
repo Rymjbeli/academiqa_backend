@@ -307,28 +307,37 @@ export class SessionTypeService {
     // Extract unique group IDs associated with the teacher
     const uniqueGroups: GroupEntity[] = [];
     const uniqueGroupIds = new Set<number>();
-    sessionTypes.forEach((sessionType) => {
-      const groupId = sessionType.group.id;
-      if (!uniqueGroupIds.has(groupId)) {
-        uniqueGroupIds.add(groupId);
-        uniqueGroups.push(sessionType.group);
+    for (const sessionType of sessionTypes) {
+      if (sessionType?.type === SessionTypeEnum.Lecture) {
+        const sectorLevel = sessionType.group.sectorLevel;
+        const groups = await this.groupService.findBySectorLevel(sectorLevel);
+        groups.forEach((group) => {
+          if (!uniqueGroupIds.has(group.id)) {
+            uniqueGroupIds.add(group.id);
+            uniqueGroups.push(group);
+          }
+        });
+      } else {
+        const groupId = sessionType.group.id;
+        if (!uniqueGroupIds.has(groupId)) {
+          uniqueGroupIds.add(groupId);
+          uniqueGroups.push(sessionType.group);
+        }
       }
-    });
+    }
 
     return uniqueGroups;
   }
 
-  async findBySession(id: number){
-    const sessionType = await this.sessionTypeRepository.find(
-      {
-        relations:['teacher'],
-        where:{
-          sessions:{
-            id: id
-          }
-        }
-      }
-    )
+  async findBySession(id: number) {
+    const sessionType = await this.sessionTypeRepository.find({
+      relations: ['teacher'],
+      where: {
+        sessions: {
+          id: id,
+        },
+      },
+    });
     return sessionType;
   }
 }

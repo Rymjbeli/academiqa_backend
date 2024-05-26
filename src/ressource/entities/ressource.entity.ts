@@ -5,7 +5,7 @@ import { SessionEntity } from '../../session/entities/session.entity';
 export class RessourceEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
-  
+
   @ManyToOne(() => SessionEntity, (session) => session.ressources, {
     nullable: false,
   })

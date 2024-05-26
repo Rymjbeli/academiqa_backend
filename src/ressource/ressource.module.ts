@@ -13,8 +13,22 @@ import { SubjectEntity } from 'src/subject/entities/subject.entity';
 import { Teacher } from 'src/user/entities/teacher.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([RessourceEntity, SessionTypeEntity, GroupEntity, SubjectEntity, Teacher])],
+  imports: [
+    TypeOrmModule.forFeature([
+      RessourceEntity,
+      SessionTypeEntity,
+      GroupEntity,
+      SubjectEntity,
+      Teacher,
+    ]),
+  ],
   controllers: [RessourceController],
-  providers: [RessourceService, SessionTypeService, GroupService, SubjectService, TeacherService]
+  providers: [
+    RessourceService,
+    SessionTypeService,
+    GroupService,
+    SubjectService,
+    TeacherService,
+  ],
 })
 export class RessourceModule {}

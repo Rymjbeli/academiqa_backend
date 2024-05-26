@@ -8,7 +8,7 @@ import { UserService } from 'src/user/user.service';
 import { SubjectService } from 'src/subject/subject.service';
 import { NotifTypeEnum } from '../Enums/notif-type.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { NewNotificationService } from "../new-notification/new-notification.service";
+import { NewNotificationService } from '../new-notification/new-notification.service';
 
 @Injectable()
 export class AnnouncementService {
@@ -19,7 +19,6 @@ export class AnnouncementService {
     private subjectService: SubjectService,
     private eventEmitter: EventEmitter2,
     private notificationService: NewNotificationService,
-
   ) {}
 
   async create(createAnnouncementDto: CreateAnnouncementDto) {
@@ -37,7 +36,7 @@ export class AnnouncementService {
       0,
       newAnnouncement?.teacher?.photo,
       newAnnouncement?.teacher?.id,
-  );
+    );
 
     this.eventEmitter.emit('notify', notification);
     // console.log('payload', payload);
