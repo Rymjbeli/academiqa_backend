@@ -28,7 +28,7 @@ export class ChatbotController {
   @UseInterceptors(
     FileInterceptor('image', {
       fileFilter: (req, file, cb) => {
-        const allowedFileTypes = /\.(png|jpeg|jpg)$/i;
+        const allowedFileTypes = /\.(png|jpeg|jpg|jfif)$/i;
         if (!file.originalname.match(allowedFileTypes)) {
           return cb(
             new HttpException(
@@ -65,35 +65,19 @@ export class ChatbotController {
     }
   }
 
-  @Get('GetAllDiscussions')
+  @Get()
   @UseGuards(JwtAuthGuard)
   async GetAllDiscussions(
     @CurrentUser() user: Student,
   ): Promise<ChatbotDiscussionsEntity[]> {
     return await this.chatbotService.getAllDiscussions(user);
   }
-  @Delete('DeleteDiscussion/:id')
+  @Delete(':id')
   @UseGuards(JwtAuthGuard)
   async DeleteDiscussionById(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: Student,
   ): Promise<void> {
-    console.log("iddddddd", id);
     return await this.chatbotService.deleteDiscussionById(+id, user);
   }
-
-  // @Post('upload-file')
-  // @UseInterceptors(
-  //   FileInterceptor('image')
-  // )
-  // async uploadFile(
-  //   @UploadedFile() file: Express.Multer.File,
-  // ): Promise<any> {
-  //   try {
-  //     const authClient = await this.fileUploadService.authorize();
-  //     return await this.fileUploadService.uploadFile(authClient, file, process.env.CSV_FILES)
-  //   } catch (error) {
-  //     throw new Error(`Failed to upload file: ${error.message}`);
-  //   }
-  // }
 }

@@ -60,7 +60,7 @@ export class NewNotificationService {
     const notification = this.notificationRepository.create(
       createNotificationDto,
     );
-    console.log('notificationnnnnnnnnnnnn', notification);
+    // console.log('notificationnnnnnnnnnnnn', notification);
     return await this.notificationRepository.save(notification);
   }
   async getAllNotifications(
@@ -105,10 +105,10 @@ export class NewNotificationService {
       notificationType: notificationType,
       receiver: receiver,
       senderImage: senderImage,
-      sender: 0,
+      sender: sender,
     };
     const notification = await this.createNotification(createNotificationDto);
-    console.log('notification', notification);
+    // console.log('notification', notification);
     return notification;
   }
   async deleteNotification(id: number): Promise<void> {
@@ -122,19 +122,14 @@ export class NewNotificationService {
         return;
       }
       activeObservers.add(receiver);
+      // console.log('receiver', receiver);
+
       const eventListener = async (data) => {
-        // if (data.receiver === receiver) {
-          const notification = await this.buildNotification(
-            data.notificationType,
-            data.content,
-            data.broadcast,
-            data.link,
-            data.receiver,
-            data.senderImage,
-            data.sender,
-          );
-          observer.next(notification);
-        // }
+          console.log('receiver', receiver);
+          console.log('receiver', data.sender);
+          console.log(typeof data.sender);
+          console.log(typeof receiver);
+        observer.next(data);
       };
 
       this.eventEmitter.on('notify', eventListener);

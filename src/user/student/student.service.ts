@@ -113,13 +113,13 @@ export class StudentService {
         }));
 
         const groupData = {
-            group: group.group,
-            sectorLevel: group.sectorLevel,
-            };
+          group: group.group,
+          sectorLevel: group.sectorLevel,
+        };
 
         return {
           group: groupData.group,
-            sectorLevel: groupData.sectorLevel,
+          sectorLevel: groupData.sectorLevel,
           students: studentData,
         };
       }),

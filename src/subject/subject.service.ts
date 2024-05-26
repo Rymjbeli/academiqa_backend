@@ -7,8 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
 import { Teacher } from '../user/entities/teacher.entity';
-import { EventEmitter2 } from "@nestjs/event-emitter";
-import { NotifTypeEnum } from "../Enums/notif-type.enum";
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NotifTypeEnum } from '../Enums/notif-type.enum';
 
 @Injectable()
 export class SubjectService {

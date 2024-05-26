@@ -10,7 +10,7 @@ import { GroupService } from '../group/group.service';
 import { SessionTypeEnum } from '../Enums/session-type.enum';
 import { SubjectService } from '../subject/subject.service';
 import { TeacherService } from '../user/teacher/teacher.service';
-import {GroupEntity} from "../group/entities/group.entity";
+import { GroupEntity } from '../group/entities/group.entity';
 
 @Injectable()
 export class SessionTypeService {

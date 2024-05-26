@@ -1,4 +1,4 @@
-import {IsEmail, IsNotEmpty, MinLength} from 'class-validator';
+import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
 export class LoginCredentialsDto {
   @IsEmail()
@@ -6,10 +6,6 @@ export class LoginCredentialsDto {
   email: string;
 
   @IsNotEmpty()
-  @MinLength(8, {message: 'Password is too short'})
-  cin: number;
-
-  @IsNotEmpty()
-  @MinLength(8)
+  @MinLength(6)
   password: string;
 }

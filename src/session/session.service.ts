@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
 import { SessionEntity } from './entities/session.entity';
@@ -498,7 +498,7 @@ export class SessionService {
     return session;
   }
 
-    async update(id: number, updateSessionDto: UpdateSessionDto) {
+  async update(id: number, updateSessionDto: UpdateSessionDto) {
     const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
       throw new Error('Session not found');
@@ -517,7 +517,7 @@ export class SessionService {
   //   }
   // }
 
-  async remove(id : number) {
+  async remove(id: number) {
     const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
       throw new NotFoundException('Session not found');
@@ -556,23 +556,65 @@ export class SessionService {
     return result;
   }
 
-  async getStudentsFromSessionId(sessionId: number) {
+  async getAbsentStudentsFromSessionId(sessionId: number) {
+    const { session, students } = await this.getSessionAndStudents(sessionId);
+    const filteredStudents = this.filterAbsenceStudents(
+      students,
+      sessionId,
+      true,
+    );
+    return filteredStudents.map((student) => {
+      return {
+        id: student.id,
+        username: student.username,
+        photo: student.photo,
+      };
+    });
+  }
+  async getPresentStudentsFromSessionId(sessionId: number) {
+    const { session, students } = await this.getSessionAndStudents(sessionId);
+    const filteredStudents = this.filterAbsenceStudents(students, sessionId, false);
+    return filteredStudents.map((student) => {
+      return {
+        id: student.id,
+        username: student.username,
+        photo: student.photo,
+      };
+    });
+  }
+
+  filterAbsenceStudents(students: Student[], sessionId: number, absence: boolean) {
+    return students.filter((student) => {
+      if(absence){
+        return !student.presences.some(
+          (presence) =>
+            presence.session?.id === sessionId,
+        );
+      }
+      console.log('student.presences', student.presences);
+      return student.presences.some(
+        (presence) => presence.session?.id === sessionId,
+      );
+    });
+  }
+  async getSessionAndStudents(sessionId: number) {
     const session = await this.sessionRepository.findOne({
       where: { id: sessionId },
       relations: ['sessionType', 'sessionType.group'],
     });
-    console.log('session', session);
+
     if (!session) {
       throw new NotFoundException('Session not found');
     }
+
     let students: Student[];
     if (session?.sessionType.type !== SessionTypeEnum.Lecture) {
-      const groupId = session.sessionType.group.id;
+      const groupId = session.sessionType?.group?.id;
       students = await this.sessionRepository.manager
         .getRepository(Student)
         .find({
           where: { group: { id: groupId } },
-          relations: ['group'],
+          relations: ['group', 'presences'],
         });
     } else {
       const sectorLevel = session.sessionType.group.sectorLevel;
@@ -580,19 +622,10 @@ export class SessionService {
         .getRepository(Student)
         .find({
           where: { group: { sectorLevel: sectorLevel } },
-          relations: ['group'],
+          relations: ['group', 'presences'],
         });
     }
 
-    return students.map((student) => {
-      return {
-        id: student.id,
-        username: student.username,
-        email: student.email,
-        photo: student.photo,
-        enrollmentNumber: student.enrollmentNumber,
-        group: student.group,
-      };
-    });
+    return { session, students };
   }
 }

@@ -13,6 +13,7 @@ import { GetTaskDto } from './dto/get-task.dto';
 import { plainToClass } from 'class-transformer';
 import { SessionEntity } from '../session/entities/session.entity';
 import { User } from '../user/entities/user.entity';
+import { UserRoleEnum } from "../Enums/user-role.enum";
 
 @Injectable()
 export class TaskService {
@@ -24,7 +25,7 @@ export class TaskService {
     createTaskDto: CreateTaskDto,
     teacher: Teacher,
   ): Promise<TaskEntity> {
-    if (teacher.role !== 'Teacher') {
+    if (teacher.role !== UserRoleEnum.TEACHER) {
       throw new UnauthorizedException('Unauthorized');
     }
     console.log('createTaskDto', createTaskDto);
@@ -88,7 +89,7 @@ export class TaskService {
     updateTaskDto: UpdateTaskDto,
     teacher: Teacher,
   ): Promise<TaskEntity | null> {
-    if (teacher.role !== 'Teacher') {
+    if (teacher.role !== UserRoleEnum.TEACHER) {
       throw new UnauthorizedException('Unauthorized');
     }
     let task = await this.findOne(id, teacher.id);
@@ -104,7 +105,7 @@ export class TaskService {
   }
 
   async remove(id: number, teacher: Teacher): Promise<TaskEntity | null> {
-    if (teacher.role !== 'Teacher') {
+    if (teacher.role !== UserRoleEnum.TEACHER) {
       throw new UnauthorizedException('Unauthorized');
     }
     const task = await this.findOne(id, teacher.id);
@@ -119,7 +120,7 @@ export class TaskService {
   }
 
   async recover(id: number, teacher: Teacher): Promise<TaskEntity | null> {
-    if (teacher.role !== 'Teacher') {
+    if (teacher.role !== UserRoleEnum.TEACHER) {
       throw new UnauthorizedException('Unauthorized');
     }
     const task = await this.taskRepository.findOne({

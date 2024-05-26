@@ -6,6 +6,9 @@ import { AnnouncementEntity } from './entities/announcement.entity';
 import { Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
 import { SubjectService } from 'src/subject/subject.service';
+import { NotifTypeEnum } from '../Enums/notif-type.enum';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NewNotificationService } from "../new-notification/new-notification.service";
 
 @Injectable()
 export class AnnouncementService {
@@ -14,6 +17,9 @@ export class AnnouncementService {
     private announcementRepository: Repository<AnnouncementEntity>,
     private teacherService: UserService,
     private subjectService: SubjectService,
+    private eventEmitter: EventEmitter2,
+    private notificationService: NewNotificationService,
+
   ) {}
 
   async create(createAnnouncementDto: CreateAnnouncementDto) {
@@ -23,6 +29,18 @@ export class AnnouncementService {
     );
     // newAnnouncement.teacher = await this.teacherService.findOne(createAnnouncementDto.teacherId);
     // newAnnouncement.subject = this.subjectService.findOne(createAnnouncementDto.subjectId);
+    const notification = await this.notificationService.buildNotification(
+      NotifTypeEnum.NEW_ANNOUNCEMENT,
+      newAnnouncement?.teacher?.username,
+      null,
+      newAnnouncement?.subject?.id,
+      0,
+      newAnnouncement?.teacher?.photo,
+      newAnnouncement?.teacher?.id,
+  );
+
+    this.eventEmitter.emit('notify', notification);
+    // console.log('payload', payload);
     return await this.announcementRepository.save(newAnnouncement);
   }
 

@@ -48,7 +48,7 @@ export class CommonChatSessionGateway {
     }
   }
 
-  @SubscribeMessage('findAllMessages')
+  @SubscribeMessage('messages')
   async findAllMessages(
     @ConnectedSocket() socket: Socket,
     @MessageBody() session: SessionEntity,

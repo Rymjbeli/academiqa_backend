@@ -11,7 +11,7 @@ import { CommonChatEntity } from '../../common-chat-session/entities/common-chat
 import { NoteEntity } from '../../note/entities/note.entity';
 import { RessourceEntity } from '../../ressource/entities/ressource.entity';
 import { TaskEntity } from '../../task/entities/task.entity';
-import { SessionTypeEnum } from "../../Enums/session-type.enum";
+import { SessionTypeEnum } from '../../Enums/session-type.enum';
 
 @Entity('session')
 export class SessionEntity extends TimestampEntites {

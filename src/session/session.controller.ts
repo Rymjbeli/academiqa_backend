@@ -106,8 +106,12 @@ export class SessionController {
   findByTeacher(@Param('teacherID') teacherID: number) {
     return this.sessionService.findByTeacher(teacherID);
   }
-  @Get('students/:id')
-  getStudents(@Param('id', ParseIntPipe) id: number) {
-    return this.sessionService.getStudentsFromSessionId(id);
+  @Get('absentStudents/:id')
+  getAbsentStudents(@Param('id', ParseIntPipe) id: number) {
+    return this.sessionService.getAbsentStudentsFromSessionId(id);
+  }
+  @Get('presentStudents/:id')
+  getPresentStudents(@Param('id', ParseIntPipe) id: number) {
+    return this.sessionService.getPresentStudentsFromSessionId(id);
   }
 }

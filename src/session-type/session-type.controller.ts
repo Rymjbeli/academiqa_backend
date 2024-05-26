@@ -86,15 +86,15 @@ export class SessionTypeController {
     return this.sessionTypeService.findByGroupAndSubject(groupId, subjectId);
   }
 
-    @Get('ByTeacher/:teacherID')
-    findByTeacher(@Param('teacherID') teacherID: number) {
-        return this.sessionTypeService.findByTeacher(teacherID);
-    }
+  @Get('ByTeacher/:teacherID')
+  findByTeacher(@Param('teacherID') teacherID: number) {
+    return this.sessionTypeService.findByTeacher(teacherID);
+  }
 
-    @Get('GroupsByTeacher/:teacherID')
-    findGroupsByTeacher(@Param('teacherID') teacherID: number) {
-        return this.sessionTypeService.findGroupsByTeacher(teacherID);
-    }
+  @Get('GroupsByTeacher/:teacherID')
+  findGroupsByTeacher(@Param('teacherID') teacherID: number) {
+    return this.sessionTypeService.findGroupsByTeacher(teacherID);
+  }
 
   @Patch(':id')
   update(

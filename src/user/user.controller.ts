@@ -18,7 +18,7 @@ import { User } from './entities/user.entity';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CurrentUser } from '../decorators/user.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from "multer";
+import { diskStorage } from 'multer';
 
 @Controller('user')
 export class UserController {

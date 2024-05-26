@@ -29,5 +29,4 @@ export class CreateNewNotificationDto {
   @IsNumber()
   @IsOptional()
   sender: number;
-
 }

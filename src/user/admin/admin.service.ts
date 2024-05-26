@@ -33,7 +33,6 @@ export class AdminService {
       // cin: admin.cin,
       photo: admin.photo,
       role: admin.role,
-
     };
   }
 

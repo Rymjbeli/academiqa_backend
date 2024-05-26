@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserRoleEnum } from '../Enums/user-role.enum';
 import { FileUploadService } from '../file-upload/file-upload.service';
-import * as fs from "fs";
+import * as fs from 'fs';
 
 @Injectable()
 export class UserService {

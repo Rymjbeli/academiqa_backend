@@ -81,7 +81,7 @@ export class ChatbotService {
       const response = result.response;
       console.log(response);
       console.log(response?.candidates[0]?.content);
-      console.log("helo",response.text);
+      console.log('helo', response.text);
       console.log(response?.functionCalls);
       await this.createMessage(
         discussion,
@@ -104,7 +104,6 @@ export class ChatbotService {
     });
   }
   async deleteDiscussionById(id: number, user: User): Promise<void> {
-    console.log("idddddddddddddddddddddddddddd", id);
     const discussion = await this.chatbotDiscussionsRepository.findOne({
       where: { id: id },
       relations: ['user'],

@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { Readable } from 'stream';
 import { google } from 'googleapis';
 import * as csv from 'csv-parser';
-import * as fs from "fs";
+import * as fs from 'fs';
 @Injectable()
 export class FileUploadService {
   uploadCSVFile(file: Express.Multer.File): Promise<any[]> {
@@ -58,7 +58,7 @@ export class FileUploadService {
       fileStream.push(image.buffer);
       fileStream.push(null);
 
-       drive.files.create(
+      drive.files.create(
         {
           requestBody: fileMetaData,
           media: {

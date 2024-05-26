@@ -9,7 +9,6 @@ import { NoteModule } from './note/note.module';
 import { CommonChatSessionModule } from './common-chat-session/common-chat-session.module';
 import { RessourceModule } from './ressource/ressource.module';
 import { AnnouncementModule } from './announcement/announcement.module';
-import { AbsenceModule } from './absence/absence.module';
 import { TaskModule } from './task/task.module';
 import { SubjectModule } from './subject/subject.module';
 import { SessionTypeModule } from './session-type/session-type.module';
@@ -23,6 +22,7 @@ import { GroupModule } from './group/group.module';
 import { MailModule } from './mail/mail.module';
 import { NewNotificationModule } from './new-notification/new-notification.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { PresenceModule } from './presence/presence.module';
 
 dotenv.config();
 @Module({
@@ -46,7 +46,6 @@ dotenv.config();
     CommonChatSessionModule,
     RessourceModule,
     AnnouncementModule,
-    AbsenceModule,
     TaskModule,
     SubjectModule,
     SessionTypeModule,
@@ -57,6 +56,7 @@ dotenv.config();
     AuthModule,
     GroupModule,
     MailModule,
+    PresenceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
