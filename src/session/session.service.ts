@@ -344,13 +344,15 @@ export class SessionService {
   }
 
   async findOne(id: number) {
-    const session = await this.sessionRepository.findOne({ where: { id } });
+    const session = await this.sessionRepository.findOne({ where: { id }});
     if (!session) {
       throw new NotFoundError('Session not found');
     }
     const { sessionType } = session;
-    if (sessionType) {
-      const { subject, ...filteredSessionType } = sessionType;
+    const sessionTypeWithTeacher = await this.sessionTypeService.findOne( sessionType.id);
+
+    if (sessionTypeWithTeacher) {
+      const { subject, ...filteredSessionType } = sessionTypeWithTeacher;
 
       const rank = await this.countSessionRank(session);
       return {

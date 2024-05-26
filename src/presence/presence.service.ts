@@ -1,14 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePresenceDto } from './dto/create-presence.dto';
-import { UpdatePresenceDto } from './dto/update-presence.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PresenceEntity } from './entities/presence.entity';
-import { QueryBuilder, Repository, SelectQueryBuilder } from 'typeorm';
-import { Student } from '../user/entities/student.entity';
-import { SessionEntity } from '../session/entities/session.entity';
-import { GroupEntity } from '../group/entities/group.entity';
-import { StudentService } from '../user/student/student.service';
+import { Injectable } from "@nestjs/common";
+import { CreatePresenceDto } from "./dto/create-presence.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { PresenceEntity } from "./entities/presence.entity";
+import { Repository, SelectQueryBuilder } from "typeorm";
+import { SessionEntity } from "../session/entities/session.entity";
+import { StudentService } from "../user/student/student.service";
 import { SessionTypeEntity } from "../session-type/entities/session-type.entity";
+import { SubjectService } from "../subject/subject.service";
 
 @Injectable()
 export class PresenceService {
@@ -20,6 +18,7 @@ export class PresenceService {
     private readonly studentService: StudentService,
     @InjectRepository(SessionTypeEntity)
     private readonly sessionTypesRepository: Repository<SessionTypeEntity>,
+    private readonly subjectService: SubjectService,
   ) {}
   async findPresence(createPresenceDto: CreatePresenceDto) {
     const { session, student } = createPresenceDto;
@@ -132,10 +131,10 @@ export class PresenceService {
       where: { student: student },
     });
 
-    return { pastSessions, presences };
+    return { pastSessions, presences, sectorLevel };
   }
 
-  async calculateAbsences(pastSessions, presences) {
+  async calculateAbsences(pastSessions, presences, sectorLevel) {
     const absentSessions = pastSessions.filter(session => {
       return !presences.some(presence => presence.session.id === session.id);
     });
@@ -158,14 +157,26 @@ export class PresenceService {
 
       return acc;
     }, {});
-
-    return Object.values(absences);
+    const allSubjects = await this.subjectService.findBySectorLevel(sectorLevel);
+    return allSubjects.map(subject => {
+      const key = `${subject.name}-${subject.module}`;
+      return {
+        ...subject,
+        numberOfAbsence: absences[key] ? absences[key].numberOfAbsence : 0,
+      };
+    });
   }
 
   async getAbsencesForOneStudent(id: number) {
-    const { pastSessions, presences } = await this.fetchAndPrepareData(id);
-    return this.calculateAbsences(pastSessions, presences);
+    const { pastSessions, presences,sectorLevel } = await this.fetchAndPrepareData(id);
+    return this.calculateAbsences(pastSessions, presences, sectorLevel);
   }
+
+  // async getAbsencesAndCoursesForAdmin(id: number) {
+  //   const { pastSessions, presences } = await this.fetchAndPrepareData(id);
+  //   return this.calculateAbsences(pastSessions, presences);
+  // }
+
   async getSectorMonthlyAbsence(year: number) {
     return await this.constructQuery()
       .addSelect('MONTH(session.endTime)', 'month') // Alias the month field properly

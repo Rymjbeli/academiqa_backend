@@ -7,12 +7,14 @@ import { SessionModule } from '../session/session.module';
 import { UserModule } from '../user/user.module';
 import { SessionEntity } from '../session/entities/session.entity';
 import { SessionTypeEntity } from "../session-type/entities/session-type.entity";
+import { SubjectModule } from "../subject/subject.module";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PresenceEntity, SessionEntity, SessionTypeEntity]),
+    TypeOrmModule.forFeature([PresenceEntity, SessionEntity, SessionTypeEntity,]),
     SessionModule,
     UserModule,
+    SubjectModule,
   ],
   controllers: [PresenceController],
   providers: [PresenceService],
