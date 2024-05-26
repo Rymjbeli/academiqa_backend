@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserRoleEnum } from '../Enums/user-role.enum';
 import { FileUploadService } from '../file-upload/file-upload.service';
-import * as fs from 'fs';
 
 @Injectable()
 export class UserService {
@@ -17,7 +16,7 @@ export class UserService {
   ) {}
 
   async findOneUser(id: number): Promise<Partial<User | null>> {
-    const user = await this.userRepository.findOneBy({ id });
+    const user = await this.userRepository.findOne({ where: { id } });
     return {
       id: user.id,
       email: user.email,
@@ -80,26 +79,32 @@ export class UserService {
   async editphoto(user: User, photo: Express.Multer.File) {
     let photoPath: string;
     if (photo) {
-      console.log(photo, user.id, user.username);
-      const authClient = await this.fileUploadService.authorize();
-      console.log('after auth');
-      const fileBuffer = await fs.promises.readFile(photo.path);
-      const photoId: any = await this.fileUploadService.uploadFile(
-        authClient,
-        { ...photo, buffer: fileBuffer },
-        process.env.IMAGES,
-      );
-      console.log(photoId.id);
-      photoPath = 'https://drive.google.com/thumbnail?id=' + photoId.id;
-      await this.userRepository.update(user.id, { photo: photoPath });
-      return {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        cin: user.cin,
-        role: user.role,
-        photo: photoPath,
-      };
+      try {
+        // Upload photo to Azure Blob Storage
+        const uploadResult = await this.fileUploadService.uploadFile(
+          photo,
+          'user_uploads',
+        );
+
+        // Construct the photo URL from the upload result
+        photoPath = uploadResult.url;
+
+        // Update the user's photo field in the database
+        await this.userRepository.update(user.id, { photo: photoPath });
+
+        // Return the updated user object with the new photo URL
+        return {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          cin: user.cin,
+          role: user.role,
+          photo: photoPath,
+        };
+      } catch (error) {
+        console.error('Error uploading photo:', error);
+        throw new Error('Failed to upload photo');
+      }
     } else {
       throw new NotFoundException('No photo provided');
     }
