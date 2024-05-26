@@ -80,16 +80,30 @@ export class UserService {
     let photoPath: string;
     if (photo) {
       console.log(photo, user.id, user.username);
-      const authClient = await this.fileUploadService.authorize();
+
+      /*const authClient = await this.fileUploadService.authorize();
       console.log('after auth');
       const photoId: any = await this.fileUploadService.uploadFile(
         authClient,
         photo,
         process.env.STUDENT_UPLOADS,
+      );*/
+
+      // Upload photo to Azure Blob Storage
+      const uploadResult = await this.fileUploadService.uploadFile(
+        photo,
+        'user_uploads',
       );
-      console.log(photoId);
-      photoPath = 'https://drive.google.com/thumbnail?id=' + photoId.id;
+      console.log(uploadResult);
+
+      // Construct the photo URL
+      photoPath = uploadResult.url;
+
+      // console.log(photoId);
+      // photoPath = 'https://drive.google.com/thumbnail?id=' + photoId.id;
+
       await this.userRepository.update(user.id, { photo: photoPath });
+
       return {
         id: user.id,
         email: user.email,

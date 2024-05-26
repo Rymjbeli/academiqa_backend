@@ -62,17 +62,34 @@ export class ChatbotService {
       let requestPrompt: any[];
       let imagePath: string;
       if (image) {
-        console.log(image, discussionId, prompt);
-        const authClient = await this.fileUploadService.authorize();
+        console.log('Image received:', image);
+        console.log('Discussion ID:', discussionId);
+        console.log('Prompt:', prompt);
+
+        /*const authClient = await this.fileUploadService.authorize();
         const imageId: any = await this.fileUploadService.uploadFile(
           authClient,
           image,
           process.env.CHATBOT_UPLOADS,
         );
         // const imagePath = await this.fileUploadService.downloadFile(authClient, imageId, process.env.CSV_FILES);
-        imagePath = 'https://drive.google.com/thumbnail?id=' + imageId.id;
-        const imageToRead = this.fileToGenerativePart(image, 'image/png');
-        requestPrompt = [promptWithHistory, imageToRead];
+        imagePath = 'https://drive.google.com/thumbnail?id=' + imageId.id;*/
+
+        try {
+          // Upload image to Azure Blob Storage
+          const uploadResult = await this.fileUploadService.uploadFile(
+            image,
+            'chatbot_uploads',
+          );
+          imagePath = uploadResult.url;
+          console.log('Image uploaded to Azure:', imagePath);
+
+          const imageToRead = this.fileToGenerativePart(image, 'image/png');
+          requestPrompt = [promptWithHistory, imageToRead];
+        } catch (uploadError) {
+          console.error('Error uploading image to Azure:', uploadError);
+          throw new Error('Failed to upload image to Azure');
+        }
       } else {
         requestPrompt = [promptWithHistory];
       }
@@ -88,6 +105,7 @@ export class ChatbotService {
       );
       return { prompt: prompt, image: imagePath, response: response.text() };
     } catch (error) {
+      console.error('Error generating response:', error);
       throw new Error(`Failed to generate response: ${error.message}`);
     }
   }
