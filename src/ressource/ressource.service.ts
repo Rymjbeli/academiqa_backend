@@ -10,6 +10,9 @@ import { UserRoleEnum } from 'src/Enums/user-role.enum';
 import { SessionTypeService } from 'src/session-type/session-type.service';
 import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
 import { Readable } from 'stream';
+import { NotifTypeEnum } from "../Enums/notif-type.enum";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { NewNotificationService } from "../new-notification/new-notification.service";
 
 @Injectable()
 export class RessourceService {
@@ -17,7 +20,9 @@ export class RessourceService {
 
   constructor(
       @InjectRepository(RessourceEntity) private ressourceRepository: Repository<RessourceEntity>,
-      private sessionTypeService: SessionTypeService
+      private sessionTypeService: SessionTypeService,
+      private eventEmitter: EventEmitter2,
+      private notificationService: NewNotificationService,
   ) {
     const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
     this.containerClient = blobServiceClient.getContainerClient(process.env.AZURE_CONTAINER_NAME);
@@ -35,7 +40,17 @@ export class RessourceService {
 
     // Upload file to Azure Blob Storage
     const fileUploadResponse = await this.uploadFile(file, 'resources');
+    const notification = await this.notificationService.buildNotification(
+      NotifTypeEnum.CONTENT,
+      user?.username,
+      null,
+      createRessourceDto?.session,
+      0,
+      user?.photo,
+      user?.id,
+    );
 
+    this.eventEmitter.emit('notify', notification);
     // Save the resource entity with the uploaded file URL
     createRessourceDto.fileUrl = fileUploadResponse.url;
     createRessourceDto.type = 'file';
@@ -91,7 +106,17 @@ export class RessourceService {
     if (!createRessourceDto.link) {
       throw new HttpException('Link must be provided', HttpStatus.BAD_REQUEST);
     }
+    const notification = await this.notificationService.buildNotification(
+      NotifTypeEnum.CONTENT,
+      user?.username,
+      null,
+      createRessourceDto?.session,
+      0,
+      user?.photo,
+      user?.id,
+    );
 
+    this.eventEmitter.emit('notify', notification);
     const savedResource = await this.ressourceRepository.save(createRessourceDto);
     //console.log("Saved Resource:", savedResource);
 

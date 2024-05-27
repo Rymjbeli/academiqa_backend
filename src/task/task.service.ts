@@ -14,12 +14,17 @@ import { plainToClass } from 'class-transformer';
 import { SessionEntity } from '../session/entities/session.entity';
 import { User } from '../user/entities/user.entity';
 import { UserRoleEnum } from '../Enums/user-role.enum';
+import { NotifTypeEnum } from "../Enums/notif-type.enum";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { NewNotificationService } from "../new-notification/new-notification.service";
 
 @Injectable()
 export class TaskService {
   constructor(
     @InjectRepository(TaskEntity)
     private taskRepository: Repository<TaskEntity>,
+    private notificationService: NewNotificationService,
+    private eventEmitter: EventEmitter2,
   ) {}
   async create(
     createTaskDto: CreateTaskDto,
@@ -29,6 +34,17 @@ export class TaskService {
       throw new UnauthorizedException('Unauthorized');
     }
     //console.log('createTaskDto', createTaskDto);
+    const notification = await this.notificationService.buildNotification(
+      NotifTypeEnum.CONTENT,
+      teacher?.username,
+      null,
+      createTaskDto?.session?.id,
+      0,
+      teacher?.photo,
+      teacher?.id,
+    );
+
+    this.eventEmitter.emit('notify', notification);
     const newTask = this.taskRepository.create(createTaskDto);
     newTask.teacher = teacher;
     //console.log('newTask', newTask);

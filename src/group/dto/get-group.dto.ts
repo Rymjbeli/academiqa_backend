@@ -1,4 +1,5 @@
 import { IsNumber, IsString } from 'class-validator';
+import { Type } from "class-transformer";
 
 export class GetGroupDto {
   @IsString()
@@ -8,5 +9,6 @@ export class GetGroupDto {
   level: string;
 
   @IsNumber()
+  @Type(() => Number)
   group: number;
 }

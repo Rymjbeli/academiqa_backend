@@ -79,11 +79,10 @@ export class SessionController {
 
   @Get(':id')
   @UseGuards(SessionGuard)
-  findOneById(
+  async findOneById(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: User,
   ) {
-    return this.sessionService.findOne(id);
+    return await this.sessionService.findOne(id);
   }
 
   @Patch(':id')

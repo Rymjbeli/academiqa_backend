@@ -32,20 +32,16 @@ export class SessionGuard implements CanActivate {
       return true;
     } else if (currentUser?.role === UserRoleEnum.TEACHER) {
       const teacher = sessionType?.teacher;
-      // console.log(currentUser?.id );
-      // console.log(teacher?.id);
       return currentUser?.id === teacher?.id;
     } else if (currentUser?.role === UserRoleEnum.STUDENT) {
       const student = await this.studentService.findOneStudent(currentUser?.id);
       // console.log('student', student);
-      console.log(student?.group?.id === sessionType?.group?.id);
       if (session?.sessionType?.type === SessionTypeEnum?.Lecture) {
         return student?.group?.sectorLevel === sessionType?.group?.sectorLevel;
       } else {
         return student?.group?.id === sessionType?.group?.id;
       }
     }
-
     return false;
   }
 }
