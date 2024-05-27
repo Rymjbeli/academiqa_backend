@@ -31,7 +31,7 @@ export class SubjectController {
   }
   @Post('CreateOne')
   async createOne(@Body() createSubjectDto: CreateSubjectDto) {
-    console.log('createSubjectDto', createSubjectDto);
+    //console.log('createSubjectDto', createSubjectDto);
     return await this.subjectService.createOneSubject(createSubjectDto);
   }
 

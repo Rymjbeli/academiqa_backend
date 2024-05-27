@@ -29,13 +29,13 @@ export class CommonChatSessionGateway {
     @ConnectedSocket() socket: Socket,
   ): Promise<CreateCommonChatSessionDto> {
     try {
-      // console.log('socket', this.commonChatSessionService.clientToUser[socket.id]);
+      // //console.log('socket', this.commonChatSessionService.clientToUser[socket.id]);
       const sender = this.commonChatSessionService.clientToUser[socket.id];
       const { notification, message } =
         await this.commonChatSessionService.createMessage(
           createCommonChatSessionDto,
         );
-      // console.log('createCommonChatSessionDto', createCommonChatSessionDto);
+      // //console.log('createCommonChatSessionDto', createCommonChatSessionDto);
       this.server.emit('message', message);
       socket.broadcast.emit('notify', notification);
       return createCommonChatSessionDto;
@@ -54,7 +54,7 @@ export class CommonChatSessionGateway {
     @MessageBody() session: SessionEntity,
   ) {
     try {
-      // console.log('session', session);
+      // //console.log('session', session);
       const messages = await this.commonChatSessionService.findAll(session);
       this.server.emit('allMessages', messages, session);
       return messages;
@@ -81,8 +81,8 @@ export class CommonChatSessionGateway {
     @ConnectedSocket() socket: Socket,
   ): void {
     const { sessionId, user } = data;
-    console.log('this sender', user);
-    console.log('socket', sessionId);
+    //console.log('this sender', user);
+    //console.log('socket', sessionId);
     socket.join(sessionId?.toString());
     socket.to(sessionId?.toString()).emit('userJoined', user);
     this.commonChatSessionService.clientToUser[socket.id] = user;

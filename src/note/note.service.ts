@@ -59,7 +59,7 @@ export class NoteService {
     student: Student,
     sessionId: number,
   ): Promise<GetNoteDto[] | null> {
-    console.log(student.id);
+    //console.log(student.id);
     const noteEntities = await this.noteRepository.find({
       where: {
         student: { id: student.id },

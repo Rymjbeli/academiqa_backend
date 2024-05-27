@@ -77,7 +77,7 @@ export class CommonChatSessionService {
       createCommonChatSessionDto?.author?.photo,
       createCommonChatSessionDto?.author?.id,
     );
-    console.log('notification', notification);
+    //console.log('notification', notification);
     const newMessage = this.commonChatSessionRepository.create(
       createCommonChatSessionDto,
     );
@@ -85,7 +85,7 @@ export class CommonChatSessionService {
     return { notification: notification, message: newMessage };
   }
   async findAll(session: SessionEntity): Promise<any[]> {
-    console.log('sessionId', session);
+    //console.log('sessionId', session);
     const chats = await this.commonChatSessionRepository.find({
       where: { session: { id: session?.id } },
       relations: ['parent', 'author', 'session'],
@@ -102,7 +102,7 @@ export class CommonChatSessionService {
         },
       };
     });
-    console.log('chatsWithAuthorDetails', chatsWithAuthorDetails);
+    //console.log('chatsWithAuthorDetails', chatsWithAuthorDetails);
     return this.organizeMessages(chatsWithAuthorDetails);
   }
 

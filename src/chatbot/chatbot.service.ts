@@ -62,9 +62,9 @@ export class ChatbotService {
       let requestPrompt: any[];
       let imagePath: string;
       if (image) {
-        console.log('Image received:', image);
-        console.log('Discussion ID:', discussionId);
-        console.log('Prompt:', prompt);
+        //console.log('Image received:', image);
+        //console.log('Discussion ID:', discussionId);
+        //console.log('Prompt:', prompt);
 
         /*const authClient = await this.fileUploadService.authorize();
         const imageId: any = await this.fileUploadService.uploadFile(
@@ -82,7 +82,7 @@ export class ChatbotService {
             'chatbot_uploads',
           );
           imagePath = uploadResult.url;
-          console.log('Image uploaded to Azure:', imagePath);
+          //console.log('Image uploaded to Azure:', imagePath);
 
           const imageToRead = this.fileToGenerativePart(image, 'image/png');
           requestPrompt = [promptWithHistory, imageToRead];
@@ -96,10 +96,10 @@ export class ChatbotService {
 
       const result = await model.generateContent(requestPrompt);
       const response = result.response;
-      console.log(response);
-      console.log(response?.candidates[0]?.content);
-      console.log('helo', response.text);
-      console.log(response?.functionCalls);
+      //console.log(response);
+      //console.log(response?.candidates[0]?.content);
+      //console.log('helo', response.text);
+      //console.log(response?.functionCalls);
       await this.createMessage(
         discussion,
         prompt,
@@ -126,7 +126,7 @@ export class ChatbotService {
       where: { id: id },
       relations: ['user'],
     });
-    console.log(discussion);
+    //console.log(discussion);
     if (!discussion) {
       throw new UnauthorizedException(`Discussion with id ${id} not found`);
     }
@@ -144,7 +144,7 @@ export class ChatbotService {
   async createDiscussion(user: User): Promise<ChatbotDiscussionsEntity> {
     const newDiscussion = this.chatbotDiscussionsRepository.create();
     newDiscussion.user = user;
-    console.log(user);
+    //console.log(user);
     return await this.chatbotDiscussionsRepository.save(newDiscussion);
   }
 

@@ -87,7 +87,7 @@ export class AuthService {
     const studentsData: any =
       await this.fileUploadService.uploadCSVFile(studentsFile);
     const conflictEmails: string[] = [];
-    console.log('User created', studentsData);
+    //console.log('User created', studentsData);
     // Loop through each student data and attempt registration
     await Promise.all(
       studentsData.map(async (studentData: any) => {
@@ -97,7 +97,7 @@ export class AuthService {
             studentData.sectorLevel,
             studentData.groupNumber,
           );
-          console.log('Group', group);
+          //console.log('Group', group);
           if (!group) {
             // If group not found, add the email to conflicts array
             // conflictEmails.push(studentData.email);

@@ -24,7 +24,7 @@ export class FileUploadService {
   // async setContainerPublicAccess(): Promise<void> {
   //   try {
   //     await this.containerClient.setAccessPolicy('blob');
-  //     console.log('Public access level set to blob.');
+  //     //console.log('Public access level set to blob.');
   //   } catch (error) {
   //     console.error('Failed to set container public access level:', error);
   //   }
@@ -36,11 +36,11 @@ export class FileUploadService {
 
   async listContainers(): Promise<void> {
     try {
-      console.log('Listing containers...');
+      //console.log('Listing containers...');
       for await (const container of BlobServiceClient.fromConnectionString(
         process.env.AZURE_STORAGE_CONNECTION_STRING,
       ).listContainers()) {
-        console.log(`- ${container.name}`);
+        //console.log(`- ${container.name}`);
       }
     } catch (error) {
       console.error('Error listing containers:', error.message);
@@ -75,21 +75,21 @@ export class FileUploadService {
     folderPath: string,
   ): Promise<any> {
     try {
-      console.log('Received file:', image); // Log the received file
+      //console.log('Received file:', image); // Log the received file
 
       const blobName = `${folderPath}/${Date.now()}-${image.originalname}`;
-      console.log('Container client:', this.containerClient);
+      //console.log('Container client:', this.containerClient);
       const blockBlobClient: BlockBlobClient =
         this.containerClient.getBlockBlobClient(blobName);
 
-      console.log('Creating Readable stream from file buffer...');
+      //console.log('Creating Readable stream from file buffer...');
       const fileStream = new Readable();
       fileStream.push(image.buffer);
       fileStream.push(null);
 
-      console.log('Starting upload to Azure Blob Storage...');
-      console.log('Blob name:', blobName);
-      console.log('Blob URL:', blockBlobClient.url);
+      //console.log('Starting upload to Azure Blob Storage...');
+      //console.log('Blob name:', blobName);
+      //console.log('Blob URL:', blockBlobClient.url);
 
       const uploadResponse = await blockBlobClient.uploadStream(
         fileStream,
@@ -100,7 +100,7 @@ export class FileUploadService {
         },
       );
 
-      console.log('Upload response:', uploadResponse);
+      //console.log('Upload response:', uploadResponse);
 
       return {
         url: blockBlobClient.url,

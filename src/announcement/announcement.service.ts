@@ -39,7 +39,7 @@ export class AnnouncementService {
     );
 
     this.eventEmitter.emit('notify', notification);
-    // console.log('payload', payload);
+    // //console.log('payload', payload);
     return await this.announcementRepository.save(newAnnouncement);
   }
 
@@ -71,9 +71,9 @@ export class AnnouncementService {
   }
 
   async update(id: number, updateAnnouncementDto: UpdateAnnouncementDto) {
-    console.log(updateAnnouncementDto);
+    //console.log(updateAnnouncementDto);
     // const updatedAnnouncement = this.announcementRepository.create(updateAnnouncementDto);
-    // console.log(updatedAnnouncement);
+    // //console.log(updatedAnnouncement);
     // return this.announcementRepository.save({id, ...updatedAnnouncement});
     return await this.announcementRepository.update(id, updateAnnouncementDto);
   }

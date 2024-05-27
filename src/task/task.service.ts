@@ -28,10 +28,10 @@ export class TaskService {
     if (teacher.role !== UserRoleEnum.TEACHER) {
       throw new UnauthorizedException('Unauthorized');
     }
-    console.log('createTaskDto', createTaskDto);
+    //console.log('createTaskDto', createTaskDto);
     const newTask = this.taskRepository.create(createTaskDto);
     newTask.teacher = teacher;
-    console.log('newTask', newTask);
+    //console.log('newTask', newTask);
     return await this.taskRepository.save(newTask);
   }
 
@@ -61,10 +61,10 @@ export class TaskService {
       relations: ['session', 'teacher'],
     });
     if (!taskEntities) {
-      console.log('tasks', taskEntities);
+      //console.log('tasks', taskEntities);
       throw new NotFoundException('No tasks found');
     }
-    console.log('tasks', taskEntities);
+    //console.log('tasks', taskEntities);
     return taskEntities.map((task) => {
       return plainToClass(GetTaskDto, task);
     });

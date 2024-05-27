@@ -69,7 +69,7 @@ export class NewNotificationService {
       sender: sender,
     };
     const notification = await this.createNotification(createNotificationDto);
-    // console.log('notification', notification);
+    // //console.log('notification', notification);
     return notification;
   }
   async deleteNotification(id: number): Promise<void> {
@@ -83,13 +83,13 @@ export class NewNotificationService {
         return;
       }
       activeObservers.add(receiver);
-      // console.log('receiver', receiver);
+      // //console.log('receiver', receiver);
 
       const eventListener = async (data) => {
-        console.log('receiver', receiver);
-        console.log('receiver', data.sender);
-        console.log(typeof data.sender);
-        console.log(typeof receiver);
+        //console.log('receiver', receiver);
+        //console.log('receiver', data.sender);
+        //console.log(typeof data.sender);
+        //console.log(typeof receiver);
         observer.next(data);
       };
 

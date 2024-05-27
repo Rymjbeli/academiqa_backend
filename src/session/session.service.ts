@@ -116,7 +116,7 @@ export class SessionService {
         try {
           existingSession = await this.findOneHoliday(date);
         } catch (e) {
-          console.log(e);
+          //console.log(e);
         }
         if (existingSession) {
           existingSession.holidayName = holidayNames;
@@ -256,7 +256,7 @@ export class SessionService {
         message: 'This date is a sunday',
       };
     }
-    // else console.log('This date is not a holiday');
+    // else //console.log('This date is not a holiday');
 
     const existingSession = await this.sessionRepository.find({
       where: {
@@ -283,7 +283,7 @@ export class SessionService {
 
     // const date = new Date(addSessionDto.date);
     const endTime = new Date(addSessionDto.endTime);
-    console.log(date);
+    //console.log(date);
     session.date = date;
     session.endTime = endTime;
 
@@ -395,7 +395,7 @@ export class SessionService {
       order: { date: 'ASC' },
       relations: ['sessionType'],
     });
-    // console.log("sessions",sessions);
+    // //console.log("sessions",sessions);
     const sessionIndex = sessions.findIndex((s) => s.id === session.id);
 
     return sessionIndex + 1;
@@ -413,12 +413,12 @@ export class SessionService {
         },
       },
     });
-    console.log('sessionofsector level ', sessionsOfSectorLevel);
+    //console.log('sessionofsector level ', sessionsOfSectorLevel);
 
     const lectureSessions = sessionsOfSectorLevel.filter(
       (session) => session.sessionType.type === SessionTypeEnum.Lecture,
     );
-    console.log('lectureSessions', lectureSessions);
+    //console.log('lectureSessions', lectureSessions);
 
     const sessions = await this.sessionRepository.find({
       relations: ['sessionType', 'sessionType.group', 'sessionType.subject'],
@@ -432,7 +432,7 @@ export class SessionService {
         },
       },
     });
-    console.log('session', sessions);
+    //console.log('session', sessions);
 
     // Check if lectureSessions already exists in sessions
     const isLectureSessionExists = sessions.some((session) =>
@@ -616,7 +616,7 @@ export class SessionService {
           (presence) => presence.session?.id === sessionId,
         );
       }
-      console.log('student.presences', student.presences);
+      //console.log('student.presences', student.presences);
       return student.presences.some(
         (presence) => presence.session?.id === sessionId,
       );
@@ -665,7 +665,7 @@ export class SessionService {
         'admin',
         0,
       );
-      console.log('notification', notification);
+      //console.log('notification', notification);
       this.eventEmitter.emit('notify', notification);
     });
   }

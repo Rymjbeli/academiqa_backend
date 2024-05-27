@@ -24,7 +24,7 @@ export class SessionGuard implements CanActivate {
     if (!session) {
       return false;
     }
-    console.log('session', session.sessionType);
+    // console.log('session', session.sessionType);
 
     const { sessionType } = session;
 
@@ -32,6 +32,8 @@ export class SessionGuard implements CanActivate {
       return true;
     } else if (currentUser?.role === UserRoleEnum.TEACHER) {
       const teacher = sessionType?.teacher;
+      // console.log(currentUser?.id );
+      // console.log(teacher?.id);
       return currentUser?.id === teacher?.id;
     } else if (currentUser?.role === UserRoleEnum.STUDENT) {
       const student = await this.studentService.findOneStudent(currentUser?.id);

@@ -79,7 +79,7 @@ export class UserController {
     @CurrentUser() user: User,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    console.log(image);
+    //console.log(image);
     return await this.userService.editphoto(user, image);
   }
 }

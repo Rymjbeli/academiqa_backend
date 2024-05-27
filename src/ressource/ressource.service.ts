@@ -27,7 +27,7 @@ export class RessourceService {
     if (user.role != UserRoleEnum.TEACHER) {
       throw new HttpException('You are not a teacher', HttpStatus.FORBIDDEN);
     }
-    console.log(createRessourceDto.session, user.id);
+    //console.log(createRessourceDto.session, user.id);
     const sessionType = await this.sessionTypeService.findBySession(createRessourceDto.session);
     if (sessionType[0].teacher.id != user.id) {
       throw new HttpException(`You are not the teacher of this session: your id is ${user.id} and the owner's id is ${sessionType[0].teacher.id}`, HttpStatus.FORBIDDEN);
@@ -72,7 +72,7 @@ export class RessourceService {
   }
 
   async addLink(createRessourceDto: CreateRessourceDto, user: User) {
-    console.log("createRessourceDto", createRessourceDto);
+    //console.log("createRessourceDto", createRessourceDto);
 
     if (user.role != UserRoleEnum.TEACHER) {
       throw new HttpException('You are not a teacher', HttpStatus.FORBIDDEN);
@@ -85,7 +85,7 @@ export class RessourceService {
 
     createRessourceDto.type = 'link';
     createRessourceDto.fileUrl = null;
-    console.log("Modified createRessourceDto:", createRessourceDto);
+    //console.log("Modified createRessourceDto:", createRessourceDto);
 
     // Ensure `link` is set
     if (!createRessourceDto.link) {
@@ -93,7 +93,7 @@ export class RessourceService {
     }
 
     const savedResource = await this.ressourceRepository.save(createRessourceDto);
-    console.log("Saved Resource:", savedResource);
+    //console.log("Saved Resource:", savedResource);
 
     return savedResource;
   }

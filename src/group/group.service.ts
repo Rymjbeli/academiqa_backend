@@ -22,7 +22,7 @@ export class GroupService {
   async createGroups(groupFile: Express.Multer.File) {
     const groups: CreateGroupDto[] =
       await this.fileUploadService.uploadCSVFile(groupFile);
-    console.log('groups', groups);
+    //console.log('groups', groups);
     const groupEntities = groups.map((createGroupDto) =>
       this.createOneGroup(createGroupDto),
     );

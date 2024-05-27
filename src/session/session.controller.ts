@@ -38,9 +38,9 @@ export class SessionController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const { numberOfWeeks, semesterStartDate } = addHolidaysDto;
-    console.log(numberOfWeeks);
-    console.log(semesterStartDate);
-    console.log(file);
+    //console.log(numberOfWeeks);
+    //console.log(semesterStartDate);
+    //console.log(file);
     return this.sessionService.generateSessionsForAllSessionTypes(
       numberOfWeeks,
       semesterStartDate,

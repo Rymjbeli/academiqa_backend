@@ -29,7 +29,7 @@ export class StudentController {
   async findAllStudentsBySectorLevel(
     @Param('sectorLevel') sectorLevel: string,
   ) {
-    console.log(sectorLevel);
+    //console.log(sectorLevel);
     return await this.studentService.findAllStudentsBySectorLevel(sectorLevel);
   }
 
