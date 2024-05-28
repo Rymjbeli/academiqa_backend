@@ -14,9 +14,9 @@ import { plainToClass } from 'class-transformer';
 import { SessionEntity } from '../session/entities/session.entity';
 import { User } from '../user/entities/user.entity';
 import { UserRoleEnum } from '../Enums/user-role.enum';
-import { NotifTypeEnum } from "../Enums/notif-type.enum";
-import { EventEmitter2 } from "@nestjs/event-emitter";
-import { NewNotificationService } from "../new-notification/new-notification.service";
+import { NotifTypeEnum } from '../Enums/notif-type.enum';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NewNotificationService } from '../new-notification/new-notification.service';
 
 @Injectable()
 export class TaskService {

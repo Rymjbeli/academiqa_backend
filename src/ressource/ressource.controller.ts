@@ -8,7 +8,8 @@ import {
   Delete,
   UseGuards,
   UseInterceptors,
-  UploadedFile, ParseIntPipe,
+  UploadedFile,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { RessourceService } from './ressource.service';
 import { CreateRessourceDto } from './dto/create-ressource.dto';
@@ -34,10 +35,11 @@ export class RessourceController {
   }
 
   @Post('link')
-    @UseGuards(JwtAuthGuard)
-    createLink( @Body() createRessourceDto: CreateRessourceDto,
-          @CurrentUser()user:User,
-         ){
+  @UseGuards(JwtAuthGuard)
+  createLink(
+    @Body() createRessourceDto: CreateRessourceDto,
+    @CurrentUser() user: User,
+  ) {
     return this.ressourceService.addLink(createRessourceDto, user);
   }
 
@@ -46,10 +48,10 @@ export class RessourceController {
     return this.ressourceService.findAll();
   }
 
-    @Get(':id')
-    findBySession(@Param('id') id: string) {
-        return this.ressourceService.findBySession(+id);
-    }
+  @Get(':id')
+  findBySession(@Param('id') id: string) {
+    return this.ressourceService.findBySession(+id);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

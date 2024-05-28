@@ -10,6 +10,7 @@ import {
   NotFoundException,
   BadRequestException,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { PresenceService } from './presence.service';
 import { CreatePresenceDto } from './dto/create-presence.dto';
@@ -45,8 +46,8 @@ export class PresenceController {
     return this.presenceService.getSectorsAbsence();
   }
   @Get('sectorAvrageAbsence')
-  async sectorAvrageAbsence() {
-    return this.presenceService.GetAvrageAbsence();
+  async getAverageAbsencePercentage(): Promise<number> {
+    return this.presenceService.getAverageAbsence();
   }
   // @Get('studentsAbsence/:id')
   // async getStudentsAbsence(@Param('id', ParseIntPipe) id: number) {

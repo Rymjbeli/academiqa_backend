@@ -20,7 +20,6 @@ import { SessionTypeEnum } from '../Enums/session-type.enum';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 
-
 @Controller('session-type')
 export class SessionTypeController {
   constructor(private readonly sessionTypeService: SessionTypeService) {}
@@ -50,7 +49,7 @@ export class SessionTypeController {
   }
   @Get('GroupsByTeacher/:id')
   @UseGuards(JwtAuthGuard)
-  async findGroupsByTeacher(@Param('id',ParseIntPipe) id: number) {
+  async findGroupsByTeacher(@Param('id', ParseIntPipe) id: number) {
     console.log('teacherID', id);
     return await this.sessionTypeService.findGroupsByTeacher(+id);
   }

@@ -263,7 +263,7 @@ export class SessionTypeService {
       return groups.find((group) => group.id === id);
     });
     return uniqueGroups;
-    return sessionTypes
+    return sessionTypes;
   }
 
   async update(id: number, updateSessionTypeDto: UpdateSessionTypeDto) {
