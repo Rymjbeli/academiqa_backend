@@ -7,6 +7,7 @@ import { SessionEntity } from "../session/entities/session.entity";
 import { StudentService } from "../user/student/student.service";
 import { SessionTypeEntity } from "../session-type/entities/session-type.entity";
 import { SubjectService } from "../subject/subject.service";
+import { Student } from "../user/entities/student.entity";
 
 @Injectable()
 export class PresenceService {
@@ -19,6 +20,8 @@ export class PresenceService {
     @InjectRepository(SessionTypeEntity)
     private readonly sessionTypesRepository: Repository<SessionTypeEntity>,
     private readonly subjectService: SubjectService,
+    @InjectRepository(Student)
+    private readonly studentRepository: Repository<Student>,
   ) {}
   async findPresence(createPresenceDto: CreatePresenceDto) {
     const { session, student } = createPresenceDto;
@@ -171,13 +174,19 @@ export class PresenceService {
     const { pastSessions, presences,sectorLevel } = await this.fetchAndPrepareData(id);
     return this.calculateAbsences(pastSessions, presences, sectorLevel);
   }
-  async GetAvrageAbsence(){
-  return await this.constructQuery()
-      .select(
-          'COUNT(students.id)/(select sum((select count(*) from `groups` as g left join user as e on (g.id = e.groupId) AND exists (select * from session_type as stype where stype.id = se.sessionTypeId) )) from session as se)  * 100', 'Absence'
-      )
-      .getRawOne();
-}
+  async GetAvrageAbsence() {
+    const totalSessions = await this.sessionRepository.count();
+    console.log(totalSessions);
+    const totalStudents = await this.studentRepository.count();
+    console.log(totalStudents);
+    const totalPossiblePresences = totalSessions * totalStudents;
+    console.log(totalPossiblePresences);
+    const totalPresences = await this.presenceRepository.count();
+    console.log(totalPresences);
+    const totalAbsences = totalPossiblePresences - totalPresences;
+    console.log(totalAbsences);
+    return totalAbsences / totalPossiblePresences;
+  }
 
 
   // async getAbsencesAndCoursesForAdmin(id: number) {

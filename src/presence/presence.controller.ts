@@ -46,7 +46,9 @@ export class PresenceController {
   }
   @Get('sectorAvrageAbsence')
   async sectorAvrageAbsence() {
-    return this.presenceService.GetAvrageAbsence();
+    const s= this.presenceService.GetAvrageAbsence();
+    // console.log(s);
+    return s;
   }
   // @Get('studentsAbsence/:id')
   // async getStudentsAbsence(@Param('id', ParseIntPipe) id: number) {
@@ -63,6 +65,6 @@ export class PresenceController {
   // }
   @Get('monthlyAbsence/:id')
   async getSectorMonthlyAbsence(@Param('id', ParseIntPipe) id: number) {
-    return this.presenceService.getSectorMonthlyAbsence(+id);
+    return await this.presenceService.getSectorMonthlyAbsence(+id);
   }
 }

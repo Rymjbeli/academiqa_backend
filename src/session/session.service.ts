@@ -413,7 +413,7 @@ export class SessionService {
         },
       },
     });
-    //console.log('sessionofsector level ', sessionsOfSectorLevel);
+    // console.log('sessionofsector level ', sessionsOfSectorLevel);
 
     const lectureSessions = sessionsOfSectorLevel.filter(
       (session) => session.sessionType.type === SessionTypeEnum.Lecture,
@@ -432,7 +432,7 @@ export class SessionService {
         },
       },
     });
-    //console.log('session', sessions);
+    console.log('session', sessions);
 
     // Check if lectureSessions already exists in sessions
     const isLectureSessionExists = sessions.some((session) =>
@@ -460,7 +460,7 @@ export class SessionService {
       },
     });
 */
-
+    // console.log('sessilllllllllllllllllllllllllllllllllons', sessions);
     const getSessionsDto: GetSessionDto[] = sessions.map((session) => {
       if (!session.sessionType) {
         return {
@@ -470,6 +470,7 @@ export class SessionService {
           holidayName: session.holidayName,
           type: SessionTypeEnum.Holiday,
           name: session.name,
+          sessionTypeId: session.sessionType?.id,
         };
       }
       return {
@@ -479,6 +480,7 @@ export class SessionService {
         holidayName: session.holidayName,
         type: session.sessionType.type,
         name: session.name ? session.name : session.sessionType.subject.name,
+        sessionTypeId: session.sessionType?.id,
       };
     });
 

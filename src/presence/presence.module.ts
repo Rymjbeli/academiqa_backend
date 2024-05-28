@@ -8,10 +8,11 @@ import { UserModule } from '../user/user.module';
 import { SessionEntity } from '../session/entities/session.entity';
 import { SessionTypeEntity } from "../session-type/entities/session-type.entity";
 import { SubjectModule } from "../subject/subject.module";
+import { Student } from "../user/entities/student.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PresenceEntity, SessionEntity, SessionTypeEntity,]),
+    TypeOrmModule.forFeature([PresenceEntity, SessionEntity, SessionTypeEntity,Student]),
     SessionModule,
     UserModule,
     SubjectModule,

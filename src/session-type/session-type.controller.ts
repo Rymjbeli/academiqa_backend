@@ -54,6 +54,10 @@ export class SessionTypeController {
     console.log('teacherID', id);
     return await this.sessionTypeService.findGroupsByTeacher(+id);
   }
+  @Get(':id/teacher-id')
+  async getTeacherIdBySessionTypeId(@Param('id', ParseIntPipe) sessionTypeId: number): Promise<number> {
+    return this.sessionTypeService.getTeacherIdBySessionTypeId(sessionTypeId);
+  }
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string) {
@@ -130,4 +134,5 @@ export class SessionTypeController {
   findBySession(@Param('id', ParseIntPipe) id: number) {
     return this.sessionTypeService.findBySession(id);
   }
+
 }
