@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateSessionTypeDto } from './dto/create-session-type.dto';
 import { UpdateSessionTypeDto } from './dto/update-session-type.dto';
 import { Repository } from 'typeorm';
@@ -340,5 +340,22 @@ export class SessionTypeService {
       },
     });
     return sessionType;
+  }
+
+  async getTeacherIdBySessionTypeId(sessionTypeId: number): Promise<number> {
+    const sessionType = await this.sessionTypeRepository.findOne({
+      where: { id: sessionTypeId },
+      relations: ['teacher'],
+    });
+
+    if (!sessionType) {
+      throw new NotFoundException('SessionType not found');
+    }
+
+    if (!sessionType.teacher) {
+      throw new NotFoundException('Teacher not found for the given SessionType');
+    }
+
+    return sessionType.teacher.id;
   }
 }

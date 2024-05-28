@@ -38,7 +38,7 @@ export class NewNotificationService {
       case NotifTypeEnum.ABSENCE_LIMIT:
         return `You have reached the **absence limit** in **${content}**, please contact the administration`;
       case NotifTypeEnum.CONTENT:
-        return `**New Content** has been added to **${content}**`;
+        return `****${content}** has added **new Content**`;
       case NotifTypeEnum.MESSAGE:
         return `You have a **new message** from **${content}**`;
       case NotifTypeEnum.ABSENT:

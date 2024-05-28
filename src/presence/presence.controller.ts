@@ -64,6 +64,6 @@ export class PresenceController {
   // }
   @Get('monthlyAbsence/:id')
   async getSectorMonthlyAbsence(@Param('id', ParseIntPipe) id: number) {
-    return this.presenceService.getSectorMonthlyAbsence(+id);
+    return await this.presenceService.getSectorMonthlyAbsence(+id);
   }
 }

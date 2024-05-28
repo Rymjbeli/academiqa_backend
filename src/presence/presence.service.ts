@@ -13,6 +13,7 @@ import { StudentService } from '../user/student/student.service';
 import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
 import { SubjectService } from '../subject/subject.service';
 import { User } from '../user/entities/user.entity';
+import { Student } from "../user/entities/student.entity";
 
 @Injectable()
 export class PresenceService {
@@ -27,6 +28,8 @@ export class PresenceService {
     private readonly subjectService: SubjectService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Student)
+    private readonly studentRepository: Repository<Student>,
   ) {}
   async findPresence(createPresenceDto: CreatePresenceDto) {
     const { session, student } = createPresenceDto;
