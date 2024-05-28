@@ -3,7 +3,7 @@ import { CreateSessionDto } from './dto/create-session.dto';
 import { SessionTypeEntity } from '../session-type/entities/session-type.entity';
 import { SessionEntity } from './entities/session.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { SessionTypeService } from '../session-type/session-type.service';
 import { FileUploadService } from '../file-upload/file-upload.service';
 import { NotFoundError } from 'rxjs';
@@ -344,12 +344,14 @@ export class SessionService {
   }
 
   async findOne(id: number) {
-    const session = await this.sessionRepository.findOne({ where: { id }});
+    const session = await this.sessionRepository.findOne({ where: { id } });
     if (!session) {
       throw new NotFoundError('Session not found');
     }
     const { sessionType } = session;
-    const sessionTypeWithTeacher = await this.sessionTypeService.findOne( sessionType.id);
+    const sessionTypeWithTeacher = await this.sessionTypeService.findOne(
+      sessionType.id,
+    );
 
     if (sessionTypeWithTeacher) {
       const { subject, ...filteredSessionType } = sessionTypeWithTeacher;
@@ -445,6 +447,14 @@ export class SessionService {
     if (!isLectureSessionExists) {
       sessions.push(...lectureSessions);
     }
+
+    const holidaySessions = await this.sessionRepository.find({
+      where: {
+        holidayName: Not(''),
+      },
+    });
+
+    sessions.push(...holidaySessions);
 
     /*
     const sessions = await this.sessionRepository.find({
