@@ -40,7 +40,7 @@ export class ChatbotService {
     user: User,
   ): Promise<{ prompt: string; image: string; response: string }> {
     try {
-      const genModel = image ? 'gemini-pro-vision' : 'gemini-pro';
+      const genModel = 'gemini-1.5-pro';
       const model = this.genAI.getGenerativeModel({
         model: genModel,
       });
